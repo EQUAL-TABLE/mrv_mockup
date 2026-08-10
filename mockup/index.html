@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQUALTABLE · 홈</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css" />
+  <!-- lucide 아이콘 (기존 repo도 lucide 사용) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen">
+
+  <!--
+    홈 화면 목업 (순수 HTML + Tailwind)
+    - 기존 repo에서 ProjectList는 좌측 사이드바 없이 표시됨 → 홈도 사이드바 없음
+    - 상단: 시스템 설명 영역 / 하단: 카드형 프로젝트 목록
+  -->
+
+  <!-- ===== 상단 앱바 (최소 구성: 로고 + 프로필) ===== -->
+  <header class="glass-header sticky top-0 z-30 h-20 border-b border-outline-variant/60">
+    <div class="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
+      <div class="flex items-center gap-2">
+        <div class="primary-gradient flex h-9 w-9 items-center justify-center rounded-lg">
+          <i data-lucide="leaf" class="h-5 w-5 text-white"></i>
+        </div>
+        <span class="font-headline text-2xl tracking-wide text-primary">EQUALTABLE</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative rounded-full p-2 text-on-surface-variant hover:bg-surface-container-high">
+          <i data-lucide="bell" class="h-5 w-5"></i>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-error"></span>
+        </button>
+        <button class="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 hover:bg-surface-container-high">
+          <span class="flex h-8 w-8 items-center justify-center rounded-full bg-primary-fixed text-sm font-semibold text-primary-container">공</span>
+          <span class="text-sm font-medium text-on-surface">공드리 로스터리</span>
+          <i data-lucide="chevron-down" class="h-4 w-4 text-on-surface-variant"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl px-6 pb-24">
+
+    <!-- ===== 상단: 시스템 설명 영역 (Hero) ===== -->
+    <section class="pt-10">
+      <div class="rounded-3xl border border-outline-variant/60 bg-surface-container-lowest p-8 shadow-sm">
+        <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div class="max-w-2xl">
+            <p class="mb-2 inline-flex items-center gap-1.5 rounded-full bg-primary-fixed px-3 py-1 text-xs font-semibold text-primary-container">
+              <i data-lucide="sparkles" class="h-3.5 w-3.5"></i> 커피 탄소발자국 산정 서비스
+            </p>
+            <h1 class="font-sans text-2xl font-bold leading-snug text-on-surface md:text-3xl">
+              내 커피가 만들어지기까지<br class="hidden md:block" />
+              발생하는 <span class="text-primary">탄소량</span>을 계산합니다
+            </h1>
+            <p class="mt-3 text-sm leading-relaxed text-on-surface-variant">
+              생두 재배부터 로스팅·유통·폐기까지 전 과정에서 나오는 온실가스를 표준(ISO 14067·환경성적표지)에 맞춰
+              산정하고, 필요 시 인증용 결과확인서를 발급받을 수 있습니다.
+            </p>
+          </div>
+          <div class="shrink-0">
+            <a href="#" onclick="alert('다음 단계에서 [프로젝트 기본정보] 화면으로 연결합니다.'); return false;"
+               class="primary-gradient inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-semibold text-white shadow-md transition hover:opacity-90">
+              <i data-lucide="plus" class="h-5 w-5"></i>
+              새 탄소 산정 시작하기
+            </a>
+          </div>
+        </div>
+
+        <!-- 두 가지 방식(트랙) 쉬운 말 안내 -->
+        <div class="mt-8 grid gap-4 sm:grid-cols-2">
+          <div class="rounded-2xl border border-outline-variant/60 bg-surface-container-low p-5">
+            <div class="mb-2 flex items-center gap-2">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <i data-lucide="file-check-2" class="h-5 w-5"></i>
+              </span>
+              <h3 class="font-sans text-base font-bold text-on-surface">MRV 기반 탄소배출량 산정</h3>
+              <span class="rounded-full bg-primary-fixed px-2 py-0.5 text-[11px] font-semibold text-primary-container">인증 가능</span>
+            </div>
+            <p class="text-sm leading-relaxed text-on-surface-variant">
+              전기 고지서·거래명세서 같은 실제 증빙 문서를 올리면 자동으로 읽어 계산합니다.
+              결과확인서·보고서 발급이 가능한 정확한 방식입니다.
+            </p>
+          </div>
+          <div class="rounded-2xl border border-outline-variant/60 bg-surface-container-low p-5">
+            <div class="mb-2 flex items-center gap-2">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning/10 text-warning">
+                <i data-lucide="calculator" class="h-5 w-5"></i>
+              </span>
+              <h3 class="font-sans text-base font-bold text-on-surface">탄소배출량 추정치 계산기</h3>
+              <span class="rounded-full bg-warning-container px-2 py-0.5 text-[11px] font-semibold text-warning">참고용</span>
+            </div>
+            <p class="text-sm leading-relaxed text-on-surface-variant">
+              증빙 문서 없이 값을 직접 입력해 대략적인 탄소량을 빠르게 확인합니다.
+              간편하지만 인증·문서 발급은 되지 않는 참고용입니다.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 하단: 프로젝트 목록 ===== -->
+    <section class="mt-10">
+      <!-- 목록 헤더 + 요약 -->
+      <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 class="font-sans text-xl font-bold text-on-surface">내 산정 프로젝트</h2>
+          <p class="mt-0.5 text-sm text-on-surface-variant">총 5건 · 진행 중인 작업을 이어서 완료하세요</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-medium">
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-surface-container-high px-3 py-1.5 text-on-surface-variant">
+            <span class="h-2 w-2 rounded-full bg-on-surface-variant/50"></span> 작성중 2
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-warning-container px-3 py-1.5 text-warning">
+            <span class="h-2 w-2 rounded-full bg-warning"></span> 검토중 1
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-primary-fixed px-3 py-1.5 text-primary-container">
+            <span class="h-2 w-2 rounded-full bg-primary"></span> 완료 2
+          </span>
+        </div>
+      </div>
+
+      <!-- 카드 그리드 (project-card 패턴 반복 = 재사용 컴포넌트 후보) -->
+      <div class="grid gap-4 md:grid-cols-2">
+
+        <!-- [작성중] 카드 -->
+        <article class="group flex flex-col rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-5 shadow-sm transition hover:shadow-md">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="font-sans text-lg font-bold leading-snug text-on-surface">에티오피아 예가체프<br />싱글오리진 2026</h3>
+            <span class="shrink-0 rounded-full bg-surface-container-high px-2.5 py-1 text-xs font-semibold text-on-surface-variant">작성중</span>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-1.5">
+            <span class="rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">MRV</span>
+            <span class="rounded-md bg-surface-container-high px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">ISO 14067</span>
+            <span class="rounded-md bg-surface-container-high px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">폐기까지</span>
+          </div>
+          <!-- 단계 진행 -->
+          <div class="mt-4">
+            <div class="mb-1.5 flex items-center justify-between text-xs">
+              <span class="font-medium text-on-surface-variant">진행 단계</span>
+              <span class="font-semibold text-primary">6 / 12 단계</span>
+            </div>
+            <div class="h-2 w-full overflow-hidden rounded-full bg-surface-container-high">
+              <div class="h-full rounded-full bg-primary" style="width:50%"></div>
+            </div>
+          </div>
+          <div class="mt-4 border-t border-outline-variant/50 pt-3">
+            <p class="mb-3 text-xs text-on-surface-variant">생성 2026-06-01 · 수정 08-05</p>
+            <a href="#" class="primary-gradient flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
+              <i data-lucide="pencil-line" class="h-4 w-4"></i> 이어서 작성
+            </a>
+          </div>
+        </article>
+
+        <!-- [검토중] 카드 -->
+        <article class="group flex flex-col rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-5 shadow-sm transition hover:shadow-md">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="font-sans text-lg font-bold leading-snug text-on-surface">콜드브루 원액용<br />블렌드 2026</h3>
+            <span class="shrink-0 rounded-full bg-warning-container px-2.5 py-1 text-xs font-semibold text-warning">검토중</span>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-1.5">
+            <span class="rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">MRV</span>
+            <span class="rounded-md bg-surface-container-high px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">ISO 14067</span>
+            <span class="rounded-md bg-surface-container-high px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">폐기까지</span>
+          </div>
+          <div class="mt-4">
+            <div class="mb-1.5 flex items-center justify-between text-xs">
+              <span class="font-medium text-on-surface-variant">진행 단계</span>
+              <span class="font-semibold text-warning">11 / 12 단계 · 검토 중</span>
+            </div>
+            <div class="h-2 w-full overflow-hidden rounded-full bg-surface-container-high">
+              <div class="h-full rounded-full bg-warning" style="width:92%"></div>
+            </div>
+          </div>
+          <div class="mt-4 border-t border-outline-variant/50 pt-3">
+            <p class="mb-3 text-xs text-on-surface-variant">생성 2026-07-20 · 수정 08-06</p>
+            <a href="#" class="primary-gradient flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
+              <i data-lucide="clipboard-check" class="h-4 w-4"></i> 검토 이어가기
+            </a>
+          </div>
+        </article>
+
+        <!-- [확정완료] 카드 - 결과값 표시 -->
+        <article class="group flex flex-col rounded-2xl border border-primary/30 bg-surface-container-lowest p-5 shadow-sm transition hover:shadow-md">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="font-sans text-lg font-bold leading-snug text-on-surface">디카페인<br />하우스블렌드 2026</h3>
+            <span class="shrink-0 inline-flex items-center gap-1 rounded-full bg-primary-fixed px-2.5 py-1 text-xs font-semibold text-primary-container">
+              <i data-lucide="check" class="h-3.5 w-3.5"></i> 확정완료
+            </span>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-1.5">
+            <span class="rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">MRV</span>
+            <span class="rounded-md bg-surface-container-high px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">ISO 14067</span>
+            <span class="rounded-md bg-surface-container-high px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">정문까지</span>
+          </div>
+          <!-- 결과값 -->
+          <div class="mt-4 rounded-xl bg-primary/5 p-3">
+            <p class="text-xs text-on-surface-variant">탄소발자국 결과</p>
+            <p class="mt-0.5 font-sans text-2xl font-bold text-primary">4.21 <span class="text-sm font-medium text-on-surface-variant">kg CO₂e / 1kg</span></p>
+          </div>
+          <div class="mt-4 border-t border-outline-variant/50 pt-3">
+            <p class="mb-3 text-xs text-on-surface-variant">생성 2026-05-20 · 확정 07-28</p>
+            <a href="#" class="flex w-full items-center justify-center gap-2 rounded-xl border border-primary px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/5">
+              <i data-lucide="bar-chart-3" class="h-4 w-4"></i> 결과 보기
+            </a>
+          </div>
+        </article>
+
+        <!-- [작성중] 환경성적표지 카드 -->
+        <article class="group flex flex-col rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-5 shadow-sm transition hover:shadow-md">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="font-sans text-lg font-bold leading-snug text-on-surface">시그니처 블렌드<br />2026</h3>
+            <span class="shrink-0 rounded-full bg-surface-container-high px-2.5 py-1 text-xs font-semibold text-on-surface-variant">작성중</span>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-1.5">
+            <span class="rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">MRV</span>
+            <span class="rounded-md bg-surface-container-high px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">환경성적표지</span>
+            <span class="rounded-md bg-surface-container-high px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">폐기까지</span>
+          </div>
+          <div class="mt-4">
+            <div class="mb-1.5 flex items-center justify-between text-xs">
+              <span class="font-medium text-on-surface-variant">진행 단계</span>
+              <span class="font-semibold text-primary">3 / 10 단계</span>
+            </div>
+            <div class="h-2 w-full overflow-hidden rounded-full bg-surface-container-high">
+              <div class="h-full rounded-full bg-primary" style="width:30%"></div>
+            </div>
+          </div>
+          <div class="mt-4 border-t border-outline-variant/50 pt-3">
+            <p class="mb-3 text-xs text-on-surface-variant">생성 2026-07-28 · 수정 08-04</p>
+            <a href="#" class="primary-gradient flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
+              <i data-lucide="pencil-line" class="h-4 w-4"></i> 이어서 작성
+            </a>
+          </div>
+        </article>
+
+        <!-- [완료] 추정 기반(계산기) 카드 -->
+        <article class="group flex flex-col rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-5 shadow-sm transition hover:shadow-md">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="font-sans text-lg font-bold leading-snug text-on-surface">케냐 AA<br />간편 계산</h3>
+            <span class="shrink-0 rounded-full bg-primary-fixed px-2.5 py-1 text-xs font-semibold text-primary-container">완료</span>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-1.5">
+            <span class="rounded-md bg-warning/10 px-2 py-0.5 text-[11px] font-medium text-warning">계산기</span>
+            <span class="rounded-md bg-surface-container-high px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">ISO 14067</span>
+            <span class="rounded-md bg-surface-container-high px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">정문까지</span>
+          </div>
+          <div class="mt-4 rounded-xl bg-warning/5 p-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs text-on-surface-variant">추정 결과 (참고용)</p>
+                <p class="mt-0.5 font-sans text-2xl font-bold text-on-surface">5.02 <span class="text-sm font-medium text-on-surface-variant">kg CO₂e / 1kg</span></p>
+              </div>
+              <span class="rounded-full bg-warning-container px-2 py-0.5 text-[11px] font-semibold text-warning">인증 불가</span>
+            </div>
+          </div>
+          <div class="mt-4 border-t border-outline-variant/50 pt-3">
+            <p class="mb-3 text-xs text-on-surface-variant">생성 2026-08-01</p>
+            <a href="#" class="flex w-full items-center justify-center gap-2 rounded-xl border border-primary px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/5">
+              <i data-lucide="bar-chart-3" class="h-4 w-4"></i> 결과 보기
+            </a>
+          </div>
+        </article>
+
+        <!-- 새 프로젝트 추가 카드 (점선) -->
+        <a href="#" onclick="alert('다음 단계에서 [프로젝트 기본정보] 화면으로 연결합니다.'); return false;"
+           class="flex min-h-[220px] flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-outline-variant bg-surface-container-low/50 p-5 text-on-surface-variant transition hover:border-primary hover:text-primary">
+          <span class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-container-high">
+            <i data-lucide="plus" class="h-6 w-6"></i>
+          </span>
+          <span class="text-sm font-semibold">새 탄소 산정 시작</span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- 상태 확인용 임시 링크 (목업 검토용, 실제 화면엔 미포함) -->
+    <div class="mt-10 text-center">
+      <a href="home-empty.html" class="text-xs text-on-surface-variant underline hover:text-primary">
+        ▸ 첫 사용자(프로젝트 없음) 화면 보기
+      </a>
+    </div>
+
+  </main>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

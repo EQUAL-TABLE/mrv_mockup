@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQUALTABLE · 홈 (첫 사용자)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen">
+
+  <!-- 홈 화면 - 프로젝트가 하나도 없는 첫 사용자 상태(Empty state) -->
+
+  <!-- ===== 상단 앱바 ===== -->
+  <header class="glass-header sticky top-0 z-30 h-20 border-b border-outline-variant/60">
+    <div class="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
+      <div class="flex items-center gap-2">
+        <div class="primary-gradient flex h-9 w-9 items-center justify-center rounded-lg">
+          <i data-lucide="leaf" class="h-5 w-5 text-white"></i>
+        </div>
+        <span class="font-headline text-2xl tracking-wide text-primary">EQUALTABLE</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 hover:bg-surface-container-high">
+          <span class="flex h-8 w-8 items-center justify-center rounded-full bg-primary-fixed text-sm font-semibold text-primary-container">공</span>
+          <span class="text-sm font-medium text-on-surface">공드리 로스터리</span>
+          <i data-lucide="chevron-down" class="h-4 w-4 text-on-surface-variant"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-4xl px-6 pb-24">
+
+    <!-- ===== 환영 + 서비스 설명 ===== -->
+    <section class="pt-14 text-center">
+      <p class="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary-fixed px-3 py-1 text-xs font-semibold text-primary-container">
+        <i data-lucide="sparkles" class="h-3.5 w-3.5"></i> 환영합니다, 공드리 로스터리님
+      </p>
+      <h1 class="font-sans text-3xl font-bold leading-snug text-on-surface">
+        커피의 <span class="text-primary">탄소발자국</span>, 지금 시작해 보세요
+      </h1>
+      <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-on-surface-variant">
+        생두 재배부터 로스팅·유통·폐기까지 커피 전 과정에서 나오는 온실가스를 표준에 맞춰 계산합니다.
+        아래 3단계면 첫 결과를 확인할 수 있습니다.
+      </p>
+    </section>
+
+    <!-- ===== 3단계 안내 (LCA를 쉬운 흐름으로 설명) ===== -->
+    <section class="mt-10">
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-5 text-center shadow-sm">
+          <span class="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">1</span>
+          <h3 class="font-sans text-base font-bold text-on-surface">방식 선택</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-on-surface-variant">MRV 기반 산정(정확·인증) 또는 계산기(간편·참고) 중 선택합니다.</p>
+        </div>
+        <div class="rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-5 text-center shadow-sm">
+          <span class="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">2</span>
+          <h3 class="font-sans text-base font-bold text-on-surface">정보 입력</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-on-surface-variant">생두·에너지·포장 등 단계별 정보를 안내에 따라 입력합니다.</p>
+        </div>
+        <div class="rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-5 text-center shadow-sm">
+          <span class="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">3</span>
+          <h3 class="font-sans text-base font-bold text-on-surface">결과 확인</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-on-surface-variant">탄소발자국 결과와 (고지서 기반 시) 인증용 보고서를 받습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 빈 목록 + CTA ===== -->
+    <section class="mt-10">
+      <div class="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-outline-variant bg-surface-container-low/50 px-6 py-14 text-center">
+        <span class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant">
+          <i data-lucide="folder-plus" class="h-8 w-8"></i>
+        </span>
+        <h2 class="font-sans text-lg font-bold text-on-surface">아직 산정 프로젝트가 없습니다</h2>
+        <p class="mt-1.5 text-sm text-on-surface-variant">첫 번째 탄소 산정을 시작해 보세요.</p>
+        <a href="#" onclick="alert('다음 단계에서 [프로젝트 기본정보] 화면으로 연결합니다.'); return false;"
+           class="primary-gradient mt-6 inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-semibold text-white shadow-md transition hover:opacity-90">
+          <i data-lucide="plus" class="h-5 w-5"></i>
+          새 탄소 산정 시작하기
+        </a>
+      </div>
+    </section>
+
+    <div class="mt-10 text-center">
+      <a href="index.html" class="text-xs text-on-surface-variant underline hover:text-primary">
+        ▸ 프로젝트가 있는 홈 화면 보기
+      </a>
+    </div>
+
+  </main>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

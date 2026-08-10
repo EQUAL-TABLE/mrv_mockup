@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"C:/Users/tkong/Project/mrv-frontend\" 2>&1 | head -50)",
+      "Read(//c/Users/tkong/Project/mrv-frontend/**)",
+      "Bash(cat \"C:/Users/tkong/Project/mrv-frontend/package.json\" 2>&1)",
+      "Bash(cd \"C:/Users/tkong/Project/mrv-frontend\" && find src -maxdepth 4 -type d 2>&1 | sort)",
+      "Bash(cat \"C:/Users/tkong/Project/mrv-frontend/vite.config.ts\" \"C:/Users/tkong/Project/mrv-frontend/tsconfig.json\" \"C:/Users/tkong/Project/mrv-frontend/index.html\" \"C:/Users/tkong/Project/mrv-frontend/.env.example\" 2>&1)",
+      "Bash(ls -la \"C:/Users/tkong/Project/mrv-frontend/mrv-frontend\" 2>&1)",
+      "Read(//c/Users/tkong/Project/mrv-frontend/mrv-frontend/**)",
+      "Bash(cd \"C:/Users/tkong/Project/mrv-frontend\" && find src -maxdepth 4 -type f 2>&1 | sort)",
+      "Read(//c/Users/tkong/Project/mrv-frontend/src/**)",
+      "Read(//c/Users/tkong/Project/mrv-frontend/src/components/**)",
+      "Read(//c/Users/tkong/Project/mrv-frontend/src/lib/**)",
+      "Read(//c/Users/tkong/Project/mrv-frontend/src/context/**)",
+      "Bash(cd \"C:/Users/tkong/Project/mrv-frontend\" && wc -l src/pages/*.tsx src/pages/*/*.tsx 2>&1 | sort -n)",
+      "Read(//c/Users/tkong/Project/mrv-frontend/src/pages/**)",
+      "PowerShell(Start-Process \"c:\\\\Users\\\\tkong\\\\Project\\\\mrv_front_mockup\\\\mockup\\\\index.html\")",
+      "PowerShell(Start-Process \"http://localhost:3001/\")"
+    ]
+  }
+}
