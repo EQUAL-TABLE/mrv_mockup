@@ -31,7 +31,7 @@ import type { Boundary, Methodology, Track } from '@/types/project';
 /**
  * 신규 프로젝트 시작 위저드 (/start).
  * [+ 탄소발자국 산정] 진입 시, 산정 방식 → 방법론 → 산정 범위를 순서대로 선택한다.
- * - 계산기 트랙: 방법론 단계를 건너뛰고 ISO 14067 자동 적용
+ * - 계산기 트랙: 방법론 단계를 건너뜀 (방법론 선택 없음)
  * - 환경성적표지: 산정 범위가 ‘폐기까지’로 고정 (제품 생산까지 선택 불가)
  * 서비스 안내에서 3가지를 이미 확인한 경우에는 이 화면을 거치지 않고 기본정보로 바로 진입한다.
  */
@@ -69,7 +69,7 @@ export function StartWizard() {
   const [boundary, setBoundary] = useState<Boundary>('grave');
   const [stepIndex, setStepIndex] = useState(0);
 
-  // 계산기 트랙은 방법론 단계를 건너뛴다 (ISO 자동)
+  // 계산기 트랙은 방법론 단계를 건너뛴다 (방법론 선택 없음)
   const activeSteps: StepKey[] = track === 'calculator' ? ['track', 'boundary'] : ['track', 'methodology', 'boundary'];
   const clamped = Math.min(stepIndex, activeSteps.length - 1);
   const currentKey = activeSteps[clamped];
@@ -163,7 +163,7 @@ export function StartWizard() {
         {/* 계산기 트랙 안내 (방법론 건너뜀) */}
         {currentKey === 'track' && track === 'calculator' && (
           <p className="mt-3 flex items-center gap-1.5 rounded-md bg-surface-container-high px-3 py-2 text-xs text-on-surface-variant">
-            <Lock className="h-3.5 w-3.5" /> 계산기 트랙은 방법론을 선택하지 않으며 ISO 14067이 자동 적용됩니다. 다음 단계에서 산정 범위만 선택합니다.
+            <Lock className="h-3.5 w-3.5" /> 계산기 트랙은 방법론 선택 없이 다음 단계에서 산정 범위만 선택합니다.
           </p>
         )}
 
@@ -237,7 +237,7 @@ function StepIndicator({ activeKey, track }: { activeKey: StepKey; track: Track 
                 >
                   {STEP_META[key].nav}
                 </span>
-                {skipped && <p className="text-[11px] text-on-surface-variant">자동 · ISO</p>}
+                {skipped && <p className="text-[11px] text-on-surface-variant">선택 안 함</p>}
               </div>
             </div>
             {i < ALL_STEP_KEYS.length - 1 && (

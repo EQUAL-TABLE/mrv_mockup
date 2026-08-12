@@ -66,7 +66,7 @@ export const AXES: Axis[] = [
     num: '2',
     title: '방법론 (표준)',
     question: '어떤 표준으로 계산할까요?',
-    note: '계산기 방식은 방법론을 선택하지 않으며, ISO 14067 기준이 자동으로 적용됩니다.',
+    note: '계산기 방식은 방법론을 선택하지 않습니다. (MRV 방식에서만 적용)',
     options: [
       {
         name: 'ISO 14067',

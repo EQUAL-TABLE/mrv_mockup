@@ -1,6 +1,8 @@
 import { AlertTriangle } from 'lucide-react';
 import { SectionCard } from '@/components/workspace/SectionCard';
 import { FormField, InfoBanner, ReadonlyField, Select, UnitInput } from '@/components/ui/form';
+import { DEFAULT_PROJECT_DATA, scenarioLabel } from '@/data/projectData';
+import type { ProjectData } from '@/data/projectData';
 import type { Boundary } from '@/types/project';
 
 /**
@@ -9,7 +11,7 @@ import type { Boundary } from '@/types/project';
  */
 
 /* ③ 원부자재 (입력) */
-export function CalcMaterials({ boundary }: { boundary: Boundary }) {
+export function CalcMaterials({ boundary, data = DEFAULT_PROJECT_DATA }: { boundary: Boundary; data?: ProjectData }) {
   const isGrave = boundary === 'grave';
   return (
     <div className="space-y-4">
@@ -19,7 +21,7 @@ export function CalcMaterials({ boundary }: { boundary: Boundary }) {
           required
           help="생두 1kg을 생산할 때 발생하는 탄소량입니다. 기본값은 문헌값(Nab & Maslin, 2020)이며, 공급자 자료가 있으면 바꿔 입력하세요."
         >
-          <UnitInput unit="kg CO₂e/kg" type="number" defaultValue={1.165} step="0.001" />
+          <UnitInput unit="kg CO₂e/kg" type="number" defaultValue={data.farms[0].beanEmission} step="0.001" />
         </FormField>
         <InfoBanner>
           포대 정보는 표준값으로 자동 처리됩니다. (황마 60kg 포대 · 개당 황마 1,000g / PP 300g)
@@ -114,7 +116,7 @@ export function CalcTransport({ boundary }: { boundary: Boundary }) {
 }
 
 /* ⑥ 제조 (입력) */
-export function CalcManufacturing() {
+export function CalcManufacturing({ fuel = 'elec_gas' }: { fuel?: 'elec' | 'elec_gas' }) {
   return (
     <div className="space-y-4">
       <SectionCard title="전력 (로스팅)" description="로스팅에 사용한 전력을 로스터기 사양과 가동시간으로 추정합니다.">
@@ -136,9 +138,15 @@ export function CalcManufacturing() {
           unit="kWh"
           help="소비전력 × 배치당 사용시간 ÷ 60 × 총 배치 수"
         />
-        <InfoBanner>
-          가스 로스터기를 함께 사용하는 경우, 기본정보에서 ‘전기 + 가스’를 선택하면 가스 사용량 입력 항목이 추가됩니다.
-        </InfoBanner>
+        {fuel === 'elec_gas' ? (
+          <FormField label="가스 사용량" required help="기본정보에서 ‘전기 + 가스’를 선택해 가스 사용량 입력 항목이 추가되었습니다.">
+            <UnitInput unit="Nm³" type="number" placeholder="0" />
+          </FormField>
+        ) : (
+          <InfoBanner>
+            전기 전용 로스터기로 설정되어 가스 입력은 표시되지 않습니다. 가스도 사용한다면 기본정보에서 ‘전기 + 가스’를 선택하세요.
+          </InfoBanner>
+        )}
       </SectionCard>
 
       <SectionCard title="커피 껍질(채프) 발생량" description="로스팅 중 떨어져 나오는 껍질입니다. 자동으로 계산됩니다.">
@@ -149,7 +157,13 @@ export function CalcManufacturing() {
 }
 
 /* ⑧ 사용 (읽기전용·자동, 폐기까지에서만) */
-export function CalcUsage() {
+const CALC_EXTRACT_UNIT: Record<ProjectData['production']['scenario'], string> = {
+  drip: '3.771',
+  espresso: '0.435',
+  coldbrew: '0',
+};
+export function CalcUsage({ data = DEFAULT_PROJECT_DATA }: { data?: ProjectData }) {
+  const scenario = data.production.scenario;
   return (
     <div className="space-y-4">
       <InfoBanner>
@@ -157,9 +171,9 @@ export function CalcUsage() {
       </InfoBanner>
       <SectionCard title="사용 단계 (자동 계산)">
         <div className="grid gap-4 sm:grid-cols-2">
-          <ReadonlyField label="선택한 사용 방식" value="드립" />
+          <ReadonlyField label="선택한 사용 방식" value={scenarioLabel(scenario)} />
           <ReadonlyField label="분쇄 전력 원단위" value="0.019" unit="kWh/kg" />
-          <ReadonlyField label="추출 전력 원단위" value="3.771" unit="kWh/kg" help="드립 3.771 / 에스프레소 0.435 / 콜드브루 0" />
+          <ReadonlyField label="추출 전력 원단위" value={CALC_EXTRACT_UNIT[scenario]} unit="kWh/kg" help="드립 3.771 / 에스프레소 0.435 / 콜드브루 0" />
           <ReadonlyField label="사용 단계 배출량" value="—" unit="kg CO₂e/kg" help="(분쇄 + 추출 원단위) × 전력 배출계수" />
         </div>
       </SectionCard>
@@ -213,15 +227,17 @@ export function CalcWaste({ boundary }: { boundary: Boundary }) {
 }
 
 /* ⑫ 결과 (읽기전용·자동) */
-export function CalcResult({ boundary }: { boundary: Boundary }) {
+export function CalcResult({ boundary, data = DEFAULT_PROJECT_DATA }: { boundary: Boundary; data?: ProjectData }) {
   const isGrave = boundary === 'grave';
-  const stages = [
-    { name: '제조 전 (원료·수송)', value: 2.34, pct: 47 },
-    { name: '제조 (로스팅)', value: 1.62, pct: 32 },
-    ...(isGrave ? [{ name: '사용', value: 0.72, pct: 14 }] : []),
-    { name: '폐기 처리', value: 0.34, pct: isGrave ? 7 : 21 },
+  const st = data.result.stages;
+  const raw = [
+    { name: '제조 전 (원료·수송)', value: st.pre },
+    { name: '제조 (로스팅)', value: st.manuf },
+    ...(isGrave ? [{ name: '사용', value: st.usage }] : []),
+    { name: '폐기 처리', value: st.waste },
   ];
-  const total = isGrave ? 5.02 : 4.3;
+  const total = raw.reduce((s, r) => s + r.value, 0);
+  const stages = raw.map((s) => ({ ...s, pct: Math.round((s.value / total) * 100) }));
 
   return (
     <div className="space-y-4">

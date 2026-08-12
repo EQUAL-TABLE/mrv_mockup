@@ -2,6 +2,7 @@ import { ChevronDown, Plus, X, Check } from 'lucide-react';
 import { useState } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
 import {
+  DocPicker,
   FormField,
   InfoBanner,
   OcrBadge,
@@ -11,6 +12,8 @@ import {
   UnitInput,
 } from '@/components/ui/form';
 import type { Boundary, Methodology } from '@/types/project';
+import { DEFAULT_PROJECT_DATA } from '@/data/projectData';
+import type { FarmData, ProjectData } from '@/data/projectData';
 
 /**
  * ③ 제조전단계-원부자재 — MRV 공통(방법론·경계 분기).
@@ -24,17 +27,14 @@ import type { Boundary, Methodology } from '@/types/project';
 interface Props {
   methodology?: Methodology;
   boundary?: Boundary;
+  data?: ProjectData;
 }
 
-const FARMS = [
-  { name: '아웰라 농장', country: '에티오피아', bean: '예가체프 G1', ratio: 60 },
-  { name: '핀카 라스니냐스', country: '콜롬비아', bean: '수프리모', ratio: 40 },
-];
-
-export function Materials({ methodology = 'iso', boundary = 'grave' }: Props = {}) {
+export function Materials({ methodology = 'iso', boundary = 'grave', data = DEFAULT_PROJECT_DATA }: Props = {}) {
   const [open, setOpen] = useState<number[]>([0]);
   const toggle = (i: number) => setOpen((p) => (p.includes(i) ? p.filter((x) => x !== i) : [...p, i]));
 
+  const farms = data.farms;
   const grave = boundary === 'grave';
   const showBox = methodology === 'epd' && grave; // 출하포장재
   const showFilter = methodology === 'iso' && grave; // 여과지(드립 가정)
@@ -52,7 +52,7 @@ export function Materials({ methodology = 'iso', boundary = 'grave' }: Props = {
       {/* Section A — 생두 (농장별) */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-on-surface">1. 생두 (농장 {FARMS.length}개)</h3>
+          <h3 className="text-sm font-bold text-on-surface">1. 생두 (농장 {farms.length}개)</h3>
           <button
             type="button"
             onClick={() => alert('농장 추가 (목업)')}
@@ -61,7 +61,7 @@ export function Materials({ methodology = 'iso', boundary = 'grave' }: Props = {
             <Plus className="h-4 w-4" /> 농장 추가
           </button>
         </div>
-        {FARMS.map((farm, i) => (
+        {farms.map((farm, i) => (
           <FarmBlock key={i} farm={farm} open={open.includes(i)} onToggle={() => toggle(i)} />
         ))}
       </div>
@@ -150,8 +150,8 @@ export function Materials({ methodology = 'iso', boundary = 'grave' }: Props = {
       >
         <div className="divide-y divide-outline-variant overflow-hidden rounded-md border border-outline-variant">
           {[
-            { label: '예가체프 G1 생두', mapped: '커피 생두 (Green coffee)' },
-            { label: '크라프트 증착 포장재', mapped: '복합 필름 포장재' },
+            { label: `${farms[0].bean} 생두`, mapped: '커피 생두 (Green coffee)' },
+            { label: data.minPackLabel, mapped: '복합 필름 포장재' },
             ...(showBox ? [{ label: '골판지 박스', mapped: '골판지 (Corrugated board)' }] : []),
             ...(showFilter ? [{ label: '크라프트지 여과지', mapped: '크라프트지 (Kraft paper)' }] : []),
           ].map((m) => (
@@ -179,7 +179,7 @@ function FarmBlock({
   open,
   onToggle,
 }: {
-  farm: { name: string; country: string; bean: string; ratio: number };
+  farm: FarmData;
   open: boolean;
   onToggle: () => void;
 }) {
@@ -212,13 +212,13 @@ function FarmBlock({
                 <TextInput defaultValue={`${farm.country} 일대`} />
               </FormField>
               <FormField label="농장 탄소배출 증빙문서 (선택)" help="증빙이 있으면 실제 농장 탄소배출량을 반영하고, 없으면 문헌값을 적용합니다." className="sm:col-span-2">
-                <Select options={[{ value: '', label: '문서 선택 (미선택 시 문헌값 적용)' }]} />
+                <DocPicker placeholder="문서 선택 (미선택 시 문헌값 적용)" />
               </FormField>
             </div>
             <div className="mt-3">
               <ReadonlyField
                 label="생두 단위 탄소배출량"
-                value="1.165"
+                value={farm.beanEmission.toFixed(3)}
                 unit="kg CO₂e/kg"
                 help="증빙 미선택 시 문헌값(Nab & Maslin, 2020) 1.165가 자동 적용됩니다."
               />
@@ -228,8 +228,8 @@ function FarmBlock({
           {/* A-3 생두 기본정보 */}
           <div>
             <p className="mb-3 text-sm font-semibold text-on-surface">생두 기본정보</p>
-            <FormField label="생두 INVOICE" required hint="업로드한 문서에서 선택하면 아래 값이 자동으로 채워집니다.">
-              <Select options={[{ value: 'inv1', label: `INVOICE_${farm.bean}.pdf` }]} />
+            <FormField label="생두 INVOICE" required hint="업로드한 문서에서 선택하거나, 오른쪽 [업로드]로 새 INVOICE를 바로 올릴 수 있습니다.">
+              <DocPicker placeholder="INVOICE 선택" options={[{ value: 'inv1', label: `INVOICE_${farm.bean}.pdf` }]} />
             </FormField>
             <div className="mt-3 grid gap-4 sm:grid-cols-3">
               <FormField label="생두명" required hint={<OcrBadge />}>
@@ -260,10 +260,10 @@ function FarmBlock({
                 <Select options={[{ value: 'jute', label: '황마' }, { value: 'pp', label: 'PP' }, { value: 'both', label: '황마 + PP' }]} />
               </FormField>
               <FormField label="단위 포대 중량" required>
-                <UnitInput unit="kg" type="number" defaultValue={60} />
+                <UnitInput unit="kg" type="number" defaultValue={farm.sackWeight} />
               </FormField>
               <FormField label="포대 1개 무게" required hint={<OcrBadge text="증빙 사진 자동 추출 · 미업로드 시 기본값" />}>
-                <UnitInput unit="g" type="number" defaultValue={1000} />
+                <UnitInput unit="g" type="number" defaultValue={farm.sackUnitWeight} />
               </FormField>
               <ReadonlyField label="총 투입 질량" value="—" unit="kg" help="포대 수량 × 1개 무게. 폐기 단계 발생량으로 이어집니다." />
             </div>

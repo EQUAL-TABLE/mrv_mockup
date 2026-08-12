@@ -61,7 +61,7 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
       {/* 메타 태그: 트랙/방법론/경계 */}
       <div className="mt-2.5 flex flex-wrap gap-1.5">
         <Badge variant={isCalculator ? 'warning' : 'primary'}>{TRACK_LABEL[track]}</Badge>
-        <Badge>{METHODOLOGY_LABEL[methodology]}</Badge>
+        {!isCalculator && <Badge>{METHODOLOGY_LABEL[methodology]}</Badge>}
         <Badge>{BOUNDARY_LABEL[boundary]}</Badge>
       </div>
 

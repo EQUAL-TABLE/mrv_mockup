@@ -44,7 +44,7 @@ export function ProjectWorkspace({ projectId, stepKey, children }: ProjectWorksp
             </div>
             <div className="flex flex-wrap gap-1.5">
               <Badge variant={project.track === 'calculator' ? 'warning' : 'primary'}>{TRACK_LABEL[project.track]}</Badge>
-              <Badge>{METHODOLOGY_LABEL[project.methodology]}</Badge>
+              {project.track !== 'calculator' && <Badge>{METHODOLOGY_LABEL[project.methodology]}</Badge>}
               <Badge>{BOUNDARY_LABEL[project.boundary]}</Badge>
               <Badge variant="neutral">전체 {steps.length}단계</Badge>
             </div>

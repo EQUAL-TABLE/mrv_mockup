@@ -2,7 +2,7 @@ import { Check, FileText, Loader2, Upload, AlertCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { SectionCard } from '@/components/workspace/SectionCard';
 import { InfoBanner } from '@/components/ui/form';
-import type { Boundary, Methodology } from '@/types/project';
+import type { Boundary, Methodology, ProjectStatus } from '@/types/project';
 
 /**
  * ② OCR 문서 업로드 — MRV 공통(방법론·경계 분기).
@@ -17,9 +17,10 @@ import type { Boundary, Methodology } from '@/types/project';
 interface Props {
   methodology?: Methodology;
   boundary?: Boundary;
+  status?: ProjectStatus;
 }
 
-type OcrState = 'done' | 'processing' | 'failed' | 'empty';
+export type OcrState = 'done' | 'processing' | 'failed' | 'empty';
 
 interface DocItem {
   no: number;
@@ -31,10 +32,13 @@ interface DocItem {
   show?: boolean;
 }
 
-export function Documents({ methodology = 'iso', boundary = 'grave' }: Props = {}) {
+export function Documents({ methodology = 'iso', boundary = 'grave', status = 'draft' }: Props = {}) {
   const grave = boundary === 'grave';
   const epd = methodology === 'epd';
   const isoGrave = methodology === 'iso' && grave; // 여과지(드립) 노출 조건
+  // 진행 상태가 검토/완료면 업로드가 마무리된 것으로 간주 (필수·기존 업로드 문서는 OCR 완료 처리)
+  const advanced = status === 'review' || status === 'finalized' || status === 'done';
+  const stateFor = (d: DocItem): OcrState => (advanced && (d.required || d.state !== 'empty') ? 'done' : d.state);
 
   const rawGroups: { step: string; docs: DocItem[] }[] = [
     {
@@ -89,7 +93,7 @@ export function Documents({ methodology = 'iso', boundary = 'grave' }: Props = {
         <SectionCard key={g.step} title={g.step} description={`${g.step} 단계에서 사용되는 증빙 문서입니다.`}>
           <div className="divide-y divide-outline-variant overflow-hidden rounded-md border border-outline-variant">
             {g.docs.map((d) => (
-              <DocRow key={d.no} doc={d} />
+              <DocRow key={d.no} doc={{ ...d, state: stateFor(d) }} />
             ))}
           </div>
         </SectionCard>

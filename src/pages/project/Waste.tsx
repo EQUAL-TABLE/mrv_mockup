@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
-import { FormField, InfoBanner, OcrBadge, ReadonlyField, Select, UnitInput } from '@/components/ui/form';
+import { DocPicker, FormField, InfoBanner, OcrBadge, ReadonlyField, Select, UnitInput } from '@/components/ui/form';
 import type { Boundary, Methodology } from '@/types/project';
 
 /**
@@ -72,8 +72,8 @@ export function Waste({ methodology = 'iso', boundary = 'grave' }: Props = {}) {
 
         {hasProof && (
           <div className="grid gap-4 sm:grid-cols-2">
-            <FormField label="재활용 위탁처리 증빙서류" required hint="업로드한 문서에서 선택합니다.">
-              <Select options={[{ value: '', label: '증빙서류 선택' }]} />
+            <FormField label="재활용 위탁처리 증빙서류" required hint="업로드한 문서에서 선택하거나 [업로드]로 새 증빙을 올립니다.">
+              <DocPicker placeholder="증빙서류 선택" />
             </FormField>
             <FormField label="재활용 처리 폐기물 종류" required hint={<OcrBadge />}>
               <Select

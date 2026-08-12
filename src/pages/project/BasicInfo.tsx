@@ -1,7 +1,9 @@
 import { Plus, X } from 'lucide-react';
 import { useState } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
-import { FormField, InfoBanner, RadioGroup, ReadonlyField, Select, TextInput, Textarea, UnitInput } from '@/components/ui/form';
+import { FormField, InfoBanner, RadioGroup, Select, TextInput, Textarea, UnitInput } from '@/components/ui/form';
+import { DEFAULT_PROJECT_DATA } from '@/data/projectData';
+import type { ProjectData } from '@/data/projectData';
 
 type Track = 'mrv' | 'calculator';
 type Methodology = 'iso' | 'epd';
@@ -11,17 +13,26 @@ interface BasicInfoProps {
   initialTrack?: Track;
   initialMethodology?: Methodology;
   initialBoundary?: Boundary;
+  /** 프로젝트명 (신규는 빈 값) */
+  name?: string;
+  data?: ProjectData;
 }
 
 /** ① 프로젝트 기본정보 (Section 1~4, 조건부 렌더링) */
-export function BasicInfo({ initialTrack = 'mrv', initialMethodology = 'iso', initialBoundary = 'grave' }: BasicInfoProps = {}) {
+export function BasicInfo({
+  initialTrack = 'mrv',
+  initialMethodology = 'iso',
+  initialBoundary = 'grave',
+  name = '',
+  data = DEFAULT_PROJECT_DATA,
+}: BasicInfoProps = {}) {
   const [track, setTrack] = useState<Track>(initialTrack);
   const [methodology, setMethodology] = useState<Methodology>(initialMethodology);
   const [boundary, setBoundary] = useState<Boundary>(initialBoundary);
   const [writeMode, setWriteMode] = useState<'A' | 'B'>('A');
-  const [fuel, setFuel] = useState('elec');
-  const [blending, setBlending] = useState<'y' | 'n'>('y');
-  const [scenario, setScenario] = useState('drip');
+  const [fuel, setFuel] = useState(data.production.fuel);
+  const [blending, setBlending] = useState<'y' | 'n'>(data.production.blending === 'blend' ? 'y' : 'n');
+  const [scenario, setScenario] = useState(data.production.scenario);
 
   // 조건부 렌더링 규칙
   const showWriteMode = track === 'mrv' && boundary === 'grave';
@@ -29,7 +40,7 @@ export function BasicInfo({ initialTrack = 'mrv', initialMethodology = 'iso', in
   const showAuthor = track === 'mrv';
   const showScenario = methodology === 'iso' && boundary === 'grave';
 
-  // 방법론 = 환경성적표지 → 경계 폐기까지 고정 / 계산기 → 방법론 ISO 고정
+  // 방법론 = 환경성적표지 → 경계 폐기까지 고정 / 계산기 → 방법론 없음
   const onMethodology = (v: string) => {
     const m = v as Methodology;
     setMethodology(m);
@@ -60,13 +71,7 @@ export function BasicInfo({ initialTrack = 'mrv', initialMethodology = 'iso', in
             />
           </FormField>
 
-          {track === 'calculator' ? (
-            <ReadonlyField
-              label="방법론"
-              value="ISO 14067"
-              help="계산기 방식은 방법론을 선택하지 않고 ISO 14067이 자동 적용됩니다."
-            />
-          ) : (
+          {track !== 'calculator' && (
             <FormField label="방법론" required help="ISO 14067 또는 환경성적표지 중 탄소발자국 기준을 선택합니다.">
               <Select
                 value={methodology}
@@ -131,26 +136,26 @@ export function BasicInfo({ initialTrack = 'mrv', initialMethodology = 'iso', in
       <SectionCard title="2. 프로젝트 정보" description="제품명과 산정 대상 기간, 결과 표시 기준을 입력합니다.">
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField label="프로젝트명" required hint="제품명과 동일하게 입력하세요.">
-            <TextInput placeholder="예: 에티오피아 예가체프 싱글오리진 2026" />
+            <TextInput defaultValue={name} placeholder="예: 에티오피아 예가체프 싱글오리진 2026" />
           </FormField>
           <FormField label="기준연도" required>
-            <UnitInput unit="년" type="number" defaultValue={2026} />
+            <UnitInput unit="년" type="number" defaultValue={data.baseYear} />
           </FormField>
           <FormField label="데이터 수집 시작" required>
-            <TextInput type="month" defaultValue="2026-01" />
+            <TextInput type="month" defaultValue={data.collectFrom} />
           </FormField>
           <FormField label="데이터 수집 종료" required hint="수집 기간이 12개월 미만이면 경고가 표시됩니다(진행은 가능).">
-            <TextInput type="month" defaultValue="2026-12" />
+            <TextInput type="month" defaultValue={data.collectTo} />
           </FormField>
           <FormField
             label="기능단위 (기준 수량)"
             required
             help="결과를 표시할 기준 수량입니다. 내부 계산은 1kg 기준이며, 표시할 때 이 수량을 곱합니다. 생성 후 변경 불가."
           >
-            <UnitInput unit="kg" type="number" defaultValue={1} />
+            <UnitInput unit="kg" type="number" defaultValue={data.functionalUnit} />
           </FormField>
           <FormField label="기능단위 표시" hint="자동으로 조합됩니다.">
-            <TextInput value="로스팅된 커피 1 kg" disabled readOnly />
+            <TextInput value={`로스팅된 커피 ${data.functionalUnit} kg`} disabled readOnly />
           </FormField>
         </div>
         <FormField label="산정 범위 설명 (선택)" help="일반적인 범위와 다른 자사 공정의 특이사항을 자유롭게 적으면 보고서에 반영됩니다.">
@@ -163,22 +168,22 @@ export function BasicInfo({ initialTrack = 'mrv', initialMethodology = 'iso', in
         <SectionCard title="3. 작성자 정보" description="사업장 정보는 회원 정보에서 자동으로 불러오며 수정할 수 없습니다.">
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label="사업장명">
-              <TextInput value="공드리 로스터리" disabled readOnly />
+              <TextInput value={data.business.name} disabled readOnly />
             </FormField>
             <FormField label="사업자등록번호">
-              <TextInput value="123-45-67890" disabled readOnly />
+              <TextInput value={data.business.bizNo} disabled readOnly />
             </FormField>
             <FormField label="사업장 주소" className="sm:col-span-2">
-              <TextInput value="서울특별시 성동구 성수이로 00" disabled readOnly />
+              <TextInput value={data.business.address} disabled readOnly />
             </FormField>
             <FormField label="담당자명" required>
-              <TextInput defaultValue="공드리" />
+              <TextInput defaultValue={data.contact.manager} />
             </FormField>
             <FormField label="연락처" required>
-              <TextInput defaultValue="010-0000-0000" />
+              <TextInput defaultValue={data.contact.phone} />
             </FormField>
             <FormField label="이메일" required className="sm:col-span-2">
-              <TextInput type="email" defaultValue="roaster@example.com" />
+              <TextInput type="email" defaultValue={data.contact.email} />
             </FormField>
           </div>
         </SectionCard>
@@ -188,12 +193,12 @@ export function BasicInfo({ initialTrack = 'mrv', initialMethodology = 'iso', in
       <SectionCard title="4. 생산 정보" description="로스팅 생산량과 설비·원두 구성을 입력합니다.">
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField label="단위 기간 원두 생산량" required help="수집 기간 동안 로스팅한 총 원두량입니다. 평균 탄소발자국 계산의 기준이 됩니다.">
-            <UnitInput unit="kg RC" type="number" placeholder="0" />
+            <UnitInput unit="kg RC" type="number" defaultValue={data.production.roastVolume} placeholder="0" />
           </FormField>
           <FormField label="로스터기 연료 유형" required help="가스를 함께 쓰면 이후 제조 단계에서 가스 사용량 입력과 가스 고지서가 필요합니다.">
             <Select
               value={fuel}
-              onChange={(e) => setFuel(e.target.value)}
+              onChange={(e) => setFuel(e.target.value as 'elec' | 'elec_gas')}
               options={[
                 { value: 'elec', label: '전기 전용' },
                 { value: 'elec_gas', label: '전기 + 가스' },
@@ -225,12 +230,9 @@ export function BasicInfo({ initialTrack = 'mrv', initialMethodology = 'iso', in
               <span className="text-xs text-on-surface-variant">합계 100% (현재 100%)</span>
             </div>
             <div className="space-y-2">
-              {[
-                { name: '생두 1', ratio: 60 },
-                { name: '생두 2', ratio: 40 },
-              ].map((row, idx) => (
+              {data.farms.map((row, idx) => (
                 <div key={idx} className="flex items-center gap-2">
-                  <TextInput className="flex-1" defaultValue={row.name} placeholder={`생두 ${idx + 1}`} />
+                  <TextInput className="flex-1" defaultValue={row.bean} placeholder={`생두 ${idx + 1}`} />
                   <div className="w-32">
                     <UnitInput unit="%" type="number" defaultValue={row.ratio} />
                   </div>
@@ -263,7 +265,7 @@ export function BasicInfo({ initialTrack = 'mrv', initialMethodology = 'iso', in
           >
             <Select
               value={scenario}
-              onChange={(e) => setScenario(e.target.value)}
+              onChange={(e) => setScenario(e.target.value as 'drip' | 'espresso' | 'coldbrew')}
               options={[
                 { value: 'drip', label: '드립' },
                 { value: 'espresso', label: '에스프레소' },

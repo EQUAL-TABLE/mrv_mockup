@@ -74,7 +74,7 @@ export function TrackGuide() {
               ]}
             />
             {track === 'calculator' && (
-              <p className="mt-1.5 text-xs text-on-surface-variant">계산기 방식은 방법론을 선택하지 않고 ISO 14067이 자동 적용됩니다.</p>
+              <p className="mt-1.5 text-xs text-on-surface-variant">계산기 방식은 방법론을 선택하지 않습니다.</p>
             )}
           </SelectorRow>
           <SelectorRow label="산정 범위">

@@ -47,7 +47,7 @@ export const WORKFLOWS: Record<WorkflowId, string[]> = {
   'calc-gate': ['basic', 'materials', 'transport', 'manufacturing', 'waste', 'result'],
 };
 
-/** 트랙·방법론·경계 → 워크플로우 결정 (환경성적표지는 항상 폐기까지, 계산기는 항상 ISO) */
+/** 트랙·방법론·경계 → 워크플로우 결정 (환경성적표지는 항상 폐기까지, 계산기는 방법론 무관) */
 export function resolveWorkflowId(track: Track, methodology: Methodology, boundary: Boundary): WorkflowId {
   if (track === 'calculator') return boundary === 'gate' ? 'calc-gate' : 'calc-grave';
   if (methodology === 'epd') return 'mrv-epd';

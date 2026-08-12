@@ -2,6 +2,7 @@ import { Plus, X } from 'lucide-react';
 import { useState } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
 import {
+  DocPicker,
   FormField,
   InfoBanner,
   OcrBadge,
@@ -10,6 +11,8 @@ import {
   Select,
   TextInput,
 } from '@/components/ui/form';
+import { DEFAULT_PROJECT_DATA } from '@/data/projectData';
+import type { ProjectData } from '@/data/projectData';
 
 /**
  * ⑥ 제조단계 — MRV 공통 화면.
@@ -24,8 +27,7 @@ import {
  */
 
 interface MrvManufacturingProps {
-  /** 기본정보에서 정한 로스터기 연료 유형 (전력+가스일 때만 가스 섹션 노출) */
-  fuel?: 'elec' | 'elec_gas';
+  data?: ProjectData;
 }
 
 /** 월별 고지서 예시 행 (목업 샘플) */
@@ -35,24 +37,15 @@ interface BillRow {
   provider: string;
 }
 
-const POWER_BILLS: BillRow[] = [
-  { month: '2026-01', amount: 1240, provider: '한국전력공사' },
-  { month: '2026-02', amount: 1185, provider: '한국전력공사' },
-];
+const numberFmt = (n: number) => n.toLocaleString('en-US');
 
-const GAS_BILLS: BillRow[] = [
-  { month: '2026-01', amount: 320, provider: '서울도시가스' },
-  { month: '2026-02', amount: 298, provider: '서울도시가스' },
-];
+export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturingProps = {}) {
+  const fuel = data.production.fuel;
+  const [renewable, setRenewable] = useState<'y' | 'n'>(data.renewable ? 'y' : 'n');
+  const [gasType, setGasType] = useState<'ng' | 'lpg'>(data.gasType);
 
-const GEN_ROWS: { month: string; amount: number }[] = [
-  { month: '2026-01', amount: 210 },
-  { month: '2026-02', amount: 240 },
-];
-
-export function MrvManufacturing({ fuel = 'elec_gas' }: MrvManufacturingProps = {}) {
-  const [renewable, setRenewable] = useState<'y' | 'n'>('n');
-  const [gasType, setGasType] = useState<'ng' | 'lpg'>('ng');
+  const powerSum = data.powerBills.reduce((s, b) => s + b.amount, 0);
+  const genSum = data.genRows.reduce((s, g) => s + g.amount, 0);
 
   const gasUnitOptions =
     gasType === 'ng'
@@ -81,7 +74,7 @@ export function MrvManufacturing({ fuel = 'elec_gas' }: MrvManufacturingProps = 
         </InfoBanner>
 
         <BillList
-          rows={POWER_BILLS}
+          rows={data.powerBills}
           amountLabel="전력 사용량"
           unit="kWh"
           addLabel="전력 고지서 추가"
@@ -89,7 +82,7 @@ export function MrvManufacturing({ fuel = 'elec_gas' }: MrvManufacturingProps = 
 
         <ReadonlyField
           label="단위 기간 전력 사용량 합계"
-          value="2,425"
+          value={numberFmt(powerSum)}
           unit="kWh"
           help="올린 고지서의 월별 사용량을 모두 더한 값입니다."
         />
@@ -125,20 +118,15 @@ export function MrvManufacturing({ fuel = 'elec_gas' }: MrvManufacturingProps = 
             <FormField
               label="재생에너지 설치 확인서"
               required
-              hint="업로드한 문서 중에서 선택합니다."
+              hint="업로드한 문서 중에서 선택하거나 [업로드]로 새 확인서를 올립니다."
             >
-              <Select
-                options={[
-                  { value: '', label: '문서 선택' },
-                  { value: 'doc1', label: '태양광 설치 확인서.pdf' },
-                ]}
-              />
+              <DocPicker placeholder="문서 선택" options={[{ value: 'doc1', label: '태양광 설치 확인서.pdf' }]} />
             </FormField>
 
             <div>
               <p className="mb-2 text-sm font-medium text-on-surface">월별 자가발전량</p>
               <div className="space-y-2">
-                {GEN_ROWS.map((row, idx) => (
+                {data.genRows.map((row, idx) => (
                   <div key={idx} className="rounded-md border border-outline-variant bg-surface-container-low p-3">
                     <div className="mb-2 flex items-center justify-between">
                       <OcrBadge />
@@ -158,7 +146,7 @@ export function MrvManufacturing({ fuel = 'elec_gas' }: MrvManufacturingProps = 
               <AddButton label="발전량 기록 추가" />
             </div>
 
-            <ReadonlyField label="단위 기간 자가발전량 합계" value="450" unit="kWh" help="증빙 목적으로 월별 발전량을 합산한 값입니다." />
+            <ReadonlyField label="단위 기간 자가발전량 합계" value={numberFmt(genSum)} unit="kWh" help="증빙 목적으로 월별 발전량을 합산한 값입니다." />
           </>
         )}
       </SectionCard>
@@ -190,7 +178,7 @@ export function MrvManufacturing({ fuel = 'elec_gas' }: MrvManufacturingProps = 
           </FormField>
 
           <BillList
-            rows={GAS_BILLS}
+            rows={data.gasBills}
             amountLabel="가스 사용량"
             unitOptions={gasUnitOptions}
             addLabel="가스 고지서 추가"

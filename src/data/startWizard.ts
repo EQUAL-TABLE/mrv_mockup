@@ -3,7 +3,7 @@ import type { Boundary, Methodology, Track } from '@/types/project';
 /**
  * 신규 프로젝트 시작 위저드 콘텐츠.
  * 3단계(산정 방식 → 방법론 → 산정 범위) 각각의 좌/우 선택지 설명을 정의한다.
- * 축별로 선택지·설명·잠금 규칙이 상이한 부분(계산기=ISO 고정, EPD=폐기까지 고정)을 반영한다.
+ * 축별로 선택지·설명·잠금 규칙이 상이한 부분(계산기=방법론 없음, EPD=폐기까지 고정)을 반영한다.
  */
 
 export type WizardIcon = 'mrv' | 'calculator' | 'iso' | 'epd' | 'gate' | 'grave';
@@ -55,7 +55,7 @@ export const TRACK_OPTIONS: WizardOption<Track>[] = [
   },
 ];
 
-/** 2단계 — 방법론(표준). 계산기 트랙에서는 선택하지 않고 ISO 14067이 자동 적용됨. */
+/** 2단계 — 방법론(표준). 계산기 트랙에서는 이 단계를 건너뛴다(방법론 선택 없음). */
 export const METHODOLOGY_OPTIONS: WizardOption<Methodology>[] = [
   {
     value: 'iso',

@@ -1,5 +1,6 @@
-import { HelpCircle, Info, ScanLine } from 'lucide-react';
-import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import { Check, HelpCircle, Info, Loader2, ScanLine, Upload } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import type { ChangeEvent, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
 /** 폼 컨트롤 공통 클래스 (신뢰도 톤: rounded-md, 헤어라인 보더) */
@@ -97,6 +98,83 @@ export function ReadonlyField({ label, help, value, unit }: { label: string; hel
         {unit && <span className="text-on-surface-variant">{unit}</span>}
       </div>
     </FormField>
+  );
+}
+
+/**
+ * 문서 선택 + 인라인 업로드.
+ * 각 단계에서 이미 올린 증빙을 고르거나, 여기서 바로 새 증빙을 업로드할 수 있게 한다.
+ * 목업: 실제 파일 선택 다이얼로그를 띄우고, 선택하면 OCR "처리중 → 완료"를 시뮬레이션한다.
+ */
+export function DocPicker({
+  options = [],
+  placeholder = '문서 선택',
+  uploadLabel = '업로드',
+  className,
+}: {
+  /** 이미 업로드된 문서 중 선택 목록 */
+  options?: Option[];
+  placeholder?: string;
+  uploadLabel?: string;
+  className?: string;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [docs, setDocs] = useState<Option[]>(options);
+  const [value, setValue] = useState(options[0]?.value ?? '');
+  const [status, setStatus] = useState<'idle' | 'processing' | 'done'>('idle');
+
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+
+  const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // 같은 파일 재선택 허용
+    if (!file) return;
+    const val = `upload_${docs.length + 1}`;
+    setDocs((d) => [...d, { value: val, label: file.name }]);
+    setValue(val);
+    setStatus('processing');
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setStatus('done'), 1200);
+  };
+
+  return (
+    <div className={className}>
+      <div className="flex gap-2">
+        <Select
+          className="flex-1"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          options={[{ value: '', label: placeholder }, ...docs]}
+        />
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-outline-variant px-3 py-2 text-sm font-medium text-on-surface transition hover:bg-surface-container-high"
+        >
+          <Upload className="h-4 w-4" /> {uploadLabel}
+        </button>
+        <input ref={inputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={handleFile} />
+      </div>
+      {status !== 'idle' && (
+        <p
+          className={cn(
+            'mt-1.5 inline-flex items-center gap-1 text-xs font-semibold',
+            status === 'done' ? 'text-primary' : 'text-on-surface-variant',
+          )}
+        >
+          {status === 'processing' ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin" /> 업로드한 문서 OCR 처리중…
+            </>
+          ) : (
+            <>
+              <Check className="h-3.5 w-3.5" /> OCR 완료 · 값이 자동으로 채워졌습니다
+            </>
+          )}
+        </p>
+      )}
+    </div>
   );
 }
 

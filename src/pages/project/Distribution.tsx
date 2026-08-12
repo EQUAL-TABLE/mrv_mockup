@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
-import { FormField, InfoBanner, OcrBadge, RadioGroup, ReadonlyField, Select, TextInput, UnitInput } from '@/components/ui/form';
+import { DocPicker, FormField, InfoBanner, OcrBadge, RadioGroup, ReadonlyField, TextInput, UnitInput } from '@/components/ui/form';
 
 /**
  * ⑦ 제품유통 — 환경성적표지 기준.
@@ -35,8 +35,8 @@ export function Distribution() {
 
         {isDelivery ? (
           <>
-            <FormField label="납품 거래명세서 (선택)" hint="선택하면 납품처 정보가 자동으로 채워집니다.">
-              <Select options={[{ value: '', label: '납품 거래명세서 선택' }]} />
+            <FormField label="납품 거래명세서 (선택)" hint="선택하거나 [업로드]로 새 명세서를 올리면 납품처 정보가 자동으로 채워집니다.">
+              <DocPicker placeholder="납품 거래명세서 선택" />
             </FormField>
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField label="납품처명" required hint={<OcrBadge />}>

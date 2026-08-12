@@ -2,6 +2,8 @@ import { Download, FileCheck2, FileText, History, ShieldAlert } from 'lucide-rea
 import type { ComponentType } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
 import { ReadonlyField } from '@/components/ui/form';
+import { DEFAULT_PROJECT_DATA } from '@/data/projectData';
+import type { ProjectData } from '@/data/projectData';
 import type { Boundary, Methodology } from '@/types/project';
 
 /**
@@ -17,20 +19,22 @@ import type { Boundary, Methodology } from '@/types/project';
 interface Props {
   methodology?: Methodology;
   boundary?: Boundary;
+  data?: ProjectData;
 }
 
-export function Result({ methodology = 'iso', boundary = 'grave' }: Props = {}) {
+export function Result({ methodology = 'iso', boundary = 'grave', data = DEFAULT_PROJECT_DATA }: Props = {}) {
   const grave = boundary === 'grave';
   const epd = methodology === 'epd';
   const iso = methodology === 'iso';
 
+  const st = data.result.stages;
   const raw = [
-    { name: '제조 전 (원료·수송)', value: 2.51, show: true },
-    { name: '제조 (로스팅)', value: 1.3, show: true },
-    { name: '제품 유통', value: 0.18, show: grave },
-    { name: '사용', value: 0.72, show: iso && grave },
-    { name: '폐기 수송', value: 0.05, show: iso },
-    { name: '폐기 처리', value: 0.34, show: true },
+    { name: '제조 전 (원료·수송)', value: st.pre, show: true },
+    { name: '제조 (로스팅)', value: st.manuf, show: true },
+    { name: '제품 유통', value: st.distribution, show: grave },
+    { name: '사용', value: st.usage, show: iso && grave },
+    { name: '폐기 수송', value: st.wasteTransport, show: iso },
+    { name: '폐기 처리', value: st.waste, show: true },
   ].filter((s) => s.show);
   const total = raw.reduce((s, r) => s + r.value, 0);
   const stages = raw.map((s) => ({ ...s, pct: Math.round((s.value / total) * 100) }));
@@ -76,9 +80,9 @@ export function Result({ methodology = 'iso', boundary = 'grave' }: Props = {}) 
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
-          <ReadonlyField label="Scope 1 (직접 연소)" value="0.42" unit="kg CO₂e/kg" help="가스 직접 연소분. 참고용." />
-          <ReadonlyField label="Scope 2 (구매 전력)" value="0.88" unit="kg CO₂e/kg" help="구매 전력분. 재생에너지 자가발전 반영. 참고용." />
-          <ReadonlyField label="Scope 3 (그 외)" value="3.03" unit="kg CO₂e/kg" help="수송·포장재·폐기 합산. 참고용." />
+          <ReadonlyField label="Scope 1 (직접 연소)" value={data.result.scope.s1.toFixed(2)} unit="kg CO₂e/kg" help="가스 직접 연소분. 참고용." />
+          <ReadonlyField label="Scope 2 (구매 전력)" value={data.result.scope.s2.toFixed(2)} unit="kg CO₂e/kg" help="구매 전력분. 재생에너지 자가발전 반영. 참고용." />
+          <ReadonlyField label="Scope 3 (그 외)" value={data.result.scope.s3.toFixed(2)} unit="kg CO₂e/kg" help="수송·포장재·폐기 합산. 참고용." />
         </div>
       </SectionCard>
 

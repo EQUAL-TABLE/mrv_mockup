@@ -15,7 +15,9 @@ import { Usage } from '@/pages/project/Usage';
 import { WasteTransport } from '@/pages/project/WasteTransport';
 import { ALL_STEPS } from '@/data/workflow';
 import { resolveProjectMeta } from '@/data/projects';
+import { resolveProjectData } from '@/data/projectData';
 import type { ProjectMeta } from '@/data/projects';
+import type { ProjectData } from '@/data/projectData';
 import type { Boundary, Methodology, Track } from '@/types/project';
 
 /** 프로젝트 작업 화면 라우트 (/projects/:id/:step) */
@@ -25,17 +27,18 @@ export function ProjectPage() {
   const projectId = id ?? 'new';
   const stepKey = step ?? 'basic';
   const meta = withWizardChoices(resolveProjectMeta(projectId), projectId, params);
+  const data = resolveProjectData(projectId);
 
   return (
     <ProjectWorkspace projectId={projectId} stepKey={stepKey}>
-      {renderStep(stepKey, meta)}
+      {renderStep(stepKey, meta, data, projectId)}
     </ProjectWorkspace>
   );
 }
 
 /**
  * 신규 프로젝트는 시작 위저드/서비스 안내에서 넘어온 선택(track·methodology·boundary)을
- * 쿼리 파라미터로 받아 반영한다. (계산기=ISO, 환경성적표지=폐기까지 규칙도 정규화)
+ * 쿼리 파라미터로 받아 반영한다. (계산기=방법론 무관, 환경성적표지=폐기까지 규칙도 정규화)
  */
 function withWizardChoices(meta: ProjectMeta, projectId: string, params: URLSearchParams): ProjectMeta {
   if (projectId !== 'new') return meta;
@@ -44,31 +47,39 @@ function withWizardChoices(meta: ProjectMeta, projectId: string, params: URLSear
   let methodology: Methodology = params.get('methodology') === 'epd' ? 'epd' : params.get('methodology') === 'iso' ? 'iso' : meta.methodology;
   let boundary: Boundary = params.get('boundary') === 'gate' ? 'gate' : params.get('boundary') === 'grave' ? 'grave' : meta.boundary;
 
-  if (track === 'calculator') methodology = 'iso'; // 계산기는 ISO 고정
+  if (track === 'calculator') methodology = 'iso'; // 계산기는 방법론 미표시 (내부 기본값만 유지)
   if (methodology === 'epd') boundary = 'grave'; // 환경성적표지는 폐기까지 고정
 
   return { ...meta, track, methodology, boundary };
 }
 
-function renderStep(stepKey: string, meta: ProjectMeta) {
+function renderStep(stepKey: string, meta: ProjectMeta, data: ProjectData, projectId: string) {
   if (stepKey === 'basic')
-    return <BasicInfo initialTrack={meta.track} initialMethodology={meta.methodology} initialBoundary={meta.boundary} />;
+    return (
+      <BasicInfo
+        initialTrack={meta.track}
+        initialMethodology={meta.methodology}
+        initialBoundary={meta.boundary}
+        name={projectId === 'new' ? '' : meta.name}
+        data={data}
+      />
+    );
 
   // 계산기 트랙 화면
   if (meta.track === 'calculator') {
     switch (stepKey) {
       case 'materials':
-        return <CalcMaterials boundary={meta.boundary} />;
+        return <CalcMaterials boundary={meta.boundary} data={data} />;
       case 'transport':
         return <CalcTransport boundary={meta.boundary} />;
       case 'manufacturing':
-        return <CalcManufacturing />;
+        return <CalcManufacturing fuel={data.production.fuel} />;
       case 'usage':
-        return <CalcUsage />;
+        return <CalcUsage data={data} />;
       case 'waste':
         return <CalcWaste boundary={meta.boundary} />;
       case 'result':
-        return <CalcResult boundary={meta.boundary} />;
+        return <CalcResult boundary={meta.boundary} data={data} />;
     }
   }
 
@@ -77,19 +88,19 @@ function renderStep(stepKey: string, meta: ProjectMeta) {
   const p = { methodology: meta.methodology, boundary: meta.boundary };
   switch (stepKey) {
     case 'documents':
-      return <Documents {...p} />;
+      return <Documents {...p} status={meta.status} />;
     case 'materials':
-      return <Materials {...p} />;
+      return <Materials {...p} data={data} />;
     case 'transport':
-      return <Transport {...p} />;
+      return <Transport {...p} data={data} />;
     case 'mass':
-      return <MassContribution {...p} />;
+      return <MassContribution {...p} data={data} />;
     case 'manufacturing':
-      return <MrvManufacturing />;
+      return <MrvManufacturing data={data} />;
     case 'distribution':
       return <Distribution />;
     case 'usage':
-      return <Usage />;
+      return <Usage data={data} />;
     case 'waste-transport':
       return <WasteTransport boundary={meta.boundary} />;
     case 'waste':
@@ -97,7 +108,7 @@ function renderStep(stepKey: string, meta: ProjectMeta) {
     case 'review':
       return <Review methodology={meta.methodology} />;
     case 'result':
-      return <Result {...p} />;
+      return <Result {...p} data={data} />;
   }
 
   const found = ALL_STEPS.find((s) => s.key === stepKey);

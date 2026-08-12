@@ -3,6 +3,19 @@ import { Home } from '@/pages/Home';
 import { TrackGuide } from '@/pages/TrackGuide';
 import { StartWizard } from '@/pages/project/StartWizard';
 import { ProjectPage } from '@/pages/project/ProjectPage';
+import { AdminLogin } from '@/pages/admin/AdminLogin';
+import { Dashboard } from '@/pages/admin/Dashboard';
+import { Users } from '@/pages/admin/Users';
+import { UserDetail } from '@/pages/admin/UserDetail';
+import { Tenants } from '@/pages/admin/Tenants';
+import { TenantDetail } from '@/pages/admin/TenantDetail';
+import { Factors } from '@/pages/admin/Factors';
+import { FactorHistory } from '@/pages/admin/FactorHistory';
+import { MasterData } from '@/pages/admin/MasterData';
+import { ReferenceData } from '@/pages/admin/ReferenceData';
+import { AuditLogs } from '@/pages/admin/AuditLogs';
+import { Monitoring } from '@/pages/admin/Monitoring';
+import { Settings } from '@/pages/admin/Settings';
 
 export default function App() {
   return (
@@ -18,6 +31,22 @@ export default function App() {
         {/* 프로젝트 작업 화면 */}
         <Route path="/projects/:id" element={<Navigate to="basic" replace />} />
         <Route path="/projects/:id/:step" element={<ProjectPage />} />
+
+        {/* ── 관리자 콘솔 (별도 도메인·별도 배포 가정) ── */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<Dashboard />} />
+        <Route path="/admin/monitoring" element={<Monitoring />} />
+        <Route path="/admin/users" element={<Users />} />
+        <Route path="/admin/users/:userId" element={<UserDetail />} />
+        <Route path="/admin/tenants" element={<Tenants />} />
+        <Route path="/admin/tenants/:tenantId" element={<TenantDetail />} />
+        <Route path="/admin/factors" element={<Factors />} />
+        <Route path="/admin/factors/:factorId/history" element={<FactorHistory />} />
+        <Route path="/admin/master-data" element={<MasterData />} />
+        <Route path="/admin/reference-data" element={<ReferenceData />} />
+        <Route path="/admin/audit-logs" element={<AuditLogs />} />
+        <Route path="/admin/settings" element={<Settings />} />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

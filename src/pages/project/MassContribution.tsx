@@ -2,6 +2,8 @@ import { Cpu } from 'lucide-react';
 import { SectionCard } from '@/components/workspace/SectionCard';
 import { InfoBanner } from '@/components/ui/form';
 import type { Boundary, Methodology } from '@/types/project';
+import { DEFAULT_PROJECT_DATA, beanListLabel } from '@/data/projectData';
+import type { ProjectData } from '@/data/projectData';
 
 /**
  * ⑤ 누적질량기여도 — MRV 공통(방법론·경계 분기).
@@ -15,6 +17,7 @@ import type { Boundary, Methodology } from '@/types/project';
 interface Props {
   methodology?: Methodology;
   boundary?: Boundary;
+  data?: ProjectData;
 }
 
 interface Row {
@@ -30,18 +33,18 @@ interface MassTable {
   rows: Row[];
 }
 
-export function MassContribution({ methodology = 'iso', boundary = 'grave' }: Props = {}) {
+export function MassContribution({ methodology = 'iso', boundary = 'grave', data = DEFAULT_PROJECT_DATA }: Props = {}) {
   const grave = boundary === 'grave';
   const epd = methodology === 'epd';
   const showBox = epd && grave;
   const showFilter = methodology === 'iso' && grave;
 
-  const green: Row = { no: 1, material: '커피 생두', label: '예가체프 G1 / 수프리모', input: 1.3138 };
-  const minPack: Row = { no: 1, material: '복합 필름 포장재', label: '250g 원두 봉투', input: 0.012 };
-  const filter: Row = { no: 2, material: '크라프트지', label: '드립 여과지', input: 0.0021 };
+  const green: Row = { no: 1, material: '커피 생두', label: beanListLabel(data), input: data.mass.green };
+  const minPack: Row = { no: 1, material: '복합 필름 포장재', label: data.minPackLabel, input: data.mass.minPack };
+  const filter: Row = { no: 2, material: '크라프트지', label: '드립 여과지', input: data.mass.filter };
   const box: Row[] = [
-    { no: 1, material: '골판지', label: '출하 박스', input: 0.0345 },
-    { no: 2, material: 'OPP 필름', label: '박스 테이프', input: 0.0009 },
+    { no: 1, material: '골판지', label: '출하 박스', input: data.mass.box[0] },
+    { no: 2, material: 'OPP 필름', label: '박스 테이프', input: data.mass.box[1] },
   ];
 
   // 환경성적표지: 3개 테이블 분리 / ISO: 단일 통합 테이블

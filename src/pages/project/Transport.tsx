@@ -2,8 +2,10 @@ import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
-import { FormField, InfoBanner, OcrBadge, ReadonlyField, Select, TextInput, UnitInput } from '@/components/ui/form';
+import { DocPicker, FormField, InfoBanner, OcrBadge, ReadonlyField, Select, TextInput, UnitInput } from '@/components/ui/form';
 import type { Boundary, Methodology } from '@/types/project';
+import { DEFAULT_PROJECT_DATA } from '@/data/projectData';
+import type { ProjectData } from '@/data/projectData';
 
 /**
  * ④ 제조전단계-수송 — MRV 공통(방법론·경계 분기).
@@ -19,18 +21,15 @@ import type { Boundary, Methodology } from '@/types/project';
 interface Props {
   methodology?: Methodology;
   boundary?: Boundary;
+  data?: ProjectData;
 }
 
-const FARMS = [
-  { name: '아웰라 농장', country: '에티오피아' },
-  { name: '핀카 라스니냐스', country: '콜롬비아' },
-];
-
-export function Transport({ methodology = 'iso', boundary = 'grave' }: Props = {}) {
+export function Transport({ methodology = 'iso', boundary = 'grave', data = DEFAULT_PROJECT_DATA }: Props = {}) {
   const [tab, setTab] = useState<'green' | 'sub'>('green');
   const [open, setOpen] = useState<number[]>([0]);
   const toggle = (i: number) => setOpen((p) => (p.includes(i) ? p.filter((x) => x !== i) : [...p, i]));
 
+  const farms = data.farms;
   const grave = boundary === 'grave';
   const showBox = methodology === 'epd' && grave;
   const showFilter = methodology === 'iso' && grave;
@@ -54,7 +53,7 @@ export function Transport({ methodology = 'iso', boundary = 'grave' }: Props = {
 
       {tab === 'green' && (
         <div className="space-y-2">
-          {FARMS.map((farm, i) => (
+          {farms.map((farm, i) => (
             <GreenTransportSet key={i} farm={farm} open={open.includes(i)} onToggle={() => toggle(i)} />
           ))}
         </div>
@@ -171,8 +170,8 @@ function Leg({
 
       {docLabel && (
         <div className="mb-3">
-          <FormField label="증빙문서 (선택)" hint="선택하면 출발·도착지와 수송량이 자동으로 채워집니다.">
-            <Select options={[{ value: '', label: `${docLabel} 선택` }]} />
+          <FormField label="증빙문서 (선택)" hint="선택하거나 [업로드]로 새 문서를 올리면 출발·도착지와 수송량이 자동으로 채워집니다.">
+            <DocPicker placeholder={`${docLabel} 선택`} />
           </FormField>
         </div>
       )}
@@ -206,8 +205,8 @@ function EndpointField({ field }: { field: Endpoint }) {
 function SubTransport({ title, doc }: { title: string; doc: string }) {
   return (
     <SectionCard title={title} description="공급처에서 로스터리까지의 이동입니다. 수송수단은 트럭으로 고정됩니다.">
-      <FormField label="구매 거래명세서 (선택)" hint="선택하면 공급처 주소가 자동으로 채워집니다.">
-        <Select options={[{ value: '', label: `${doc} 선택` }]} />
+      <FormField label="구매 거래명세서 (선택)" hint="선택하거나 [업로드]로 새 명세서를 올리면 공급처 주소가 자동으로 채워집니다.">
+        <DocPicker placeholder={`${doc} 선택`} />
       </FormField>
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField label="공급처 주소" required>

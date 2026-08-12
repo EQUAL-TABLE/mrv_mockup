@@ -11,7 +11,7 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
-  { to: '/', label: '프로젝트', Icon: LayoutGrid, end: true },
+  { to: '/', label: '프로젝트 목록', Icon: LayoutGrid, end: true },
   { to: '/guide', label: '서비스 안내', Icon: BookOpen },
   { to: '/settings', label: '설정', Icon: Settings },
 ];
