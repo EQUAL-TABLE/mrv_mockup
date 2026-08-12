@@ -2,6 +2,17 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { ProjectWorkspace } from '@/components/workspace/ProjectWorkspace';
 import { BasicInfo } from '@/pages/project/BasicInfo';
 import { CalcManufacturing, CalcMaterials, CalcResult, CalcTransport, CalcUsage, CalcWaste } from '@/pages/project/calc';
+import { MrvManufacturing } from '@/pages/project/Manufacturing';
+import { Documents } from '@/pages/project/Documents';
+import { Materials } from '@/pages/project/Materials';
+import { Transport } from '@/pages/project/Transport';
+import { MassContribution } from '@/pages/project/MassContribution';
+import { Distribution } from '@/pages/project/Distribution';
+import { Waste } from '@/pages/project/Waste';
+import { Review } from '@/pages/project/Review';
+import { Result } from '@/pages/project/Result';
+import { Usage } from '@/pages/project/Usage';
+import { WasteTransport } from '@/pages/project/WasteTransport';
 import { ALL_STEPS } from '@/data/workflow';
 import { resolveProjectMeta } from '@/data/projects';
 import type { ProjectMeta } from '@/data/projects';
@@ -61,7 +72,34 @@ function renderStep(stepKey: string, meta: ProjectMeta) {
     }
   }
 
-  // MRV 트랙 화면은 순차 구현 예정
+  // MRV 트랙 화면 (방법론·경계에 따라 화면 구성 분기)
+  // ⑥제조단계는 방법론·경계와 무관하게 동일한 공통 화면.
+  const p = { methodology: meta.methodology, boundary: meta.boundary };
+  switch (stepKey) {
+    case 'documents':
+      return <Documents {...p} />;
+    case 'materials':
+      return <Materials {...p} />;
+    case 'transport':
+      return <Transport {...p} />;
+    case 'mass':
+      return <MassContribution {...p} />;
+    case 'manufacturing':
+      return <MrvManufacturing />;
+    case 'distribution':
+      return <Distribution />;
+    case 'usage':
+      return <Usage />;
+    case 'waste-transport':
+      return <WasteTransport boundary={meta.boundary} />;
+    case 'waste':
+      return <Waste {...p} />;
+    case 'review':
+      return <Review methodology={meta.methodology} />;
+    case 'result':
+      return <Result {...p} />;
+  }
+
   const found = ALL_STEPS.find((s) => s.key === stepKey);
   return <StepPlaceholder title={found?.title ?? '해당 단계'} />;
 }

@@ -17,7 +17,7 @@ export function AppShell({ children }: AppShellProps) {
         <footer className="border-t border-outline-variant px-6 py-4">
           <p className="text-xs text-on-surface-variant">
             표준 <b className="font-semibold text-on-surface">ISO 14067</b> ·{' '}
-            <b className="font-semibold text-on-surface">환경성적표지(EPD)</b> 기반 &nbsp;·&nbsp; 방법론 v2.1 &nbsp;·&nbsp;
+            <b className="font-semibold text-on-surface">환경성적표지</b> 기반 &nbsp;·&nbsp; 방법론 v2.1 &nbsp;·&nbsp;
             산정 결과는 검토·확정 절차를 거쳐 발급됩니다 &nbsp;·&nbsp; © EQUALTABLE
           </p>
         </footer>

@@ -76,7 +76,7 @@ export const WORKFLOW_META: Record<WorkflowId, { title: string; summary: string;
   'mrv-epd': {
     title: 'MRV · 환경성적표지 · 폐기까지',
     summary:
-      '증빙을 기반으로 국내 환경성적표지(EPD) 인증에 맞춰 산정합니다. 소비자 사용·폐기 수송 단계가 제외되는 등 표준 고유의 규칙을 따릅니다.',
+      '증빙을 기반으로 국내 환경성적표지 중 탄소발자국 기준에 맞춰 산정합니다. 소비자 사용·폐기 수송 단계가 제외되는 등 표준 고유의 규칙을 따릅니다.',
     certify: true,
   },
   'calc-grave': {

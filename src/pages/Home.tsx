@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { AppShell } from '@/components/AppShell';
 import { SystemIntro } from '@/components/SystemIntro';
 import { ProjectCard } from '@/components/ProjectCard';
-import { EmptyHome } from '@/components/EmptyHome';
 import { StatusChip } from '@/components/ui/Badge';
 import type { Project } from '@/types/project';
 import { SAMPLE_PROJECTS } from '@/data/projects';
@@ -23,23 +22,17 @@ export function Home({ empty = false }: HomeProps) {
   return (
     <AppShell>
       <div className="mx-auto max-w-6xl space-y-6">
-        {projects.length === 0 ? (
-          <EmptyHome onStart={startNew} />
-        ) : (
-          <>
-            <SystemIntro onStart={startNew} />
+        <SystemIntro onStart={startNew} />
 
-            <section>
-              <ListHeader projects={projects} />
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {projects.map((p) => (
-                  <ProjectCard key={p.id} project={p} onOpen={openProject} />
-                ))}
-                <AddCard onClick={startNew} />
-              </div>
-            </section>
-          </>
-        )}
+        <section>
+          <ListHeader projects={projects} />
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {projects.map((p) => (
+              <ProjectCard key={p.id} project={p} onOpen={openProject} />
+            ))}
+            <AddCard onClick={startNew} />
+          </div>
+        </section>
 
         {/* 목업 검토용 상태 전환 링크 (실제 화면 미포함) */}
         <div className="pt-2 text-center">

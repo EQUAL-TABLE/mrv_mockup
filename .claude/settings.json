@@ -16,7 +16,11 @@
       "Bash(cd \"C:/Users/tkong/Project/mrv-frontend\" && wc -l src/pages/*.tsx src/pages/*/*.tsx 2>&1 | sort -n)",
       "Read(//c/Users/tkong/Project/mrv-frontend/src/pages/**)",
       "PowerShell(Start-Process \"c:\\\\Users\\\\tkong\\\\Project\\\\mrv_front_mockup\\\\mockup\\\\index.html\")",
-      "PowerShell(Start-Process \"http://localhost:3001/\")"
+      "PowerShell(Start-Process \"http://localhost:3001/\")",
+      "Bash(cd /c/Users/tkong/Project/mrv-frontend && echo \"=== ROOT ===\" && ls -la && echo \"=== package.json ===\" && cat package.json 2>/dev/null | head -80)",
+      "Bash(cd /c/Users/tkong/Project/mrv-frontend && echo \"=== src tree ===\" && find src -type f \\\\\\( -name \"*.tsx\" -o -name \"*.ts\" \\\\\\) | sort && echo \"=== nested mrv-frontend ===\" && ls -la mrv-frontend 2>/dev/null)",
+      "Read(//c/Users/tkong/Project/mrv-frontend/src/pages/v2/**)",
+      "Read(//c/Users/tkong/Project/mrv-frontend/src/pages/signup/**)"
     ]
   }
 }

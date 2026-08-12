@@ -1,4 +1,4 @@
-import { HelpCircle, Info } from 'lucide-react';
+import { HelpCircle, Info, ScanLine } from 'lucide-react';
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -97,6 +97,15 @@ export function ReadonlyField({ label, help, value, unit }: { label: string; hel
         {unit && <span className="text-on-surface-variant">{unit}</span>}
       </div>
     </FormField>
+  );
+}
+
+/** OCR 자동 추출값 표시 배지 (업로드 문서에서 자동으로 읽어온 값) */
+export function OcrBadge({ text = '문서 자동 추출' }: { text?: string }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+      <ScanLine className="h-3 w-3" /> {text}
+    </span>
   );
 }
 

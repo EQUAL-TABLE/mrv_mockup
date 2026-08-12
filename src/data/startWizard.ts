@@ -74,7 +74,7 @@ export const METHODOLOGY_OPTIONS: WizardOption<Methodology>[] = [
   {
     value: 'epd',
     icon: 'epd',
-    title: '환경성적표지 (EPD)',
+    title: '환경성적표지 중 탄소발자국',
     subtitle: '한국환경산업기술원 국내 인증',
     tag: '국내 인증',
     tagTone: 'primary',

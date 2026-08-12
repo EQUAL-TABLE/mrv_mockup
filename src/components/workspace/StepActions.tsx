@@ -17,6 +17,8 @@ export function StepActions({ projectId, currentKey, steps }: StepActionsProps) 
   const next = index >= 0 && index < steps.length - 1 ? steps[index + 1] : undefined;
   const isReview = currentKey === 'review';
   const isResult = currentKey === 'result';
+  // 읽기전용·전량 자동산출 단계(⑤질량기여도, ⑧사용, ⑨폐기수송)는 저장 버튼 미노출
+  const isAuto = index >= 0 && steps[index]?.auto === true;
 
   const go = (key?: string) => key && navigate(`/projects/${projectId}/${key}`);
 
@@ -27,7 +29,7 @@ export function StepActions({ projectId, currentKey, steps }: StepActionsProps) 
       </Button>
 
       <div className="flex items-center gap-2">
-        {!isResult && (
+        {!isResult && !isReview && !isAuto && (
           <Button variant="secondary" onClick={() => alert('저장되었습니다. (목업)')}>
             <Save className="h-4 w-4" /> 저장
           </Button>

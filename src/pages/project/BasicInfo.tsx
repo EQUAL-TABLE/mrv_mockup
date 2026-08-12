@@ -67,13 +67,13 @@ export function BasicInfo({ initialTrack = 'mrv', initialMethodology = 'iso', in
               help="계산기 방식은 방법론을 선택하지 않고 ISO 14067이 자동 적용됩니다."
             />
           ) : (
-            <FormField label="방법론" required help="ISO 14067 또는 환경성적표지(EPD) 표준을 선택합니다.">
+            <FormField label="방법론" required help="ISO 14067 또는 환경성적표지 중 탄소발자국 기준을 선택합니다.">
               <Select
                 value={methodology}
                 onChange={(e) => onMethodology(e.target.value)}
                 options={[
                   { value: 'iso', label: 'ISO 14067' },
-                  { value: 'epd', label: '환경성적표지 (EPD)' },
+                  { value: 'epd', label: '환경성적표지 중 탄소발자국' },
                 ]}
               />
             </FormField>
