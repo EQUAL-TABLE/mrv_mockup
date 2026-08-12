@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { AdminShell } from '@/components/admin/AdminShell';
 import { Card, CardTitle, Column, DataTable, MetaBadges, MetaFields, Modal, PageHeader, Pill, Tabs } from '@/components/admin/ui';
 import { Button } from '@/components/ui/Button';
-import { FormField, InfoBanner, TextInput } from '@/components/ui/form';
+import { FormField, InfoBanner, Select, TextInput } from '@/components/ui/form';
 import {
   EfState,
   EF_STATE_LABEL,
@@ -12,8 +12,12 @@ import {
   PACKAGING_MATERIALS,
   PackagingMaterial,
   VersionMeta,
+  WASTE_CATEGORIES,
+  WASTE_ITEMS,
   WASTE_RATIOS,
   WasteRatioRow,
+  wasteCategoryName,
+  wasteItemName,
 } from '@/data/admin';
 
 const STATE_TONE: Record<EfState, 'green' | 'amber' | 'gray'> = { active: 'green', pending: 'amber', archived: 'gray' };
@@ -39,14 +43,18 @@ const EMPTY_COMMON: CommonForm = { category: '', name: '', value: '', unit: '', 
 
 interface WasteForm {
   statYear: string;
-  wasteType: string;
-  target: string;
+  scope: 'category' | 'item';
+  refId: string;
   incinerate: string;
   landfill: string;
   recycle: string;
   source: string;
 }
-const EMPTY_WASTE: WasteForm = { statYear: '', wasteType: '', target: '', incinerate: '', landfill: '', recycle: '', source: '' };
+const EMPTY_WASTE: WasteForm = { statYear: '', scope: 'category', refId: WASTE_CATEGORIES[0]?.id ?? '', incinerate: '', landfill: '', recycle: '', source: '' };
+
+/** 성상/품목 refId → 표시명 */
+const refLabel = (row: { scope: 'category' | 'item'; refId: string }) =>
+  row.scope === 'category' ? wasteCategoryName(row.refId) : wasteItemName(row.refId);
 
 export function MasterData() {
   const [tab, setTab] = useState('common');
@@ -94,7 +102,7 @@ export function MasterData() {
 
   const openWaste = (mode: 'add' | 'edit', row?: WasteRatioRow) => {
     if (mode === 'add') setWForm(EMPTY_WASTE);
-    else if (row) setWForm({ statYear: String(row.statYear), wasteType: row.wasteType, target: row.target, incinerate: String(row.incinerate), landfill: String(row.landfill), recycle: String(row.recycle), source: row.source });
+    else if (row) setWForm({ statYear: String(row.statYear), scope: row.scope, refId: row.refId, incinerate: String(row.incinerate), landfill: String(row.landfill), recycle: String(row.recycle), source: row.source });
     setWModal({ mode, target: row });
   };
   const wSum = Number(wForm.incinerate || 0) + Number(wForm.landfill || 0) + Number(wForm.recycle || 0);
@@ -102,12 +110,12 @@ export function MasterData() {
   const submitWaste = () => {
     if (!wModal || !wValid) return;
     if (wModal.mode === 'edit' && wModal.target) {
-      setWaste((rows) => rows.map((r) => (r.id === wModal.target!.id ? { ...r, statYear: Number(wForm.statYear), wasteType: wForm.wasteType, target: wForm.target, incinerate: Number(wForm.incinerate), landfill: Number(wForm.landfill), recycle: Number(wForm.recycle), source: wForm.source } : r)));
+      setWaste((rows) => rows.map((r) => (r.id === wModal.target!.id ? { ...r, statYear: Number(wForm.statYear), scope: wForm.scope, refId: wForm.refId, incinerate: Number(wForm.incinerate), landfill: Number(wForm.landfill), recycle: Number(wForm.recycle), source: wForm.source } : r)));
       flash('처리 비율을 정정했습니다. (감사 로그 기록됨)');
     } else {
-      const item: WasteRatioRow = { id: `wr-${idRef.current++}`, statYear: Number(wForm.statYear), wasteType: wForm.wasteType, target: wForm.target, incinerate: Number(wForm.incinerate), landfill: Number(wForm.landfill), recycle: Number(wForm.recycle), source: wForm.source, registeredAt: TODAY };
+      const item: WasteRatioRow = { id: `wr-${idRef.current++}`, statYear: Number(wForm.statYear), scope: wForm.scope, refId: wForm.refId, incinerate: Number(wForm.incinerate), landfill: Number(wForm.landfill), recycle: Number(wForm.recycle), source: wForm.source, registeredAt: TODAY };
       setWaste((rows) => [...rows, item]);
-      flash(`${wForm.statYear}년 ${wForm.wasteType} 처리 비율을 추가했습니다. 기존 연도는 병존 유지됩니다.`);
+      flash(`${wForm.statYear}년 ${refLabel(item)} 처리 비율을 추가했습니다. 기존 연도는 병존 유지됩니다.`);
     }
     setWModal(null);
   };
@@ -224,11 +232,11 @@ export function MasterData() {
                     rows={rows}
                     columns={[
                       {
-                        header: '성상(폐기물 종류)',
+                        header: '적용 단위 (성상/품목)',
                         cell: (r) => (
-                          <div>
-                            <p className="font-medium text-on-surface">{r.wasteType}</p>
-                            <p className="text-xs text-on-surface-variant">{r.target}</p>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-on-surface">{refLabel(r)}</span>
+                            {r.scope === 'category' ? <Pill tone="gray">성상</Pill> : <Pill tone="amber">품목 override</Pill>}
                           </div>
                         ),
                       },
@@ -392,7 +400,7 @@ export function MasterData() {
         footer={
           <>
             <Button variant="secondary" size="sm" onClick={() => setWModal(null)}>취소</Button>
-            <Button size="sm" onClick={submitWaste} disabled={!wValid || !wForm.statYear || !wForm.wasteType}>
+            <Button size="sm" onClick={submitWaste} disabled={!wValid || !wForm.statYear || !wForm.refId}>
               {wModal?.mode === 'add' ? '추가' : '정정 확정'}
             </Button>
           </>
@@ -402,11 +410,25 @@ export function MasterData() {
           <FormField label="적용 기준연도 (stat_year)" required>
             <TextInput type="number" value={wForm.statYear} onChange={(e) => setWForm((f) => ({ ...f, statYear: e.target.value }))} placeholder="예: 2025" />
           </FormField>
-          <FormField label="성상(폐기물 종류)" required>
-            <TextInput value={wForm.wasteType} onChange={(e) => setWForm((f) => ({ ...f, wasteType: e.target.value }))} placeholder="예: 생활폐기물" />
+          <FormField label="적용 단위" required help="기본은 성상 단위. 특정 품목만 별도 통계를 쓸 때 '품목 override'.">
+            <Select
+              value={wForm.scope}
+              onChange={(e) => {
+                const scope = e.target.value as 'category' | 'item';
+                setWForm((f) => ({ ...f, scope, refId: scope === 'category' ? WASTE_CATEGORIES[0]?.id ?? '' : WASTE_ITEMS[0]?.id ?? '' }));
+              }}
+              options={[
+                { value: 'category', label: '성상 단위 (기본)' },
+                { value: 'item', label: '품목 override' },
+              ]}
+            />
           </FormField>
-          <FormField label="대상 폐기물" className="sm:col-span-2">
-            <TextInput value={wForm.target} onChange={(e) => setWForm((f) => ({ ...f, target: e.target.value }))} placeholder="예: 커피박·채프·여과지" />
+          <FormField label={wForm.scope === 'category' ? '성상 선택' : '품목 선택'} required className="sm:col-span-2" help="자유 입력이 아닌 마스터에서 선택합니다. 목록은 '물질·매핑 데이터'에서 관리.">
+            <Select
+              value={wForm.refId}
+              onChange={(e) => setWForm((f) => ({ ...f, refId: e.target.value }))}
+              options={(wForm.scope === 'category' ? WASTE_CATEGORIES.map((c) => ({ value: c.id, label: c.name })) : WASTE_ITEMS.map((w) => ({ value: w.id, label: w.name })))}
+            />
           </FormField>
           <FormField label="소각 %" required>
             <TextInput type="number" value={wForm.incinerate} onChange={(e) => setWForm((f) => ({ ...f, incinerate: e.target.value }))} placeholder="0" />
@@ -431,7 +453,7 @@ export function MasterData() {
       <Modal open={!!wDelete} onClose={() => setWDelete(null)} title="처리 비율 삭제" footer={<><Button variant="secondary" size="sm" onClick={() => setWDelete(null)}>취소</Button><Button size="sm" className="bg-error hover:bg-error/90" onClick={() => { setWaste((r) => r.filter((x) => x.id !== wDelete!.id)); flash('처리 비율 행을 삭제했습니다.'); setWDelete(null); }}>삭제 확정</Button></>}>
         <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-3 text-sm leading-relaxed text-warning">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-          <span><b>{wDelete?.statYear}년 {wDelete?.wasteType}</b> 행을 삭제합니다. 과거 연도 통계는 해당 연도 프로젝트 매칭에 쓰이므로, 잘못 입력한 경우에만 삭제하세요.</span>
+          <span><b>{wDelete?.statYear}년 {wDelete && refLabel(wDelete)}</b> 행을 삭제합니다. 과거 연도 통계는 해당 연도 프로젝트 매칭에 쓰이므로, 잘못 입력한 경우에만 삭제하세요.</span>
         </div>
       </Modal>
 

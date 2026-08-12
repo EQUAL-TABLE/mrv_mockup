@@ -12,10 +12,10 @@ import { TenantDetail } from '@/pages/admin/TenantDetail';
 import { Factors } from '@/pages/admin/Factors';
 import { FactorHistory } from '@/pages/admin/FactorHistory';
 import { MasterData } from '@/pages/admin/MasterData';
+import { Materials } from '@/pages/admin/Materials';
 import { ReferenceData } from '@/pages/admin/ReferenceData';
 import { AuditLogs } from '@/pages/admin/AuditLogs';
 import { Monitoring } from '@/pages/admin/Monitoring';
-import { Settings } from '@/pages/admin/Settings';
 
 export default function App() {
   return (
@@ -43,9 +43,9 @@ export default function App() {
         <Route path="/admin/factors" element={<Factors />} />
         <Route path="/admin/factors/:factorId/history" element={<FactorHistory />} />
         <Route path="/admin/master-data" element={<MasterData />} />
+        <Route path="/admin/materials" element={<Materials />} />
         <Route path="/admin/reference-data" element={<ReferenceData />} />
         <Route path="/admin/audit-logs" element={<AuditLogs />} />
-        <Route path="/admin/settings" element={<Settings />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

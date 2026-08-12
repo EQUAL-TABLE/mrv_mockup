@@ -20,7 +20,8 @@
       "Bash(cd /c/Users/tkong/Project/mrv-frontend && echo \"=== ROOT ===\" && ls -la && echo \"=== package.json ===\" && cat package.json 2>/dev/null | head -80)",
       "Bash(cd /c/Users/tkong/Project/mrv-frontend && echo \"=== src tree ===\" && find src -type f \\\\\\( -name \"*.tsx\" -o -name \"*.ts\" \\\\\\) | sort && echo \"=== nested mrv-frontend ===\" && ls -la mrv-frontend 2>/dev/null)",
       "Read(//c/Users/tkong/Project/mrv-frontend/src/pages/v2/**)",
-      "Read(//c/Users/tkong/Project/mrv-frontend/src/pages/signup/**)"
+      "Read(//c/Users/tkong/Project/mrv-frontend/src/pages/signup/**)",
+      "PowerShell(npx tsc --noEmit -p \"c:\\\\Users\\\\tkong\\\\Project\\\\mrv_front_mockup\\\\tsconfig.json\")"
     ]
   }
 }

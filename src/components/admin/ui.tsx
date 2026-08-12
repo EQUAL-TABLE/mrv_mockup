@@ -1,4 +1,5 @@
 import { CalendarClock, Megaphone, Tag, X } from 'lucide-react';
+import { useState } from 'react';
 import type { ComponentType, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import type { VersionMeta } from '@/data/admin';
@@ -272,6 +273,25 @@ export function MetaBadges({ meta, latest }: { meta?: VersionMeta; latest?: bool
           공고 {meta.announcedAt}
         </span>
       )}
+    </div>
+  );
+}
+
+// ── 공용 토스트 ───────────────────────────────────────────
+export function useFlash() {
+  const [msg, setMsg] = useState<string | null>(null);
+  const flash = (m: string) => {
+    setMsg(m);
+    window.setTimeout(() => setMsg(null), 3000);
+  };
+  return { msg, flash };
+}
+
+export function Toast({ msg }: { msg: string | null }) {
+  if (!msg) return null;
+  return (
+    <div className="fixed bottom-6 left-1/2 z-50 w-[min(90vw,36rem)] -translate-x-1/2 rounded-md bg-on-surface px-4 py-3 text-center text-sm font-medium text-white shadow-lg">
+      {msg}
     </div>
   );
 }

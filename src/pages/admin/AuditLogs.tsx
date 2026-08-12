@@ -35,7 +35,7 @@ export function AuditLogs() {
     <AdminShell>
       <PageHeader
         title="감사 로그"
-        description="관리자 자신의 조작 이력(배출계수·기준·참조 데이터 등록, 사용자·조직 상태 변경, 시스템 설정, 문서 원본 열람)을 조회합니다."
+        description="관리자 자신의 조작 이력(배출계수·기준·참조 데이터 등록, 사용자·조직 상태 변경, 문서 원본 열람)을 조회합니다."
       />
 
       <InfoBanner>

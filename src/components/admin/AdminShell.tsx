@@ -6,10 +6,10 @@ import {
   LayoutDashboard,
   LogOut,
   Building2,
-  Settings,
   ShieldCheck,
   SlidersHorizontal,
   Users,
+  Workflow,
 } from 'lucide-react';
 import type { ComponentType, ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -47,14 +47,14 @@ const NAV: NavGroup[] = [
     items: [
       { to: '/admin/factors', label: '배출계수(EF) 관리', Icon: Boxes },
       { to: '/admin/master-data', label: '기준 데이터 관리', Icon: Database },
+      { to: '/admin/materials', label: '물질·매핑 데이터', Icon: Workflow },
       { to: '/admin/reference-data', label: '참조 데이터셋', Icon: SlidersHorizontal },
     ],
   },
   {
-    title: '감사·설정',
+    title: '감사',
     items: [
       { to: '/admin/audit-logs', label: '감사 로그', Icon: FileClock },
-      { to: '/admin/settings', label: '시스템 설정', Icon: Settings },
     ],
   },
 ];
