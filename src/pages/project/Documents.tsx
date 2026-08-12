@@ -1,7 +1,6 @@
 import { Check, FileText, Loader2, Upload, AlertCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { SectionCard } from '@/components/workspace/SectionCard';
-import { InfoBanner } from '@/components/ui/form';
 import type { Boundary, Methodology, ProjectStatus } from '@/types/project';
 
 /**
@@ -83,12 +82,6 @@ export function Documents({ methodology = 'iso', boundary = 'grave', status = 'd
 
   return (
     <div className="space-y-4">
-      <InfoBanner>
-        전기 고지서·거래명세서 등 보유한 증빙을 올리면 시스템이 자동으로 값을 읽어 다음 단계 입력 칸을 채워줍니다.
-        <b className="font-medium text-on-surface"> 생두 INVOICE와 전력 고지서 2종만 있어도 시작</b>할 수 있고, 나머지는 각
-        단계에서 추가로 올릴 수 있습니다. (확정 전까지 언제든 교체·삭제 가능)
-      </InfoBanner>
-
       {groups.map((g) => (
         <SectionCard key={g.step} title={g.step} description={`${g.step} 단계에서 사용되는 증빙 문서입니다.`}>
           <div className="divide-y divide-outline-variant overflow-hidden rounded-md border border-outline-variant">

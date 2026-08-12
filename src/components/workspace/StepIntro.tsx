@@ -1,4 +1,4 @@
-import { CheckCircle2, Cpu, PencilLine, Target } from 'lucide-react';
+import { CheckCircle2, Cpu, Info, PencilLine, Target } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { Badge } from '@/components/ui/Badge';
 import { STEP_INTRO } from '@/data/stepIntro';
@@ -18,7 +18,7 @@ export function StepIntro({ stepKey, steps }: { stepKey: string; steps: Workflow
         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
           {index + 1}
         </span>
-        <h2 className="text-base font-bold text-on-surface">{step.title}</h2>
+        <h2 className="text-2xl font-bold text-on-surface">{step.title}</h2>
         {step.auto && (
           <Badge variant="neutral">
             <Cpu className="h-3 w-3" /> 자동 계산 단계
@@ -34,6 +34,12 @@ export function StepIntro({ stepKey, steps }: { stepKey: string; steps: Workflow
             <IntroItem Icon={PencilLine} label="입력하는 정보" text={c.inputs} />
             <IntroItem Icon={CheckCircle2} label="얻는 결과" text={c.result} />
           </div>
+          {c.note && (
+            <div className="mt-3 flex items-start gap-2 rounded-md border border-primary/15 bg-surface-container-lowest p-3 text-sm leading-relaxed text-on-surface-variant">
+              <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <span>{c.note}</span>
+            </div>
+          )}
         </>
       )}
     </section>

@@ -36,11 +36,6 @@ export function Transport({ methodology = 'iso', boundary = 'grave', data = DEFA
 
   return (
     <div className="space-y-4">
-      <InfoBanner>
-        생두가 <b className="font-medium text-on-surface">농장에서 로스터리까지</b> 오는 이동 과정과, 포장재가 공급처에서
-        오는 이동 과정을 등록합니다. 거리는 대부분 자동으로 계산되며, 자동 산출이 안 되면 직접 입력합니다.
-      </InfoBanner>
-
       {/* 탭 */}
       <div className="flex gap-1 rounded-md border border-outline-variant bg-surface-container-low p-1">
         <TabButton active={tab === 'green'} onClick={() => setTab('green')}>
@@ -79,7 +74,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
     <button
       type="button"
       onClick={onClick}
-      className={`flex-1 rounded px-3 py-2 text-sm font-semibold transition ${
+      className={`flex-1 rounded px-3 py-2.5 text-base font-semibold transition ${
         active ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'
       }`}
     >
@@ -102,14 +97,14 @@ function GreenTransportSet({
     <section className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-lowest">
       <button type="button" onClick={onToggle} className="flex w-full items-center justify-between px-6 py-4 text-left hover:bg-surface-container-high/40">
         <span className="flex items-center gap-2">
-          <span className="text-sm font-bold text-on-surface">{farm.name}</span>
-          <span className="text-xs text-on-surface-variant">{farm.country} → 로스터리</span>
+          <span className="text-xl font-bold text-on-surface">{farm.name}</span>
+          <span className="text-sm text-on-surface-variant">{farm.country} → 로스터리</span>
         </span>
         <ChevronDown className={`h-4 w-4 text-on-surface-variant transition ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
-        <div className="space-y-5 border-t border-outline-variant px-6 py-5">
+        <div className="divide-y divide-outline-variant border-t border-outline-variant px-6">
           <Leg
             title="수출국 내륙 수송"
             desc="농장 → 수출항"
@@ -162,10 +157,10 @@ function Leg({
   transports: { value: string; label: string }[];
 }) {
   return (
-    <div>
-      <div className="mb-3 flex items-baseline gap-2">
-        <p className="text-sm font-semibold text-on-surface">{title}</p>
-        <span className="text-xs text-on-surface-variant">{desc}</span>
+    <div className="py-6">
+      <div className="mb-4 flex items-baseline gap-2">
+        <p className="text-lg font-bold text-on-surface">{title}</p>
+        <span className="text-sm text-on-surface-variant">{desc}</span>
       </div>
 
       {docLabel && (

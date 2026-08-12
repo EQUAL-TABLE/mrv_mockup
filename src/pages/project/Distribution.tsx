@@ -15,11 +15,6 @@ export function Distribution() {
 
   return (
     <div className="space-y-4">
-      <InfoBanner>
-        완성된 커피가 <b className="font-medium text-on-surface">납품처까지 배송</b>되는 과정을 등록합니다. 매장에서 직접
-        소비(자체 소비)한다면 수송 배출량은 0으로 처리됩니다.
-      </InfoBanner>
-
       <SectionCard title="유통 정보" description="납품 방식과 배송 정보를 입력합니다. 수송수단은 트럭으로 고정됩니다.">
         <FormField label="유통 방식" required>
           <RadioGroup

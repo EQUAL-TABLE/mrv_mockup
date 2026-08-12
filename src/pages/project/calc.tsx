@@ -166,9 +166,6 @@ export function CalcUsage({ data = DEFAULT_PROJECT_DATA }: { data?: ProjectData 
   const scenario = data.production.scenario;
   return (
     <div className="space-y-4">
-      <InfoBanner>
-        이 단계는 입력할 것이 없습니다. 기본정보에서 선택한 사용 방식 기준으로, 소비자가 커피를 내릴 때 쓰는 전력을 자동 계산합니다.
-      </InfoBanner>
       <SectionCard title="사용 단계 (자동 계산)">
         <div className="grid gap-4 sm:grid-cols-2">
           <ReadonlyField label="선택한 사용 방식" value={scenarioLabel(scenario)} />
@@ -198,9 +195,6 @@ export function CalcWaste({ boundary }: { boundary: Boundary }) {
 
   return (
     <div className="space-y-4">
-      <InfoBanner>
-        이 단계는 입력할 것이 없습니다. 앞 단계에서 발생한 폐기물의 양과 처리 방식을 자동으로 반영합니다.
-      </InfoBanner>
       <SectionCard title="폐기물 발생량 (자동)" description="앞 단계에서 자동으로 누적된 폐기물입니다.">
         <div className="divide-y divide-outline-variant overflow-hidden rounded-md border border-outline-variant">
           {items.map((it) => (

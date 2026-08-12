@@ -36,11 +36,6 @@ export function Waste({ methodology = 'iso', boundary = 'grave' }: Props = {}) {
 
   return (
     <div className="space-y-4">
-      <InfoBanner>
-        앞 단계에서 자동으로 쌓인 <b className="font-medium text-on-surface">폐기물의 양</b>을 보여주고, 재활용 위탁처리
-        증빙이 있으면 그만큼 재활용으로 반영합니다. 나머지는 국가 통계 기준 처리 비율(소각·매립·재활용)을 자동 적용합니다.
-      </InfoBanner>
-
       {/* Section 1 — 폐기물 발생량 (자동) */}
       <SectionCard title="1. 폐기물 발생량" description="앞 단계 저장 시 자동으로 누적된 값입니다. (읽기전용)">
         <div className="divide-y divide-outline-variant overflow-hidden rounded-md border border-outline-variant">

@@ -24,11 +24,6 @@ export function WasteTransport({ boundary = 'grave' }: Props = {}) {
 
   return (
     <div className="space-y-4">
-      <InfoBanner>
-        다 쓴 커피 찌꺼기·포장재가 처리 시설까지 옮겨지는 과정을 자동으로 계산합니다. 따로 입력할 것은 없으며, 발생 위치의
-        시군구를 기준으로 가까운 공공처리시설을 자동으로 찾아 거리를 산출합니다.
-      </InfoBanner>
-
       <SectionCard title="대상 폐기물 · 수송 기준점 (자동)" description="폐기물이 어디서 발생하는지에 따라 수송 출발지가 정해집니다.">
         <div className="divide-y divide-outline-variant overflow-hidden rounded-md border border-outline-variant">
           {wastes.map((w) => {

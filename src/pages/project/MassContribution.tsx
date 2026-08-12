@@ -1,6 +1,5 @@
 import { Cpu } from 'lucide-react';
 import { SectionCard } from '@/components/workspace/SectionCard';
-import { InfoBanner } from '@/components/ui/form';
 import type { Boundary, Methodology } from '@/types/project';
 import { DEFAULT_PROJECT_DATA, beanListLabel } from '@/data/projectData';
 import type { ProjectData } from '@/data/projectData';
@@ -64,17 +63,6 @@ export function MassContribution({ methodology = 'iso', boundary = 'grave', data
 
   return (
     <div className="space-y-4">
-      <InfoBanner>
-        지금까지 등록한 재료가 최종 제품(원두 1kg)에서 각각 얼마나 차지하는지 자동으로 계산해 보여줍니다. 따로 입력할 것은
-        없습니다.{' '}
-        {epd ? (
-          <b className="font-medium text-on-surface">환경성적표지는 원료·최소포장재·출하포장재를 3개 표로 나누어</b>
-        ) : (
-          <b className="font-medium text-on-surface">ISO 14067은 모든 투입물을 하나의 표로</b>
-        )}{' '}
-        집계하며, 누락 없이 100% 모두 반영합니다.
-      </InfoBanner>
-
       {tables.map((t) => (
         <SectionCard key={t.title} title={t.title} description={t.note}>
           <MassTableView table={t} />

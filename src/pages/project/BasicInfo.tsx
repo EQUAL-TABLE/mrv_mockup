@@ -163,8 +163,8 @@ export function BasicInfo({
         </FormField>
       </SectionCard>
 
-      {/* Section 3 — 작성자 정보 (계산기 트랙은 없음) */}
-      {showAuthor && (
+      {/* Section 3 — 작성자 정보 (계산기 트랙은 입력받지 않음: 번호 유지 + 안내) */}
+      {showAuthor ? (
         <SectionCard title="3. 작성자 정보" description="사업장 정보는 회원 정보에서 자동으로 불러오며 수정할 수 없습니다.">
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label="사업장명">
@@ -187,6 +187,14 @@ export function BasicInfo({
             </FormField>
           </div>
         </SectionCard>
+      ) : (
+        <section>
+          <h3 className="text-xl font-bold text-on-surface">3. 작성자 정보</h3>
+          <p className="mt-1 text-sm leading-relaxed text-on-surface-variant">
+            계산기 방식은 참고용 추정 결과만 제공하며 인증서·보고서를 발행하지 않으므로, 작성자·사업장 정보가 필요하지
+            않습니다. 이 항목은 건너뛰고 바로 <b className="font-medium text-on-surface">생산 정보</b>로 진행하세요.
+          </p>
+        </section>
       )}
 
       {/* Section 4 — 생산 정보 */}

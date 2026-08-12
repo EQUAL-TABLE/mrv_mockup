@@ -42,17 +42,10 @@ export function Materials({ methodology = 'iso', boundary = 'grave', data = DEFA
 
   return (
     <div className="space-y-4">
-      <InfoBanner>
-        커피에 들어가는 <b className="font-medium text-on-surface">생두·포장재</b>를 등록합니다. 블렌딩이면 사용한 농장별로
-        입력하며, 대부분의 값은 업로드한 문서에서 자동으로 채워집니다.
-        {showBox && ' (환경성적표지는 박스·테이프 등 출하포장재도 함께 입력)'}
-        {showFilter && ' (드립 방식은 여과지 사용량이 자동 포함됩니다)'}
-      </InfoBanner>
-
       {/* Section A — 생두 (농장별) */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-on-surface">1. 생두 (농장 {farms.length}개)</h3>
+          <h3 className="text-xl font-bold text-on-surface">1. 생두 (농장 {farms.length}개)</h3>
           <button
             type="button"
             onClick={() => alert('농장 추가 (목업)')}
@@ -191,8 +184,8 @@ function FarmBlock({
         className="flex w-full items-center justify-between px-6 py-4 text-left hover:bg-surface-container-high/40"
       >
         <span className="flex items-center gap-2">
-          <span className="text-sm font-bold text-on-surface">{farm.name}</span>
-          <span className="text-xs text-on-surface-variant">
+          <span className="text-xl font-bold text-on-surface">{farm.name}</span>
+          <span className="text-sm text-on-surface-variant">
             {farm.country} · {farm.bean} · 블렌딩 {farm.ratio}%
           </span>
         </span>
@@ -200,19 +193,19 @@ function FarmBlock({
       </button>
 
       {open && (
-        <div className="space-y-5 border-t border-outline-variant px-6 py-5">
+        <div className="divide-y divide-outline-variant border-t border-outline-variant px-6">
           {/* A-1 농장 정보 */}
-          <div>
-            <p className="mb-3 text-sm font-semibold text-on-surface">농장 정보</p>
-            <div className="grid gap-4 sm:grid-cols-2">
+          <div className="py-6">
+            <p className="mb-4 text-lg font-bold text-on-surface">농장 정보</p>
+            <FormField label="농장 탄소배출 증빙문서 (선택)" hint="문서를 선택하거나 [업로드]로 올리면 농장명·주소가 자동으로 채워집니다. 증빙이 있으면 실제 농장 탄소배출량을, 없으면 문헌값을 적용합니다.">
+              <DocPicker placeholder="문서 선택 (미선택 시 문헌값 적용)" />
+            </FormField>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <FormField label="농장명" hint={<OcrBadge />}>
                 <TextInput defaultValue={farm.name} />
               </FormField>
               <FormField label="농장 주소" required hint={<OcrBadge />}>
                 <TextInput defaultValue={`${farm.country} 일대`} />
-              </FormField>
-              <FormField label="농장 탄소배출 증빙문서 (선택)" help="증빙이 있으면 실제 농장 탄소배출량을 반영하고, 없으면 문헌값을 적용합니다." className="sm:col-span-2">
-                <DocPicker placeholder="문서 선택 (미선택 시 문헌값 적용)" />
               </FormField>
             </div>
             <div className="mt-3">
@@ -226,8 +219,8 @@ function FarmBlock({
           </div>
 
           {/* A-3 생두 기본정보 */}
-          <div>
-            <p className="mb-3 text-sm font-semibold text-on-surface">생두 기본정보</p>
+          <div className="py-6">
+            <p className="mb-4 text-lg font-bold text-on-surface">생두 기본정보</p>
             <FormField label="생두 INVOICE" required hint="업로드한 문서에서 선택하거나, 오른쪽 [업로드]로 새 INVOICE를 바로 올릴 수 있습니다.">
               <DocPicker placeholder="INVOICE 선택" options={[{ value: 'inv1', label: `INVOICE_${farm.bean}.pdf` }]} />
             </FormField>
@@ -253,8 +246,8 @@ function FarmBlock({
           </div>
 
           {/* A-2 생두 포장 정보 */}
-          <div>
-            <p className="mb-3 text-sm font-semibold text-on-surface">생두 포장 (자루)</p>
+          <div className="py-6">
+            <p className="mb-4 text-lg font-bold text-on-surface">생두 포장 (자루)</p>
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField label="포대 재질" required help="생두 자루 재질을 선택합니다. 황마·PP 복수 선택 가능.">
                 <Select options={[{ value: 'jute', label: '황마' }, { value: 'pp', label: 'PP' }, { value: 'both', label: '황마 + PP' }]} />

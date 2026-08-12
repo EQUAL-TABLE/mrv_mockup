@@ -78,6 +78,7 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
           amountLabel="전력 사용량"
           unit="kWh"
           addLabel="전력 고지서 추가"
+          docLabel="전력 고지서"
         />
 
         <ReadonlyField
@@ -182,6 +183,7 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
             amountLabel="가스 사용량"
             unitOptions={gasUnitOptions}
             addLabel="가스 고지서 추가"
+            docLabel="가스 고지서"
           />
 
           <p className="text-xs text-on-surface-variant">
@@ -219,15 +221,24 @@ function BillList({
   unit,
   unitOptions,
   addLabel,
+  docLabel,
 }: {
   rows: BillRow[];
   amountLabel: string;
   unit?: string;
   unitOptions?: { value: string; label: string }[];
   addLabel: string;
+  docLabel: string;
 }) {
   return (
     <div>
+      <FormField
+        label={`${docLabel} (문서 선택 · 업로드)`}
+        hint="업로드한 고지서에서 선택하거나 [업로드]로 새 고지서를 올리면 월별 사용량이 자동으로 채워집니다. 데이터 수집 기간의 월별 고지서를 여러 장 올릴 수 있습니다."
+      >
+        <DocPicker placeholder={`${docLabel} 선택`} />
+      </FormField>
+      <p className="mb-2 mt-4 text-sm font-medium text-on-surface">월별 사용 내역 (문서에서 자동 추출)</p>
       <div className="space-y-2">
         {rows.map((row, idx) => (
           <div key={idx} className="rounded-md border border-outline-variant bg-surface-container-low p-3">
