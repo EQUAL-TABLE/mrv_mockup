@@ -50,7 +50,7 @@ export function Distribution() {
           <InfoBanner>자체 소비로 분류되어 제품유통 수송 거리 = 0km, 배출량 = 0으로 산정됩니다.</InfoBanner>
         )}
 
-        <ReadonlyField label="수송량" value="—" unit="kg RC" help="단위 기간 원두 생산량이 자동으로 연결됩니다." />
+        <ReadonlyField label="수송량" value="—" unit="kg RC" help="배송한 원두 무게입니다. 단위 기간 원두 생산량이 자동으로 연결됩니다. (kg RC = 로스팅된 원두 kg)" />
         <p className="text-xs text-on-surface-variant">
           유통 배출량은 마지막 <b className="font-medium text-on-surface">결과</b> 단계에서 계산되어 표시됩니다.
         </p>

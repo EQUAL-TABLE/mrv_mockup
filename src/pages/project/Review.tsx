@@ -1,7 +1,6 @@
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
-import { InfoBanner } from '@/components/ui/form';
 import type { Methodology } from '@/types/project';
 
 /**
@@ -106,11 +105,6 @@ export function Review({ methodology = 'iso' }: Props = {}) {
 
   return (
     <div className="space-y-4">
-      <InfoBanner>
-        지금까지 입력한 내용에 빠지거나 이상한 값이 없는지 한 번에 점검합니다. <b className="font-medium text-on-surface">오류</b>가
-        있으면 확정할 수 없고, <b className="font-medium text-on-surface">경고</b>는 내용을 확인한 뒤 진행할 수 있습니다.
-      </InfoBanner>
-
       {/* 요약 */}
       <div className="grid gap-3 sm:grid-cols-3">
         <SummaryTile label="오류" count={errorCount} tone="error" hint="수정해야 확정 가능" />

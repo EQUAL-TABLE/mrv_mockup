@@ -4,6 +4,7 @@ import { SectionCard } from '@/components/workspace/SectionCard';
 import {
   DocPicker,
   FormField,
+  HelpOptions,
   InfoBanner,
   OcrBadge,
   RadioGroup,
@@ -85,7 +86,7 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
           label="단위 기간 전력 사용량 합계"
           value={numberFmt(powerSum)}
           unit="kWh"
-          help="올린 고지서의 월별 사용량을 모두 더한 값입니다."
+          help="올린 전력 고지서의 월별 사용량을 모두 더한 값입니다. 이 전기를 쓰며 나온 배출량은 결과 단계에서 계산돼요."
         />
         <p className="text-xs text-on-surface-variant">
           전력 배출량(Scope 2)은 마지막 <b className="font-medium text-on-surface">결과</b> 단계에서 계산되어 표시됩니다.
@@ -147,7 +148,7 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
               <AddButton label="발전량 기록 추가" />
             </div>
 
-            <ReadonlyField label="단위 기간 자가발전량 합계" value={numberFmt(genSum)} unit="kWh" help="증빙 목적으로 월별 발전량을 합산한 값입니다." />
+            <ReadonlyField label="단위 기간 자가발전량 합계" value={numberFmt(genSum)} unit="kWh" help="태양광 등으로 직접 만들어 쓴 전기를 월별로 더한 값입니다. 이만큼은 배출량이 0으로 처리됩니다." />
           </>
         )}
       </SectionCard>
@@ -166,7 +167,17 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
           <FormField
             label="가스 종류"
             required
-            help="가스 종류에 따라 사용량 단위 선택지가 달라집니다."
+            helpWide
+            help={
+              <HelpOptions
+                intro="로스터기에 쓰는 가스 종류를 고릅니다. 고지서나 가스 계약서를 보면 알 수 있어요."
+                items={[
+                  { term: '천연가스 (도시가스)', desc: '배관으로 들어오는 가스로, 매달 도시가스 고지서를 받습니다.' },
+                  { term: 'LPG', desc: '통(용기)이나 탱크로 받아 쓰는 가스입니다.' },
+                ]}
+                outro="고른 종류에 따라 사용량 단위 선택지가 달라집니다."
+              />
+            }
           >
             <Select
               value={gasType}
@@ -201,7 +212,7 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
           label="채프 발생량"
           value="—"
           unit="kg"
-          help="생두 투입량 × 0.0057 (생두 1kg당 5.7g)으로 자동 산정됩니다."
+          help="로스팅할 때 생두에서 떨어져 나오는 얇은 껍질입니다. 생두 1kg당 약 5.7g이 나온다는 기준으로 자동 계산되니 따로 입력할 필요 없어요."
         />
         <InfoBanner>
           채프 발생량은 품종별 실측값(Bytof et al., 2024)에 세계 생산·수출 비중을 가중한 생두 1kg당 5.7g을 적용해 자동

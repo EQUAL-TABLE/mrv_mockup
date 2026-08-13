@@ -1,6 +1,6 @@
 import { AlertTriangle } from 'lucide-react';
 import { SectionCard } from '@/components/workspace/SectionCard';
-import { FormField, InfoBanner, ReadonlyField, Select, UnitInput } from '@/components/ui/form';
+import { FormField, HelpOptions, InfoBanner, ReadonlyField, Select, UnitInput } from '@/components/ui/form';
 import { DEFAULT_PROJECT_DATA, scenarioLabel } from '@/data/projectData';
 import type { ProjectData } from '@/data/projectData';
 import type { Boundary } from '@/types/project';
@@ -30,7 +30,21 @@ export function CalcMaterials({ boundary, data = DEFAULT_PROJECT_DATA }: { bound
 
       <SectionCard title="최소포장재" description="원두를 담는 봉투 등 포장재 정보를 입력합니다.">
         <div className="grid gap-4 sm:grid-cols-3">
-          <FormField label="포장재 종류" required help="사전 정의된 3종 중 선택하면 배출계수가 자동 적용됩니다.">
+          <FormField
+            label="포장재 종류"
+            required
+            helpWide
+            help={
+              <HelpOptions
+                intro="원두 봉투 재질을 미리 정해진 3종 중에서 고릅니다. 고르면 해당 재질의 탄소량이 자동 적용돼 따로 숫자를 넣지 않아도 돼요."
+                items={[
+                  { term: '알루미늄 합지', desc: '안쪽에 은박(알루미늄)이 있는 봉투입니다. 빛·산소 차단이 좋아 흔히 씁니다.' },
+                  { term: '증착 삼중지', desc: '얇은 금속막을 입힌 3겹 필름 봉투입니다.' },
+                  { term: '크라프트 삼중지', desc: '겉이 갈색 종이(크라프트) 느낌인 3겹 봉투입니다.' },
+                ]}
+              />
+            }
+          >
             <Select
               options={[
                 { value: 'al', label: '알루미늄 합지' },
@@ -42,12 +56,12 @@ export function CalcMaterials({ boundary, data = DEFAULT_PROJECT_DATA }: { bound
           <FormField label="봉투 1개 무게" required>
             <UnitInput unit="g" type="number" placeholder="0" />
           </FormField>
-          <FormField label="봉투 1개 포장량" required help="봉투 하나에 담기는 원두 양입니다.">
+          <FormField label="봉투 1개 포장량" required helpWide help="봉투 하나에 담는 원두 양입니다. 예를 들어 250g 봉투면 250을 넣으세요. 이 값으로 필요한 봉투 개수를 자동 계산합니다.">
             <UnitInput unit="g/ea" type="number" placeholder="0" />
           </FormField>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <ReadonlyField label="단위 기간 사용량" value="—" unit="ea" help="생산량과 포장량으로 자동 계산됩니다." />
+          <ReadonlyField label="단위 기간 사용량" value="—" unit="ea" help="전체 생산량을 봉투 1개 포장량으로 나눠, 기간 동안 쓴 봉투 개수를 자동 계산한 값입니다." />
           <ReadonlyField label="총 사용 중량" value="—" unit="kg" />
         </div>
       </SectionCard>
@@ -83,7 +97,20 @@ export function CalcTransport({ boundary }: { boundary: Boundary }) {
           <FormField label="국제 수송 거리" required help="수출항에서 수입항까지">
             <UnitInput unit="km" type="number" placeholder="0" />
           </FormField>
-          <FormField label="국제 수송 수단" required>
+          <FormField
+            label="국제 수송 수단"
+            required
+            helpWide
+            help={
+              <HelpOptions
+                intro="생두를 해외에서 들여올 때 이용한 방법을 고릅니다."
+                items={[
+                  { term: '선박', desc: '배로 운송합니다. 느리지만 배출량이 매우 적어요.' },
+                  { term: '항공', desc: '비행기로 운송합니다. 빠르지만 배출량이 훨씬 큽니다.' },
+                ]}
+              />
+            }
+          >
             <Select options={[{ value: 'ship', label: '선박' }, { value: 'air', label: '항공' }]} />
           </FormField>
         </div>
@@ -124,7 +151,7 @@ export function CalcManufacturing({ fuel = 'elec_gas' }: { fuel?: 'elec' | 'elec
           <FormField label="배치당 생두 투입량" required help="한 번 볶을 때 넣는 생두 양입니다. 총 배치 수 계산에 쓰입니다.">
             <UnitInput unit="kg" type="number" placeholder="0" />
           </FormField>
-          <ReadonlyField label="총 배치 수" value="—" unit="회" help="생두 투입량 ÷ 배치당 투입량 (올림)" />
+          <ReadonlyField label="총 배치 수" value="—" unit="회" help="전체 생두를 한 번에 볶는 양(배치당 투입량)으로 나눠, 총 몇 번 볶는지 자동 계산합니다. (소수점은 올림)" />
           <FormField label="로스터기 소비전력" required>
             <UnitInput unit="kW" type="number" placeholder="0" />
           </FormField>
@@ -136,7 +163,7 @@ export function CalcManufacturing({ fuel = 'elec_gas' }: { fuel?: 'elec' | 'elec
           label="추정 전력 사용량"
           value="—"
           unit="kWh"
-          help="소비전력 × 배치당 사용시간 ÷ 60 × 총 배치 수"
+          help="로스터기 소비전력에 1회 볶는 시간(시간 단위로 환산)과 총 배치 수를 곱해 전기 사용량을 추정합니다."
         />
         {fuel === 'elec_gas' ? (
           <FormField label="가스 사용량" required help="기본정보에서 ‘전기 + 가스’를 선택해 가스 사용량 입력 항목이 추가되었습니다.">
@@ -150,7 +177,7 @@ export function CalcManufacturing({ fuel = 'elec_gas' }: { fuel?: 'elec' | 'elec
       </SectionCard>
 
       <SectionCard title="커피 껍질(채프) 발생량" description="로스팅 중 떨어져 나오는 껍질입니다. 자동으로 계산됩니다.">
-        <ReadonlyField label="채프 발생량" value="—" unit="kg" help="생두 투입량 × 0.0057 (생두 1kg당 5.7g)" />
+        <ReadonlyField label="채프 발생량" value="—" unit="kg" help="로스팅할 때 생두에서 떨어져 나오는 얇은 껍질입니다. 생두 1kg당 약 5.7g이 나온다는 기준으로 자동 계산됩니다." />
       </SectionCard>
     </div>
   );
@@ -170,8 +197,8 @@ export function CalcUsage({ data = DEFAULT_PROJECT_DATA }: { data?: ProjectData 
         <div className="grid gap-4 sm:grid-cols-2">
           <ReadonlyField label="선택한 사용 방식" value={scenarioLabel(scenario)} />
           <ReadonlyField label="분쇄 전력 원단위" value="0.019" unit="kWh/kg" />
-          <ReadonlyField label="추출 전력 원단위" value={CALC_EXTRACT_UNIT[scenario]} unit="kWh/kg" help="드립 3.771 / 에스프레소 0.435 / 콜드브루 0" />
-          <ReadonlyField label="사용 단계 배출량" value="—" unit="kg CO₂e/kg" help="(분쇄 + 추출 원단위) × 전력 배출계수" />
+          <ReadonlyField label="추출 전력 원단위" value={CALC_EXTRACT_UNIT[scenario]} unit="kWh/kg" help="원두 1kg을 커피로 내릴 때 드는 전기량입니다. 내리는 방식마다 달라요. 드립 3.771 · 에스프레소 0.435 · 콜드브루 0 kWh/kg." />
+          <ReadonlyField label="사용 단계 배출량" value="—" unit="kg CO₂e/kg" help="분쇄와 추출에 든 전기량을 더해 전력 배출계수를 곱한 값입니다." />
         </div>
       </SectionCard>
     </div>

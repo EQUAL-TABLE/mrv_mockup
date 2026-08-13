@@ -1,4 +1,4 @@
-import { CheckCircle2, Cpu, Info, PencilLine, Target } from 'lucide-react';
+import { CheckCircle2, Cpu, PencilLine, Target } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { Badge } from '@/components/ui/Badge';
 import { STEP_INTRO } from '@/data/stepIntro';
@@ -28,22 +28,28 @@ export function StepIntro({ stepKey, steps }: { stepKey: string; steps: Workflow
 
       {c && (
         <>
-          <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">{c.summary}</p>
+          <div className="mt-2 space-y-1 text-sm leading-relaxed text-on-surface-variant">
+            {splitSentences([c.summary, c.note].filter(Boolean).join(' ')).map((sentence, i) => (
+              <p key={i}>{sentence}</p>
+            ))}
+          </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <IntroItem Icon={Target} label="이 단계의 목적" text={c.purpose} />
-            <IntroItem Icon={PencilLine} label="입력하는 정보" text={c.inputs} />
-            <IntroItem Icon={CheckCircle2} label="얻는 결과" text={c.result} />
+            <IntroItem Icon={PencilLine} label="입력 정보" text={c.inputs} />
+            <IntroItem Icon={CheckCircle2} label="결과" text={c.result} />
           </div>
-          {c.note && (
-            <div className="mt-3 flex items-start gap-2 rounded-md border border-primary/15 bg-surface-container-lowest p-3 text-sm leading-relaxed text-on-surface-variant">
-              <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-              <span>{c.note}</span>
-            </div>
-          )}
         </>
       )}
     </section>
   );
+}
+
+/** 문장 종결부호(. ! ?) 뒤에서 문장 단위로 분리 */
+function splitSentences(text: string): string[] {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 function IntroItem({ Icon, label, text }: { Icon: ComponentType<{ className?: string }>; label: string; text: string }) {

@@ -25,14 +25,14 @@ export function Usage({ data = DEFAULT_PROJECT_DATA }: { data?: ProjectData } = 
       <SectionCard title="사용 방식 · 전력 원단위 (자동)" description="선택한 시나리오에 따라 분쇄·추출 전력이 자동 적용됩니다.">
         <div className="grid gap-4 sm:grid-cols-2">
           <ReadonlyField label="선택한 사용 방식" value={scenarioLabel(scenario)} />
-          <ReadonlyField label="분쇄 전력 원단위" value="0.019" unit="kWh/kg" help="시나리오 공통 고정값. 출처: Páez et al. (2018)" />
+          <ReadonlyField label="분쇄 전력 원단위" value="0.019" unit="kWh/kg" help="원두 1kg을 분쇄(그라인딩)할 때 드는 전기량입니다. 사용 방식과 관계없이 같은 값을 씁니다. (출처: Páez et al., 2018)" />
           <ReadonlyField
             label="추출 전력 원단위"
             value={EXTRACT_UNIT[scenario]}
             unit="kWh/kg"
-            help="드립 3.771 / 에스프레소 0.435 / 콜드브루 0. 출처: Shadow PEFCR (ECF, 2025)"
+            help="원두 1kg을 커피로 내릴 때 드는 전기량입니다. 내리는 방식마다 달라요. 드립 3.771 · 에스프레소 0.435 · 콜드브루 0 kWh/kg."
           />
-          <ReadonlyField label="사용단계 배출량" value="—" unit="kg CO₂e/kg" help="(분쇄 + 추출 원단위) × 전력 배출계수. 결과 단계에서 표시됩니다." />
+          <ReadonlyField label="사용단계 배출량" value="—" unit="kg CO₂e/kg" help="분쇄와 추출에 든 전기량을 더해 전력 배출계수를 곱한 값입니다. 실제 숫자는 결과 단계에서 보여줍니다." />
         </div>
       </SectionCard>
 

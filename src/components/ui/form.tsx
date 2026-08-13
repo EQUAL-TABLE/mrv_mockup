@@ -1,6 +1,7 @@
 import { Check, HelpCircle, Info, Loader2, ScanLine, Upload } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import type { ChangeEvent, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import { createPortal } from 'react-dom';
+import type { ChangeEvent, InputHTMLAttributes, MouseEvent as ReactMouseEvent, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
 /** 폼 컨트롤 공통 클래스 (신뢰도 톤: rounded-md, 헤어라인 보더) */
@@ -9,29 +10,87 @@ const CONTROL =
   'placeholder:text-on-surface-variant/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary ' +
   'disabled:cursor-not-allowed disabled:bg-surface-container-low disabled:text-on-surface-variant';
 
-/** 도움말 툴팁 (쉬운 설명 제공) */
-export function HelpTip({ text }: { text: string }) {
+/**
+ * 도움말 툴팁 (쉬운 설명 제공).
+ * hover 시 표시하되, portal로 body에 렌더링하고 위치를 계산해
+ * 카드의 overflow에 잘리지 않고 화면 좌/우 경계에 맞춰 clamp 된다.
+ */
+export function HelpTip({ text, wide = false }: { text: ReactNode; wide?: boolean }) {
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const width = wide ? 320 : 240;
+  const MARGIN = 8;
+
+  function show(e: ReactMouseEvent<HTMLSpanElement>) {
+    const r = e.currentTarget.getBoundingClientRect();
+    // 아이콘 중앙 아래에 배치하되, 좌우가 화면 밖으로 나가지 않도록 clamp
+    const rawLeft = r.left + r.width / 2 - width / 2;
+    const left = Math.max(MARGIN, Math.min(rawLeft, window.innerWidth - width - MARGIN));
+    setPos({ top: r.bottom + 6, left });
+  }
+
   return (
-    <span className="group relative inline-flex align-middle">
+    <span
+      className="inline-flex align-middle"
+      onMouseEnter={show}
+      onMouseLeave={() => setPos(null)}
+    >
       <HelpCircle className="h-3.5 w-3.5 cursor-help text-on-surface-variant" />
-      <span className="pointer-events-none absolute left-1/2 top-5 z-20 hidden w-60 -translate-x-1/2 rounded-md border border-outline-variant bg-surface-container-lowest p-2.5 text-xs font-normal leading-relaxed text-on-surface-variant shadow-md group-hover:block">
-        {text}
-      </span>
+      {pos &&
+        createPortal(
+          <span
+            role="tooltip"
+            className="pointer-events-none fixed z-50 rounded-md border border-outline-variant bg-surface-container-lowest p-2.5 text-xs font-normal leading-relaxed text-on-surface-variant shadow-md"
+            style={{ top: pos.top, left: pos.left, width }}
+          >
+            {text}
+          </span>,
+          document.body,
+        )}
     </span>
+  );
+}
+
+/**
+ * 도움말 툴팁 안에서 "선택지별 의미"를 보기 좋게 나열하는 헬퍼.
+ * intro(안내 문장) → 선택지 목록(굵은 이름 + 쉬운 설명) → outro(보조 문장) 순.
+ * 로스터리 담당자가 각 값이 무엇인지 알고 고를 수 있도록 사용한다.
+ */
+export function HelpOptions({
+  intro,
+  items,
+  outro,
+}: {
+  intro?: ReactNode;
+  items: { term: ReactNode; desc: ReactNode }[];
+  outro?: ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      {intro && <p>{intro}</p>}
+      {items.map((it, i) => (
+        <div key={i}>
+          <p className="font-semibold text-on-surface">{it.term}</p>
+          <p>{it.desc}</p>
+        </div>
+      ))}
+      {outro && <p>{outro}</p>}
+    </div>
   );
 }
 
 interface FormFieldProps {
   label: string;
   required?: boolean;
-  help?: string;
+  help?: ReactNode;
+  /** 도움말 툴팁을 넓게(설명이 긴 경우) */
+  helpWide?: boolean;
   hint?: ReactNode;
   children: ReactNode;
   className?: string;
 }
 
 /** 라벨 + (도움말) + 컨트롤 + 힌트 */
-export function FormField({ label, required, help, hint, children, className }: FormFieldProps) {
+export function FormField({ label, required, help, helpWide, hint, children, className }: FormFieldProps) {
   return (
     <div className={className}>
       <div className="mb-1.5 flex items-center gap-1">
@@ -39,7 +98,7 @@ export function FormField({ label, required, help, hint, children, className }: 
           {label}
           {required && <span className="text-error"> *</span>}
         </span>
-        {help && <HelpTip text={help} />}
+        {help && <HelpTip text={help} wide={helpWide} />}
       </div>
       {children}
       {hint && <p className="mt-1 text-xs text-on-surface-variant">{hint}</p>}

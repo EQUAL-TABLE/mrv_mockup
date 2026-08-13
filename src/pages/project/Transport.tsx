@@ -174,7 +174,7 @@ function Leg({
       <div className="grid gap-4 sm:grid-cols-2">
         <EndpointField field={from} />
         <EndpointField field={to} />
-        <FormField label="수송수단" required>
+        <FormField label="수송수단" required helpWide help="이 구간에서 실제로 이용한 운송 방법을 고릅니다. 같은 거리라도 방법에 따라 배출량 차이가 큽니다. 특히 해외 구간은 선박이 항공보다 훨씬 적게 배출해요.">
           <Select options={transports} />
         </FormField>
         <FormField label="수송 거리" required hint="자동 산출되며, 안 되면 직접 입력하세요.">
@@ -182,7 +182,7 @@ function Leg({
         </FormField>
       </div>
       <div className="mt-3">
-        <ReadonlyField label="수송량" value="—" unit="ton" help="생두 투입량이 자동으로 연결됩니다." />
+        <ReadonlyField label="수송량" value="—" unit="ton" help="운반한 생두 무게입니다. 앞에서 입력한 생두 투입량이 자동으로 연결됩니다." />
       </div>
     </div>
   );
@@ -211,7 +211,7 @@ function SubTransport({ title, doc }: { title: string; doc: string }) {
         <FormField label="수송 거리" required hint="공급처·로스터리 주소로 자동 산출됩니다.">
           <UnitInput unit="km" type="number" placeholder="자동 계산" />
         </FormField>
-        <ReadonlyField label="수송량" value="—" unit="kg" help="해당 부자재 총 사용 중량이 자동으로 연결됩니다." />
+        <ReadonlyField label="수송량" value="—" unit="kg" help="운반한 부자재 무게입니다. 해당 부자재의 총 사용 중량이 자동으로 연결됩니다." />
       </div>
     </SectionCard>
   );

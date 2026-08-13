@@ -1,4 +1,4 @@
-import { Download, FileCheck2, FileText, History, ShieldAlert } from 'lucide-react';
+import { Download, FileCheck2, FileText, History } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
 import { ReadonlyField } from '@/components/ui/form';
@@ -24,7 +24,6 @@ interface Props {
 
 export function Result({ methodology = 'iso', boundary = 'grave', data = DEFAULT_PROJECT_DATA }: Props = {}) {
   const grave = boundary === 'grave';
-  const epd = methodology === 'epd';
   const iso = methodology === 'iso';
 
   const st = data.result.stages;
@@ -38,19 +37,9 @@ export function Result({ methodology = 'iso', boundary = 'grave', data = DEFAULT
   ].filter((s) => s.show);
   const total = raw.reduce((s, r) => s + r.value, 0);
   const stages = raw.map((s) => ({ ...s, pct: Math.round((s.value / total) * 100) }));
-  const methodLabel = epd ? '환경성적표지 중 탄소발자국 기준' : 'ISO 14067 기준';
 
   return (
     <div className="space-y-4">
-      {/* 인증 안내 */}
-      <div className="flex items-start gap-2 rounded-md border border-primary/30 bg-primary/5 p-3 text-sm leading-relaxed text-on-surface-variant">
-        <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-        <span>
-          {methodLabel}으로 산정된 결과입니다. 발급 문서에는 <b className="font-medium text-on-surface">‘외부 검증 필요’</b>{' '}
-          워터마크가 표시되며, 공식 인증을 위해서는 별도의 외부 검증 절차가 필요합니다.
-        </span>
-      </div>
-
       {/* Section 1 — 단계별 배출량 */}
       <SectionCard title="단계별 탄소배출량" description="단위: kg CO₂e / 원두 1kg">
         <div className="space-y-3">
@@ -80,9 +69,9 @@ export function Result({ methodology = 'iso', boundary = 'grave', data = DEFAULT
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
-          <ReadonlyField label="Scope 1 (직접 연소)" value={data.result.scope.s1.toFixed(2)} unit="kg CO₂e/kg" help="가스 직접 연소분. 참고용." />
-          <ReadonlyField label="Scope 2 (구매 전력)" value={data.result.scope.s2.toFixed(2)} unit="kg CO₂e/kg" help="구매 전력분. 재생에너지 자가발전 반영. 참고용." />
-          <ReadonlyField label="Scope 3 (그 외)" value={data.result.scope.s3.toFixed(2)} unit="kg CO₂e/kg" help="수송·포장재·폐기 합산. 참고용." />
+          <ReadonlyField label="Scope 1 (직접 연소)" value={data.result.scope.s1.toFixed(2)} unit="kg CO₂e/kg" help="우리 로스터리에서 가스를 직접 태워 나온 배출량입니다. 배출을 어디서 냈는지 나눠 보는 참고용 분류예요." />
+          <ReadonlyField label="Scope 2 (구매 전력)" value={data.result.scope.s2.toFixed(2)} unit="kg CO₂e/kg" help="외부에서 사서 쓴 전기 때문에 나온 배출량입니다. 태양광 등 직접 만든 전기는 빼고 계산합니다. 참고용 분류예요." />
+          <ReadonlyField label="Scope 3 (그 외)" value={data.result.scope.s3.toFixed(2)} unit="kg CO₂e/kg" help="그 밖에 생두·수송·포장재·폐기 등에서 나온 배출량을 모두 합한 값입니다. 참고용 분류예요." />
         </div>
       </SectionCard>
 
