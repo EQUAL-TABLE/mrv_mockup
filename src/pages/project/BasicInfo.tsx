@@ -258,7 +258,11 @@ export function BasicInfo({
       <SectionCard title="4. 생산 정보" 
       description="이 프로젝트에 해당하는 원두 생산량과 로스팅 설비·생두 구성을 입력하세요.">
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label="단위 기간 원두 생산량" required helpWide help="데이터 수집 기간 동안 로스팅한 원두 총량입니다. 이 값으로 원두 1kg당 평균 탄소발자국을 계산하니 정확히 넣어 주세요. (kg RC = 로스팅된 원두 kg)">
+          <FormField label="단위 기간 원두 생산량" 
+          required 
+          helpWide 
+          help="데이터 수집 기간 동안 로스팅한 원두 총량입니다. 이 값으로 원두 1kg당 평균 탄소발자국을 계산하니 정확히 넣어 주세요. (kg RC = 로스팅된 원두 kg)
+          생두 사용량은 원두 생산량의 로스팅 수율 76.12%를 일괄 적용하여 자동 계산됩니다.">
             <UnitInput unit="kg RC" type="number" defaultValue={data.production.roastVolume} placeholder="0" />
           </FormField>
           <FormField

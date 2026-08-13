@@ -182,7 +182,8 @@ function FarmBlock({
           {/* A-1 농장 정보 */}
           <div className="py-6">
             <p className="mb-4 text-lg font-bold text-on-surface">농장 정보</p>
-            <FormField label="농장 탄소배출 증빙문서 (선택)" hint="문서를 선택하거나 [업로드]로 올리면 농장명·주소가 자동으로 채워집니다. 증빙이 있으면 실제 농장 탄소배출량을, 없으면 문헌값을 적용합니다.">
+            <FormField label="농장 탄소배출 증빙문서 (선택)" 
+            help="문서를 선택하거나 [업로드]로 올리면 농장명·주소가 자동으로 입력됩니다. 증빙이 있으면 실제 농장 탄소배출량을, 없으면 문헌값을 적용합니다.">
               <DocPicker placeholder="문서 선택 (미선택 시 문헌값 적용)" />
             </FormField>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -198,7 +199,7 @@ function FarmBlock({
                 label="생두 단위 탄소배출량"
                 value={farm.beanEmission.toFixed(3)}
                 unit="kg CO₂e/kg"
-                help="증빙 서류를 올리지 않으면, 연구 문헌(Nab & Maslin, 2020)의 표준값 1.165 kg CO₂e/kg이 자동으로 적용됩니다. 농장 증빙이 있으면 실제 값이 들어갑니다."
+                help="증빙 서류를 업로드 하지 않으면, 연구 문헌(Nab & Maslin, 2020)의 표준값 1.165 kg CO₂e/kg(생두)이 자동으로 적용됩니다. "
               />
             </div>
           </div>
