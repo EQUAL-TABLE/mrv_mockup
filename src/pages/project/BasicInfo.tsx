@@ -66,15 +66,15 @@ export function BasicInfo({
             helpWide
             help={
               <HelpOptions
-                intro="탄소발자국을 어떻게 계산할지 정합니다. 만든 뒤에는 바꿀 수 없어요."
+                intro="탄소발자국을 어떻게 계산할지 정합니다. 생성 후 수정이 불가합니다."
                 items={[
                   {
-                    term: 'MRV 기반 (증빙·인증 가능)',
-                    desc: '전기 고지서·거래명세서 같은 실제 증빙을 올려 계산합니다. 값이 정확해 인증이나 납품처 제출용으로 쓸 수 있어요. 대신 준비할 서류가 조금 더 많습니다. (MRV = 측정·보고·검증)',
+                    term: 'MRV 기반 탄소배출량 산정 (증빙·인증 가능)',
+                    desc: '전기 고지서·거래명세서와 같은 실제 증빙을 올려 데이터를 추출하고 탄소발자국을 계산합니다. 값이 정확해 인증이나 납품처 제출용으로 활용 가능합니다. 대신 준비할 서류가 조금 더 많습니다. (MRV = 측정·보고·검증. 단, 제출 등을 위한 외부 검증은 별도 절차 필요)',
                   },
                   {
-                    term: '계산기 (추정·참고용)',
-                    desc: '증빙 없이 대략적인 값만 넣어 예상치를 빠르게 봅니다. 우리 커피가 대략 얼마나 나오는지 참고할 때 좋지만, 인증에는 쓸 수 없어요.',
+                    term: '탄소배출량 추정치 계산기 (추정·참고용)',
+                    desc: '증빙 없이 대략적인 값만 넣어 탄소배출량 예상치를 빠르게 확인할 수 있습니다. 우리 커피에서 대략 적인 탄소배출량을 참고할 수 있지만, 인증에는 활용할 수 없습니다.',
                   },
                 ]}
               />
@@ -84,8 +84,8 @@ export function BasicInfo({
               value={track}
               onChange={(e) => onTrack(e.target.value)}
               options={[
-                { value: 'mrv', label: 'MRV 기반 (증빙·인증 가능)' },
-                { value: 'calculator', label: '계산기 (추정·참고용)' },
+                { value: 'mrv', label: 'MRV 기반 탄소배출량 산정 (증빙·인증 가능)' },
+                { value: 'calculator', label: '탄소배출량 추정치 계산기 (추정·참고용)' },
               ]}
             />
           </FormField>
@@ -128,18 +128,18 @@ export function BasicInfo({
             helpWide
             help={
               <HelpOptions
-                intro="어디까지 계산에 넣을지 정합니다."
+                intro="탄소발자국을 산정한 범위를 선택합니다."
                 items={[
                   {
-                    term: '제품 생산까지 (제조 완료)',
-                    desc: '생두 구매부터 로스팅·포장을 마칠 때까지만 계산합니다. 공장 문을 나서기 전까지예요.',
+                    term: '제품 생산까지 (제조)',
+                    desc: '생두 생산부터 운송·로스팅·포장을 통해 제품이 생산되는 공정까지 발생하는 탄소배출량을 산정합니다. 제품 생산 후 유통·사용·폐기 과정에서 발생하는 탄소배출량은 포함하지 않습니다.(단, 제조공정에서 발생한 폐기물에 대한 탄소배출량은 포함합니다.)',
                   },
                   {
                     term: '폐기까지 (유통·사용·폐기 포함)',
-                    desc: '위 과정에 더해 납품처로 가는 배송, 소비자가 내려 마시는 사용, 다 쓰고 버리는 폐기까지 전부 포함합니다.',
+                    desc: '생두 생산부터 제품 제조·유통·사용·폐기에 이르는 전 과정에서 발생하는 탄소배출량을 산정합니다.',
                   },
                 ]}
-                outro="환경성적표지 방법론을 고르면 ‘폐기까지’로 고정됩니다."
+                outro="환경성적표지 방법론의 경우 ‘폐기까지’가 자동으로 선택되지만, 환경성적표지 방법론에 의거하여 사용 및 폐기물 운송 단계는 생략됩니다."
               />
             }
           >
@@ -148,7 +148,7 @@ export function BasicInfo({
               disabled={methodology === 'epd'}
               onChange={(e) => setBoundary(e.target.value as Boundary)}
               options={[
-                { value: 'gate', label: '제품 생산까지 (제조 완료)' },
+                { value: 'gate', label: '제품 생산까지 (제조)' },
                 { value: 'grave', label: '폐기까지 (유통·사용·폐기 포함)' },
               ]}
             />
@@ -156,14 +156,17 @@ export function BasicInfo({
         </div>
 
         {showWriteMode && (
-          <FormField label="작성 방식" required helpWide help="처음부터 새로 입력할지, 이미 끝낸 ‘제품 생산까지’ 프로젝트의 입력값을 가져와 이어서 작성할지 정합니다. 이어받으면 생두·포장재처럼 겹치는 값을 다시 넣지 않아도 돼요.">
+          <FormField label="작성 방식" 
+          required 
+          helpWide 
+          help="처음부터 새로 입력할지, 이미 작성한 ‘제품 생산까지’ 프로젝트의 입력값을 가져와 후단 데이터를 연결하여 작성할지 정합니다. 프로젝트 연동의 경우 생두·포장재 등 겹치는 데이터는 다시 입력할 필요가 없습니다.">
             <RadioGroup
               name="writeMode"
               value={writeMode}
               onChange={(v) => setWriteMode(v as 'A' | 'B')}
               options={[
-                { value: 'A', label: '신규 작성', desc: '처음부터 새로 입력합니다.' },
-                { value: 'B', label: '제품 생산까지 프로젝트 연동', desc: '확정된 제품 생산까지 산정을 이어받습니다.' },
+                { value: 'A', label: '신규 작성', desc: '처음부터 모든 데이터를 새로 입력합니다.' },
+                { value: 'B', label: '프로젝트 연동', desc: '기존 작성·확정한 "제품 생산까지" 프로젝트에 이후 단계 데이터를 이어서 작성할 수 있습니다.' },
               ]}
             />
           </FormField>
@@ -171,7 +174,7 @@ export function BasicInfo({
 
         {showLinkedProject && (
           <div className="grid gap-4 sm:grid-cols-2">
-            <FormField label="연동 프로젝트" required hint="확정 완료된 ISO 14067 · 제품 생산까지 프로젝트만 표시됩니다.">
+            <FormField label="연동 프로젝트" required hint="확정 완료된 ISO 14067·'제품 생산'까지 프로젝트만 표시됩니다.">
               <Select
                 options={[
                   { value: '', label: '프로젝트 선택' },
@@ -179,7 +182,7 @@ export function BasicInfo({
                 ]}
               />
             </FormField>
-            <FormField label="출고량" required helpWide help="이번에 실제로 내보내는(출고하는) 원두 양입니다. 이어받은 프로젝트의 생산량과 비교해, 재료 투입량이 그 비율만큼 자동으로 조정됩니다. (kg RC = 로스팅된 원두 kg)">
+            <FormField label="출고량" required helpWide help="이 프로젝트에서 출고되는 원두 양을 의미합니다. 이어받은 프로젝트의 생산량과 비교해, 출고량 기반으로 원부자재 투입량이 자동 결정됩니다. (kg RC = 로스팅된 원두 kg)">
               <UnitInput unit="kg RC" type="number" placeholder="0" />
             </FormField>
           </div>
@@ -187,9 +190,9 @@ export function BasicInfo({
       </SectionCard>
 
       {/* Section 2 — 프로젝트 정보 */}
-      <SectionCard title="2. 프로젝트 정보" description="제품명과 산정 대상 기간, 결과 표시 기준을 입력합니다.">
+      <SectionCard title="2. 프로젝트 정보" description="프로젝트 명과 산정 대상 기간, 결과 표시 기준을 입력합니다.">
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label="프로젝트명" required hint="제품명과 동일하게 입력하세요.">
+          <FormField label="프로젝트명" required >
             <TextInput defaultValue={name} placeholder="예: 에티오피아 예가체프 싱글오리진 2026" />
           </FormField>
           <FormField label="기준연도" required>
@@ -198,14 +201,14 @@ export function BasicInfo({
           <FormField label="데이터 수집 시작" required>
             <TextInput type="month" defaultValue={data.collectFrom} />
           </FormField>
-          <FormField label="데이터 수집 종료" required hint="수집 기간이 12개월 미만이면 경고가 표시됩니다(진행은 가능).">
+          <FormField label="데이터 수집 종료" required hint="데이터 수집기간은 연단위를 권장합니다. 따라서 수집 기간이 12개월 미만이면 경고가 표시될 수 있습니다.">
             <TextInput type="month" defaultValue={data.collectTo} />
           </FormField>
           <FormField
-            label="기능단위 (기준 수량)"
+            label="기준 수량(기능단위)"
             required
             helpWide
-            help="결과를 ‘얼마당’ 보여줄지 정하는 값입니다. 계산은 항상 원두 1kg 기준으로 하고, 화면·보고서에는 여기 적은 수량을 곱해 보여줍니다. (예: 1로 두면 1kg당 결과) 만든 뒤에는 바꿀 수 없어요."
+            help="결과를 ‘얼마당’ 보여줄지 정하는 값입니다. 계산은 항상 원두 1kg 기준으로 하되, 화면·보고서에는 기준 수량을 기반으로 제공합니다."
           >
             <UnitInput unit="kg" type="number" defaultValue={data.functionalUnit} />
           </FormField>
@@ -213,7 +216,7 @@ export function BasicInfo({
             <TextInput value={`로스팅된 커피 ${data.functionalUnit} kg`} disabled readOnly />
           </FormField>
         </div>
-        <FormField label="산정 범위 설명 (선택)" helpWide help="표준 계산과 다른, 우리 회사만의 특이한 공정이 있으면 자유롭게 적어 주세요. 적은 내용은 보고서에 그대로 들어갑니다. 특별한 게 없으면 비워 둬도 됩니다.">
+        <FormField label="산정 범위 설명 (선택)" helpWide help="표준 계산 방식·공정과 다른, 이 프로젝트 만의 특이한 공정을 작성할 수 있습니다. 작성 내용은 결과 보고서에 반영됩니다.">
           <Textarea rows={2} placeholder="예: 자사는 재생에너지 자가발전 설비를 운영합니다." />
         </FormField>
       </SectionCard>
@@ -246,16 +249,16 @@ export function BasicInfo({
         <section>
           <h3 className="text-xl font-bold text-on-surface">3. 작성자 정보</h3>
           <p className="mt-1 text-sm leading-relaxed text-on-surface-variant">
-            계산기 방식은 참고용 추정 결과만 제공하며 인증서·보고서를 발행하지 않으므로, 작성자·사업장 정보가 필요하지
-            않습니다. 이 항목은 건너뛰고 바로 <b className="font-medium text-on-surface">생산 정보</b>로 진행하세요.
+            계산기 방식은 참고용 추정 결과만 제공하며 인증서·보고서를 발행하지 않으므로, 작성자·사업장 정보가 필요하지 않습니다.
           </p>
         </section>
       )}
 
       {/* Section 4 — 생산 정보 */}
-      <SectionCard title="4. 생산 정보" description="로스팅 생산량과 설비·원두 구성을 입력합니다.">
+      <SectionCard title="4. 생산 정보" 
+      description="이 프로젝트에 해당하는 원두 생산량과 로스팅 설비·생두 구성을 입력하세요.">
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label="단위 기간 원두 생산량" required helpWide help="데이터 수집 기간 동안 로스팅한 원두 총량입니다. 이 값으로 원두 1kg당 평균 탄소발자국을 계산하니 되도록 정확히 넣어 주세요. (kg RC = 로스팅된 원두 kg)">
+          <FormField label="단위 기간 원두 생산량" required helpWide help="데이터 수집 기간 동안 로스팅한 원두 총량입니다. 이 값으로 원두 1kg당 평균 탄소발자국을 계산하니 정확히 넣어 주세요. (kg RC = 로스팅된 원두 kg)">
             <UnitInput unit="kg RC" type="number" defaultValue={data.production.roastVolume} placeholder="0" />
           </FormField>
           <FormField
@@ -266,10 +269,10 @@ export function BasicInfo({
               <HelpOptions
                 intro="로스터기를 돌릴 때 무엇으로 열을 내는지 고릅니다."
                 items={[
-                  { term: '전기 전용', desc: '전기로만 볶습니다.' },
+                  { term: '전기 로스터기', desc: '전기로만 원두를 로스팅하는 경우' },
                   {
-                    term: '전기 + 가스',
-                    desc: '전기와 함께 가스(도시가스·LPG)로 불을 씁니다. 이걸 고르면 이후 제조 단계에서 가스 사용량과 가스 고지서를 추가로 입력하게 됩니다.',
+                    term: '전기+가스 복합 로스터기',
+                    desc: '전기와 함께 가스(도시가스·LPG)를 사용하여 로스팅하는 경우',
                   },
                 ]}
               />
@@ -279,15 +282,15 @@ export function BasicInfo({
               value={fuel}
               onChange={(e) => setFuel(e.target.value as 'elec' | 'elec_gas')}
               options={[
-                { value: 'elec', label: '전기 전용' },
-                { value: 'elec_gas', label: '전기 + 가스' },
+                { value: 'elec', label: '전기 로스터기' },
+                { value: 'elec_gas', label: '전기+가스 복합 로스터기' },
               ]}
             />
           </FormField>
         </div>
 
         {track === 'calculator' ? (
-          <InfoBanner>계산기 방식은 단일 원두 기준으로 계산합니다. (블렌딩 비율 입력 없음)</InfoBanner>
+          <InfoBanner>계산기 방식은 단일 원두 기준으로 탄소발자국을 산정합니다.</InfoBanner>
         ) : (
           <FormField label="블렌딩 여부" required>
             <RadioGroup
@@ -295,8 +298,8 @@ export function BasicInfo({
               value={blending}
               onChange={(v) => setBlending(v as 'y' | 'n')}
               options={[
-                { value: 'n', label: '단일 원두', desc: '한 종류의 생두만 사용합니다.' },
-                { value: 'y', label: '블렌딩', desc: '여러 생두를 섞습니다. 비율을 입력합니다.' },
+                { value: 'n', label: '단일 원두', desc: '한 종류의 생두만 사용' },
+                { value: 'y', label: '블렌딩', desc: '여러 생두를 함께 사용할 경우' },
               ]}
             />
           </FormField>
@@ -343,11 +346,11 @@ export function BasicInfo({
             helpWide
             help={
               <HelpOptions
-                intro="소비자가 이 커피를 어떻게 내려 마시는지 고릅니다. 내리는 방식마다 쓰는 전기·물이 달라 사용 단계 배출량이 바뀝니다."
+                intro="커피 추출 방식을에 따라 사용 단계 배출량이 결정됩니다. 한 프로젝트에는 한 가지 사용 방식만 적용할 수 있습니다."
                 items={[
-                  { term: '드립', desc: '뜨거운 물을 부어 여과지로 내립니다. 고르면 여과지가 자동으로 포함됩니다.' },
-                  { term: '에스프레소', desc: '머신으로 고압 추출합니다.' },
-                  { term: '콜드브루', desc: '찬물로 오래 우립니다. 추출에 전기를 거의 안 써 사용 단계 전력이 0으로 잡힙니다.' },
+                  { term: '드립', desc: '선택시 원부자재에 "여과지"가 자동으로 포함됩니다. 물 가열에 다른 에너지 소모가 발생합니다.' },
+                  { term: '에스프레소', desc: '에스프레소 머신으로 고압 추출하며, 머신 사용에 따른 에너지 소모가 발생합니다.' },
+                  { term: '콜드브루', desc: '장시간 미온수를 활용하여 커피를 추출하므로, 추출시 별도의 에너지를 사용하지 않습니다.' },
                 ]}
                 outro="만든 뒤에는 바꿀 수 없어요."
               />
