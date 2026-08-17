@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Home } from '@/pages/Home';
 import { TrackGuide } from '@/pages/TrackGuide';
 import { StartWizard } from '@/pages/project/StartWizard';
@@ -19,7 +19,7 @@ import { Monitoring } from '@/pages/admin/Monitoring';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Home />} />
         {/* 첫 사용자(프로젝트 없음) 데모 */}
@@ -49,6 +49,6 @@ export default function App() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
