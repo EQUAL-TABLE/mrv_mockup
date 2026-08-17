@@ -3,7 +3,7 @@ import { SectionCard } from '@/components/workspace/SectionCard';
 import { DocPicker, FormField, InfoBanner, OcrBadge, RadioGroup, ReadonlyField, TextInput, UnitInput } from '@/components/ui/form';
 
 /**
- * ⑦ 제품유통 — 환경성적표지 기준.
+ * ⑦ 제품유통 
  *
  * 로스터리 → 납품처(또는 자체 소비)까지의 유통 수송을 등록한다.
  * 수송 구간 단일·수송수단 트럭 고정. 배출량은 결과 단계에서만 표시.
@@ -15,14 +15,14 @@ export function Distribution() {
 
   return (
     <div className="space-y-4">
-      <SectionCard title="유통 정보" description="납품 방식과 배송 정보를 입력합니다. 수송수단은 트럭으로 고정됩니다.">
+      <SectionCard title="유통 정보" description="납품 방식과 배송 정보를 입력합니다. 수송수단은 트럭으로 고정됩니다. 입력한 납품처 위치는 폐기 단계에서 포장재·커피박이 어디서 버려지는지 판단하는 기준점이 됩니다.">
         <FormField label="유통 방식" required>
           <RadioGroup
             name="deliveryMode"
             value={mode}
             onChange={(v) => setMode(v as 'delivery' | 'self')}
             options={[
-              { value: 'delivery', label: '납품', desc: '납품처로 제품을 배송합니다.' },
+              { value: 'delivery', label: '납품·배송', desc: '납품처로 제품을 배송합니다.' },
               { value: 'self', label: '자체 소비', desc: '자사 매장 등에서 직접 소비합니다. (배송 없음)' },
             ]}
           />
@@ -56,9 +56,6 @@ export function Distribution() {
         </p>
       </SectionCard>
 
-      <InfoBanner>
-        입력한 납품처 위치는 폐기 단계에서 포장재·커피박이 어디서 버려지는지 판단하는 기준점으로 자동 연결됩니다.
-      </InfoBanner>
     </div>
   );
 }
