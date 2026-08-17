@@ -64,13 +64,13 @@ export const WORKFLOW_META: Record<WorkflowId, { title: string; summary: string;
   'mrv-iso-grave': {
     title: 'MRV · ISO 14067 · 폐기까지',
     summary:
-      '증빙을 기반으로 커피의 전 생애(재배~폐기)를 국제표준 ISO 14067로 산정하고, 검토·확정을 거쳐 인증용 문서를 발급합니다. 모든 단계를 포함하는 가장 완전한 흐름입니다.',
+      '증빙을 기반으로 커피의 전 생애(재배~폐기)를 국제표준으로 산정하고, 검토·확정을 거쳐 인증용 문서를 발급합니다. 모든 단계를 포함하는 가장 완전한 흐름입니다.',
     certify: true,
   },
   'mrv-iso-gate': {
     title: 'MRV · ISO 14067 · 제품 생산까지',
     summary:
-      '증빙을 기반으로 생두 재배부터 제품 생산 완료까지를 국제표준으로 산정합니다. 제품 유통·소비자 사용 단계가 제외되어 조금 더 짧게 진행됩니다.',
+      '증빙을 기반으로 생두 재배부터 제품 생산 완료까지를 국제표준으로 산정합니다.',
     certify: true,
   },
   'mrv-epd': {
@@ -82,13 +82,13 @@ export const WORKFLOW_META: Record<WorkflowId, { title: string; summary: string;
   'calc-grave': {
     title: '계산기 · 폐기까지',
     summary:
-      '증빙 없이 값을 직접 입력해 재배부터 폐기까지를 추정합니다. 문서 업로드·검토·확정이 없어 간단하며, 결과는 인증 불가한 참고용입니다.',
+      '증빙 없이 데이터를 직접 입력해 재배부터 폐기까지를 추정합니다. 문서 업로드·검토·확정이 없어 간단하며, 결과는 인증 불가한 참고용입니다.',
     certify: false,
   },
   'calc-gate': {
     title: '계산기 · 제품 생산까지',
     summary:
-      '증빙 없이 값을 직접 입력해 제품 생산까지를 추정합니다. 가장 간단한 흐름이며, 결과는 인증 불가한 참고용입니다.',
+      '증빙 없이 값을 직접 입력해 제품 생산까지를 추정합니다. 결과는 인증 불가한 참고용입니다.',
     certify: false,
   },
 };

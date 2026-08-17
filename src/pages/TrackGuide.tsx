@@ -33,7 +33,7 @@ export function TrackGuide() {
   return (
     <AppShell>
       <div className="mx-auto max-w-6xl">
-        <h1 className="text-lg font-bold text-on-surface">서비스 안내</h1>
+        <h1 className="text-2xl font-bold text-on-surface">서비스 안내</h1>
         <p className="mt-1 text-sm text-on-surface-variant">
           커피 탄소회계가 무엇인지 이해하고, 나에게 맞는 산정 방식을 선택하세요.
         </p>
@@ -46,7 +46,7 @@ export function TrackGuide() {
 
         {/* 방식별 상세 진행 단계 */}
         <div className="mt-10">
-          <h2 className="text-lg font-bold text-on-surface">방식별 상세 진행 단계</h2>
+          <h2 className="text-xl font-bold text-on-surface">방식별 상세 진행 단계</h2>
           <p className="mt-1 text-sm text-on-surface-variant">
             아래에서 방식·표준·범위를 골라 보세요. 선택한 조합이 실제로 어떤 순서로 진행되는지 바로 확인할 수 있습니다.
           </p>
@@ -147,12 +147,11 @@ function ConceptSection() {
           <ScanLine className="h-6 w-6" />
         </span>
         <div>
-          <p className="text-lg font-bold text-on-surface">이 모든 과정의 데이터를, 고지서 한 장으로.</p>
+          <p className="text-lg font-bold text-on-surface">이 모든 과정의 데이터를, 고지서 OCR 기반으로 신뢰성있게</p>
           <p className="mt-1.5 text-[15px] leading-7 text-on-surface-variant">
             <b className="font-semibold text-primary">MRV 방식</b>은 이퀄테이블만의 <b className="font-semibold text-on-surface">OCR 자동 판독 기술</b>로,
             전기 고지서·거래명세서를 올리기만 하면 산정에 필요한 수치를 스스로 읽어냅니다. 복잡한 전과정 데이터를 손쉽게,
-            그러나 <b className="font-semibold text-on-surface">실제 증빙에 근거한 신뢰할 수 있는 값</b>으로 채워 —
-            누구나 전문가 수준의 정확한 탄소발자국을 산정할 수 있습니다.
+            그러나 <b className="font-semibold text-on-surface">실제 증빙에 근거한 신뢰할 수 있는 값</b>으로 채워, 전문가 수준의 정확한 탄소발자국을 산정할 수 있습니다.
           </p>
         </div>
       </div>
@@ -185,7 +184,7 @@ function lifecycleIcon(icon: LifecyclePhase['icon']) {
 function AxesSection() {
   return (
     <section className="mt-5">
-      <h2 className="text-lg font-bold text-on-surface">시작할 때 정하는 3가지</h2>
+      <h2 className="text-xl font-bold text-on-surface">시작할 때 정하는 3가지</h2>
       <p className="mt-1 text-sm text-on-surface-variant">
         아래 세 가지를 정하면 나에게 맞는 산정 방식이 결정되고, 진행 단계가 구성됩니다.
       </p>

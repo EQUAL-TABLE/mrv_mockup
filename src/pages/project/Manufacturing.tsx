@@ -1,4 +1,4 @@
-import { Plus, X } from 'lucide-react';
+import { AlertTriangle, Plus, ScanLine, X } from 'lucide-react';
 import { useState } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
 import {
@@ -6,7 +6,6 @@ import {
   FormField,
   HelpOptions,
   InfoBanner,
-  OcrBadge,
   RadioGroup,
   ReadonlyField,
   Select,
@@ -67,13 +66,9 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
       {/* Section A — 전력 (로스팅) */}
       <SectionCard
         title="1. 전력 (로스팅)"
-        description="로스팅에 사용한 전력입니다. 업로드한 전력 고지서에서 사용량을 자동으로 읽어옵니다."
+        description="로스팅에 사용한 전력입니다. 업로드한 전력 고지서에서 사용량을 자동으로 읽어옵니다. 값이 다르면 직접 수정할 수 있습니다. 반드시 데이터 수집 기간 전체(월별)를 빠짐없이 올려야 합니다."
       >
-        <InfoBanner>
-          전력 고지서에서 사용량을 자동으로 읽어옵니다. 값이 다르면 직접 고칠 수 있고, 수정한 내용은 자동으로 기록됩니다.
-          데이터 수집 기간 전체(월별)를 빠짐없이 올려야 합니다.
-        </InfoBanner>
-
+    
         <BillList
           rows={data.powerBills}
           amountLabel="전력 사용량"
@@ -96,7 +91,7 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
       {/* Section B — 재생에너지 (자가발전) */}
       <SectionCard
         title="2. 재생에너지 (자가발전)"
-        description="태양광 등으로 전기를 직접 생산해 사용하는 경우 입력합니다. 외부에서 구매한 재생에너지(녹색프리미엄·REC 등)는 인정되지 않습니다."
+        description="태양광 등으로 전기를 직접 생산해 사용하는 경우 입력합니다. 외부에서 구매한 재생에너지(녹색프리미엄·REC 등)는 인정되지 않습니다. 자가발전으로 사용한 전력은 배출계수 0으로 처리됩니다. 발전량 모니터링 기록의 기간이 데이터 수집 기간에 포함되어야 합니다."
       >
         <FormField label="재생에너지를 직접 생산해 사용하나요?" required>
           <RadioGroup
@@ -112,11 +107,6 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
 
         {renewable === 'y' && (
           <>
-            <InfoBanner>
-              자가발전으로 사용한 전력은 배출계수 0으로 처리됩니다. 발전량 모니터링 기록의 기간이 데이터 수집 기간에
-              포함되어야 합니다.
-            </InfoBanner>
-
             <FormField
               label="재생에너지 설치 확인서"
               required
@@ -126,26 +116,14 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
             </FormField>
 
             <div>
-              <p className="mb-2 text-sm font-medium text-on-surface">월별 자가발전량</p>
-              <div className="space-y-2">
-                {data.genRows.map((row, idx) => (
-                  <div key={idx} className="rounded-md border border-outline-variant bg-surface-container-low p-3">
-                    <div className="mb-2 flex items-center justify-between">
-                      <OcrBadge />
-                      <DeleteButton />
-                    </div>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      <FormField label="기록 연월">
-                        <TextInput type="month" defaultValue={row.month} />
-                      </FormField>
-                      <FormField label="자가발전량">
-                        <AmountWithUnit defaultValue={row.amount} unit="kWh" />
-                      </FormField>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <AddButton label="발전량 기록 추가" />
+              <p className="mb-2 text-sm font-medium text-on-surface">월별 자가발전량 (문서에서 자동 추출)</p>
+              <UsageTable
+                rows={data.genRows}
+                monthLabel="기록 연월"
+                amountLabel="자가발전량"
+                unit="kWh"
+                addLabel="발전량 기록 추가"
+              />
             </div>
 
             <ReadonlyField label="단위 기간 자가발전량 합계" value={numberFmt(genSum)} unit="kWh" help="태양광 등으로 직접 만들어 쓴 전기를 월별로 더한 값입니다. 이만큼은 배출량이 0으로 처리됩니다." />
@@ -206,18 +184,13 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
       {/* Section D — 채프 발생량 (자동) */}
       <SectionCard
         title={`${fuel === 'elec_gas' ? '4' : '3'}. 커피 껍질(채프) 발생량`}
-        description="로스팅 중 떨어져 나오는 얇은 껍질입니다. 따로 입력할 필요 없이 자동으로 계산됩니다."
+        description="로스팅 중 떨어져 나오는 얇은 껍질입니다. 채프 발생량은 품종별 실측값(Bytof et al., 2024)에 세계 생산·수출 비중을 가중한 생두 1kg당 5.7g을 적용해 자동 계산됩니다. 이 값은 폐기 단계-폐기물 발생량으로 자동 이어집니다."
       >
         <ReadonlyField
           label="채프 발생량"
           value="—"
           unit="kg"
-          help="로스팅할 때 생두에서 떨어져 나오는 얇은 껍질입니다. 생두 1kg당 약 5.7g이 나온다는 기준으로 자동 계산되니 따로 입력할 필요 없어요."
         />
-        <InfoBanner>
-          채프 발생량은 품종별 실측값(Bytof et al., 2024)에 세계 생산·수출 비중을 가중한 생두 1kg당 5.7g을 적용해 자동
-          계산됩니다. 이 값은 폐기 단계 발생량으로 자동 이어집니다.
-        </InfoBanner>
       </SectionCard>
     </div>
   );
@@ -250,28 +223,96 @@ function BillList({
         <DocPicker placeholder={`${docLabel} 선택`} />
       </FormField>
       <p className="mb-2 mt-4 text-sm font-medium text-on-surface">월별 사용 내역 (문서에서 자동 추출)</p>
-      <div className="space-y-2">
-        {rows.map((row, idx) => (
-          <div key={idx} className="rounded-md border border-outline-variant bg-surface-container-low p-3">
-            <div className="mb-2 flex items-center justify-between">
-              <OcrBadge />
-              <DeleteButton />
-            </div>
-            <div className="grid gap-2 sm:grid-cols-3">
-              <FormField label="발행 연월">
-                <TextInput type="month" defaultValue={row.month} />
-              </FormField>
-              <FormField label={amountLabel}>
-                <AmountWithUnit defaultValue={row.amount} unit={unit} unitOptions={unitOptions} />
-              </FormField>
-              <FormField label="발급처">
-                <TextInput defaultValue={row.provider} />
-              </FormField>
-            </div>
-          </div>
-        ))}
+      <UsageTable
+        rows={rows}
+        monthLabel="발행 연월"
+        amountLabel={amountLabel}
+        unit={unit}
+        unitOptions={unitOptions}
+        addLabel={addLabel}
+        showProvider
+      />
+    </div>
+  );
+}
+
+/**
+ * 월별 사용 내역 테이블 (고지서·자가발전량 공통).
+ * 카드 12개 대신 A:연월 · B:사용량 · C:발급처(선택) 순의 테이블로 표시한다.
+ * - 자동 추출(OCR) 행은 왼쪽 색 바 + ScanLine 아이콘으로 표시
+ * - 연월이 비어 있으면(OCR 인식 실패 등) "연월 확인 필요" 경고 노출
+ * - 좁은 화면은 컨테이너 가로 스크롤로 대응
+ */
+function UsageTable({
+  rows,
+  monthLabel,
+  amountLabel,
+  unit,
+  unitOptions,
+  addLabel,
+  showProvider = false,
+}: {
+  rows: { month: string; amount: number; provider?: string }[];
+  monthLabel: string;
+  amountLabel: string;
+  unit?: string;
+  unitOptions?: { value: string; label: string }[];
+  addLabel: string;
+  showProvider?: boolean;
+}) {
+  return (
+    <div className="overflow-hidden rounded-md border border-outline-variant">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-130 border-collapse text-sm">
+          <thead>
+            <tr className="border-b border-outline-variant bg-surface-container-low text-left text-xs font-medium text-on-surface-variant">
+              <th scope="col" className="w-9 px-2 py-2 text-center" title="문서 자동 추출 여부">
+                <ScanLine className="mx-auto h-3.5 w-3.5" aria-label="출처" />
+              </th>
+              <th scope="col" className="px-3 py-2">{monthLabel}</th>
+              <th scope="col" className="px-3 py-2">{amountLabel}</th>
+              {showProvider && <th scope="col" className="px-3 py-2">발급처</th>}
+              <th scope="col" className="w-11 px-2 py-2" aria-label="삭제" />
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, idx) => {
+              const noMonth = !row.month;
+              return (
+                <tr key={idx} className="border-b border-outline-variant last:border-b-0">
+                  <td className="border-l-2 border-primary/50 px-2 py-2 text-center align-top">
+                    <ScanLine className="mx-auto mt-2.5 h-4 w-4 text-primary" aria-label="문서 자동 추출" />
+                  </td>
+                  <td className="px-3 py-2 align-top">
+                    <TextInput type="month" defaultValue={row.month} />
+                    {noMonth && (
+                      <p className="mt-1 inline-flex items-center gap-1 text-xs text-error">
+                        <AlertTriangle className="h-3 w-3" /> 연월 확인 필요
+                      </p>
+                    )}
+                  </td>
+                  <td className="px-3 py-2 align-top">
+                    <AmountWithUnit defaultValue={row.amount} unit={unit} unitOptions={unitOptions} />
+                  </td>
+                  {showProvider && (
+                    <td className="px-3 py-2 align-top">
+                      <TextInput defaultValue={row.provider} />
+                    </td>
+                  )}
+                  <td className="px-2 py-2 text-center align-top">
+                    <div className="mt-1">
+                      <DeleteButton />
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
-      <AddButton label={addLabel} />
+      <div className="border-t border-outline-variant bg-surface-container-low px-3 py-1.5">
+        <AddButton label={addLabel} />
+      </div>
     </div>
   );
 }
