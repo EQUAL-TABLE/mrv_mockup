@@ -106,7 +106,7 @@ function renderStep(stepKey: string, meta: ProjectMeta, data: ProjectData, proje
     case 'waste':
       return <Waste {...p} />;
     case 'review':
-      return <Review methodology={meta.methodology} />;
+      return <Review methodology={meta.methodology} data={data} />;
     case 'result':
       return <Result {...p} data={data} />;
   }

@@ -1,6 +1,8 @@
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
+import { BEAN_EMISSION_LITERATURE, DEFAULT_PROJECT_DATA } from '@/data/projectData';
+import type { ProjectData } from '@/data/projectData';
 import type { Methodology } from '@/types/project';
 
 /**
@@ -14,6 +16,7 @@ import type { Methodology } from '@/types/project';
 
 interface Props {
   methodology?: Methodology;
+  data?: ProjectData;
 }
 
 type Verdict = 'ok' | 'warn' | 'error';
@@ -56,7 +59,8 @@ const GROUPS: Group[] = [
     title: '그룹 3 · 데이터 매칭 및 품질',
     items: [
       { no: 10, label: '원료 매칭(DB 매핑) 완료 여부', verdict: 'ok' },
-      { no: 11, label: '문헌값(이차 데이터) 적용 구간 존재', verdict: 'warn', detail: '농장 탄소배출 증빙이 없어 생두 배출량에 문헌값(1.165)을 적용했습니다.' },
+      // 항목 11의 판정은 농장 증빙 등록 여부에 따라 달라진다 (literatureItem에서 대체)
+      { no: 11, label: '문헌값(이차 데이터) 적용 구간 존재', verdict: 'warn' },
       { no: 12, label: 'OCR 실패로 수동 입력한 항목 존재', verdict: 'ok' },
     ],
   },
@@ -89,11 +93,14 @@ const GROUPS: Group[] = [
   },
 ];
 
-export function Review({ methodology = 'iso' }: Props = {}) {
+export function Review({ methodology = 'iso', data = DEFAULT_PROJECT_DATA }: Props = {}) {
   // 항목 22는 환경성적표지 전용 판정 → 그 외 방법론에서는 제외
+  // 항목 11은 농장 증빙 등록 여부에 따라 판정이 달라짐
   const groups = GROUPS.map((g) => ({
     ...g,
-    items: g.items.filter((it) => it.no !== 22 || methodology === 'epd'),
+    items: g.items
+      .filter((it) => it.no !== 22 || methodology === 'epd')
+      .map((it) => (it.no === 11 ? literatureItem(data) : it)),
   }));
   const warnItems = groups.flatMap((g) => g.items).filter((i) => i.verdict === 'warn');
   const errorCount = groups.flatMap((g) => g.items).filter((i) => i.verdict === 'error').length;
@@ -145,6 +152,26 @@ function SummaryTile({ label, count, tone, hint }: { label: string; count: numbe
       {hint && <p className="mt-0.5 text-xs text-on-surface-variant">{hint}</p>}
     </div>
   );
+}
+
+/**
+ * 항목 11 — 농장 탄소배출 증빙이 없는 농장이 하나라도 있으면 문헌값(이차 데이터) 적용 구간이 존재한다.
+ * 증빙을 등록한 농장은 문서에서 추출한 총 배출량 ÷ 생두 생산량으로 산정하므로 해당하지 않는다.
+ */
+function literatureItem(data: ProjectData): Item {
+  const label = '문헌값(이차 데이터) 적용 구간 존재';
+  const noProof = data.farms.filter((f) => !f.proof);
+  if (noProof.length === 0) {
+    return { no: 11, label, verdict: 'ok', detail: '모든 농장이 탄소배출 증빙 기반 값을 사용했습니다.' };
+  }
+  return {
+    no: 11,
+    label,
+    verdict: 'warn',
+    detail: `농장 ${data.farms.length}곳 중 ${noProof.length}곳(${noProof
+      .map((f) => f.name)
+      .join(', ')})에 탄소배출 증빙이 없어 생두 배출량에 문헌값(${BEAN_EMISSION_LITERATURE})을 적용했습니다.`,
+  };
 }
 
 function ItemRow({ item, checked, onToggle }: { item: Item; checked: boolean; onToggle: () => void }) {

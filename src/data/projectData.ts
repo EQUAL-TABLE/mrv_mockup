@@ -180,8 +180,11 @@ export const PROJECT_DATA: Record<string, ProjectData> = {
     contact: DEFAULT_CONTACT,
     production: { roastVolume: 2400, fuel: 'elec_gas', blending: 'single', scenario: 'drip' },
     farms: [
-      // 증빙 X → 문헌값 경로 (dLUC 0 · 20년 무변화 가정)
-      { name: '아웰라 농장', country: '에티오피아', bean: '예가체프 G1', ratio: 100, beanEmission: 1.165, sackWeight: 60, sackUnitWeight: 1000 },
+      // 증빙 O · dLUC 제공 (19,440 ÷ 18,000 = 1.08 / 360 ÷ 18,000 = 0.02)
+      {
+        name: '아웰라 농장', country: '에티오피아', bean: '예가체프 G1', ratio: 100, beanEmission: 1.08, sackWeight: 60, sackUnitWeight: 1000,
+        proof: { docLabel: '아웰라 농장_탄소배출 보고서_2026.pdf', periodFrom: '2026-01', periodTo: '2026-12', totalEmission: 19440, greenOutput: 18000, dluc: 360, dlucIncluded: true },
+      },
     ],
     minPackLabel: '250g 크라프트 봉투',
     powerBills: [
