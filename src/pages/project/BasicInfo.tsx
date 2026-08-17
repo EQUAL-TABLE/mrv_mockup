@@ -39,8 +39,8 @@ export function BasicInfo({
   const showLinkedProject = showWriteMode && writeMode === 'B';
   const showAuthor = track === 'mrv';
   const showScenario = methodology === 'iso' && boundary === 'grave';
-  // 계산기 트랙은 증빙을 받지 않으므로 활동데이터가 모두 무증빙 자가입력(입력 추정)이 된다.
-  const activitySource = track === 'calculator' ? 'estimated' : 'measured';
+  // 계산기 트랙은 참고용 추정 결과만 제공하므로 데이터 출처 등급을 표시하지 않는다.
+  const isMrv = track === 'mrv';
 
   // 방법론 = 환경성적표지 → 경계 폐기까지 고정 / 계산기 → 방법론 없음
   const onMethodology = (v: string) => {
@@ -184,7 +184,7 @@ export function BasicInfo({
                 ]}
               />
             </FormField>
-            <FormField label="출고량" required helpWide source={activitySource} help="이 프로젝트에서 출고되는 원두 양을 의미합니다. 이어받은 프로젝트의 생산량과 비교해, 출고량 기반으로 원부자재 투입량이 자동 결정됩니다. (kg RC = 로스팅된 원두 kg)">
+            <FormField label="출고량" required helpWide source={isMrv ? 'measured' : undefined} help="이 프로젝트에서 출고되는 원두 양을 의미합니다. 이어받은 프로젝트의 생산량과 비교해, 출고량 기반으로 원부자재 투입량이 자동 결정됩니다. (kg RC = 로스팅된 원두 kg)">
               <UnitInput unit="kg RC" type="number" placeholder="0" />
             </FormField>
           </div>
@@ -263,7 +263,7 @@ export function BasicInfo({
           <FormField label="단위 기간 원두 생산량"
           required
           helpWide
-          source={activitySource}
+          source={isMrv ? 'measured' : undefined}
           help="데이터 수집 기간 동안 로스팅한 원두 총량입니다. 이 값으로 원두 1kg당 평균 탄소발자국을 계산하니 정확히 넣어 주세요. (kg RC = 로스팅된 원두 kg)
           생두 사용량은 원두 생산량의 로스팅 수율 76.12%를 일괄 적용하여 자동 계산됩니다.">
             <UnitInput unit="kg RC" type="number" defaultValue={data.production.roastVolume} placeholder="0" />

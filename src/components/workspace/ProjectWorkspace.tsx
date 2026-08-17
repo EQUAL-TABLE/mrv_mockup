@@ -55,10 +55,10 @@ export function ProjectWorkspace({ projectId, stepKey, children }: ProjectWorksp
         {/* 상단 스텝 네비 */}
         <Stepper projectId={projectId} currentKey={stepKey} steps={steps} />
 
-        {/* 단계 설명 (비전문가 눈높이) + 출처 등급 범례 + 내용 */}
+        {/* 단계 설명 (비전문가 눈높이) + 출처 등급 범례(MRV 전용) + 내용 */}
         <div className="space-y-4">
           <StepIntro stepKey={stepKey} steps={steps} />
-          <SourceLegend />
+          {project.track !== 'calculator' && <SourceLegend />}
           {children}
         </div>
 

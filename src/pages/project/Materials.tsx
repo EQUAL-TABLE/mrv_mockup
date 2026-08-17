@@ -14,8 +14,8 @@ import {
   UnitInput,
 } from '@/components/ui/form';
 import type { Boundary, Methodology } from '@/types/project';
-import { DEFAULT_PROJECT_DATA } from '@/data/projectData';
-import type { FarmData, ProjectData } from '@/data/projectData';
+import { BEAN_EMISSION_LITERATURE, DEFAULT_PROJECT_DATA } from '@/data/projectData';
+import type { FarmData, FarmProof, ProjectData } from '@/data/projectData';
 
 /**
  * ③ 제조전단계-원부자재 — MRV 공통(방법론·경계 분기).
@@ -57,7 +57,15 @@ export function Materials({ methodology = 'iso', boundary = 'grave', data = DEFA
           </button>
         </div>
         {farms.map((farm, i) => (
-          <FarmBlock key={i} farm={farm} open={open.includes(i)} onToggle={() => toggle(i)} />
+          <FarmBlock
+            key={i}
+            farm={farm}
+            iso={methodology === 'iso'}
+            collectFrom={data.collectFrom}
+            collectTo={data.collectTo}
+            open={open.includes(i)}
+            onToggle={() => toggle(i)}
+          />
         ))}
       </div>
 
@@ -154,15 +162,36 @@ export function Materials({ methodology = 'iso', boundary = 'grave', data = DEFA
 }
 
 /* ── 농장 블록 (A-1 농장 + A-2 포장 + A-3 생두 기본정보) ── */
+
+/** 증빙문서를 선택한 상태를 나타내는 DocPicker 값 */
+const PROOF_DOC = 'proof';
+
+const kgFmt = (n: number) => n.toLocaleString('en-US');
+const periodLabel = (from: string, to: string) => `${from.replace('-', '.')} ~ ${to.replace('-', '.')}`;
+
 function FarmBlock({
   farm,
+  iso,
+  collectFrom,
+  collectTo,
   open,
   onToggle,
 }: {
   farm: FarmData;
+  /** ISO 14067 트랙 여부 — dLUC 항목은 ISO에서만 노출 */
+  iso: boolean;
+  collectFrom: string;
+  collectTo: string;
   open: boolean;
   onToggle: () => void;
 }) {
+  const proof = farm.proof;
+  // 증빙문서 선택 상태. 해제하면 문헌값 경로로 되돌아간다.
+  const [doc, setDoc] = useState(proof ? PROOF_DOC : '');
+  // dLUC가 총 배출량 안에 이미 포함되어 있는지 (대부분 포함)
+  const [dlucIncluded, setDlucIncluded] = useState(proof?.dlucIncluded ?? true);
+  const hasProof = Boolean(proof) && doc !== '';
+
   return (
     <section className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-lowest">
       <button
@@ -184,9 +213,16 @@ function FarmBlock({
           {/* A-1 농장 정보 */}
           <div className="py-6">
             <p className="mb-4 text-lg font-bold text-on-surface">농장 정보</p>
-            <FormField label="농장 탄소배출 증빙문서 (선택)" 
-            help="문서를 선택하거나 [업로드]로 올리면 농장명·주소가 자동으로 입력됩니다. 증빙이 있으면 실제 농장 탄소배출량을, 없으면 문헌값을 적용합니다.">
-              <DocPicker placeholder="문서 선택 (미선택 시 문헌값 적용)" />
+            <FormField
+              label="농장 탄소배출 증빙문서 (선택)"
+              help="문서를 선택하거나 [업로드]로 올리면 농장명·주소와 탄소배출 산정 근거가 자동으로 입력됩니다. 증빙이 있으면 실제 농장 탄소배출량을, 없으면 문헌값을 적용합니다."
+            >
+              <DocPicker
+                placeholder="문서 선택 (미선택 시 문헌값 적용)"
+                options={proof ? [{ value: PROOF_DOC, label: proof.docLabel }] : []}
+                value={doc}
+                onChange={setDoc}
+              />
             </FormField>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <FormField label="농장명" source="measured" sourceOcr>
@@ -196,15 +232,19 @@ function FarmBlock({
                 <TextInput defaultValue={`${farm.country} 일대`} />
               </FormField>
             </div>
-            <div className="mt-3">
-              <ReadonlyField
-                label="생두 단위 탄소배출량"
-                value={farm.beanEmission.toFixed(3)}
-                unit="kg CO₂e/kg"
-                source="literature"
-                help="증빙 서류를 업로드 하지 않으면, 연구 문헌(Nab & Maslin, 2020)의 표준값 1.165 kg CO₂e/kg(생두)이 자동으로 적용됩니다. "
+
+            {hasProof && proof ? (
+              <FarmProofFields
+                proof={proof}
+                iso={iso}
+                collectFrom={collectFrom}
+                collectTo={collectTo}
+                dlucIncluded={dlucIncluded}
+                onDlucIncludedChange={setDlucIncluded}
               />
-            </div>
+            ) : (
+              <FarmLiteratureFields iso={iso} />
+            )}
           </div>
 
           {/* A-3 생두 기본정보 */}
@@ -274,6 +314,186 @@ function FarmBlock({
         </div>
       )}
     </section>
+  );
+}
+
+/**
+ * 증빙 미선택 — 문헌값 경로.
+ * 문헌값 1.165는 20년 내 토지전용이 없다고 보고 산정한 값이라 dLUC가 0이다.
+ * "문헌값 적용"이라고만 쓰면 1.165 안에 dLUC가 들어있다고 오해하므로 가정을 명시한다.
+ */
+function FarmLiteratureFields({ iso }: { iso: boolean }) {
+  return (
+    <div className="mt-4 space-y-3">
+      <ReadonlyField
+        label="생두 단위 탄소배출량"
+        value={BEAN_EMISSION_LITERATURE.toFixed(3)}
+        unit="kg CO₂e/kg"
+        source="literature"
+        help="농장 탄소배출 증빙문서를 선택하지 않으면 연구 문헌(Nab & Maslin, 2020)의 표준값 1.165 kg CO₂e/kg(생두)이 자동으로 적용됩니다."
+      />
+      {iso && (
+        <>
+          <ReadonlyField
+            label="이 중 토지이용변화(dLUC)"
+            value="0.000"
+            unit="kg CO₂e/kg"
+            source="literature"
+            help="문헌값은 최근 20년간 해당 농지에 토지전용이 없었다고 보고 산정한 값이라 토지이용변화 배출이 0입니다."
+          />
+          <p className="rounded-md border border-outline-variant bg-surface-container-low p-3 text-xs leading-relaxed text-on-surface-variant">
+            <b className="font-medium text-on-surface">가정</b> · 최근 20년간 토지이용변화가 없었던 것으로 보고 dLUC를 0으로
+            산정합니다. 실제 토지전용이 있었다면 농장 탄소배출 증빙문서를 등록해 주세요.
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
+
+/**
+ * 증빙 선택 — 문서에서 추출한 값으로 산정.
+ *
+ * 생두 단위 탄소배출량은 농장이 직접 주는 값이 아니라 "단위기간 총 배출량 ÷ 같은 기간 생두 생산량"이므로
+ * 분자·분모를 함께 노출해 검증 시 추적할 수 있게 한다.
+ */
+function FarmProofFields({
+  proof,
+  iso,
+  collectFrom,
+  collectTo,
+  dlucIncluded,
+  onDlucIncludedChange,
+}: {
+  proof: FarmProof;
+  iso: boolean;
+  collectFrom: string;
+  collectTo: string;
+  dlucIncluded: boolean;
+  onDlucIncludedChange: (v: boolean) => void;
+}) {
+  const dlucProvided = proof.dluc !== null;
+  const dluc = proof.dluc ?? 0;
+  // 총계에 이미 포함돼 있으면 그대로, 총계 밖에 별도 산정된 경우에만 더한다.
+  const total = dlucIncluded ? proof.totalEmission : proof.totalEmission + dluc;
+  const perKg = total / proof.greenOutput;
+  const dlucPerKg = dluc / proof.greenOutput;
+
+  const periodMismatch = proof.periodFrom !== collectFrom || proof.periodTo !== collectTo;
+  // dLUC는 총 배출량의 하위 항목이므로 초과할 수 없다 (누적 전용량 오기재·OCR 오독 신호)
+  const dlucOverTotal = dlucIncluded && dluc > proof.totalEmission;
+
+  return (
+    <div className="mt-4 space-y-3">
+      <div className="space-y-3 rounded-md border border-outline-variant bg-surface-container-low p-4">
+        <p className="text-sm font-semibold text-on-surface">문서에서 추출한 산정 근거</p>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <ReadonlyField
+            label="자료 대상 기간"
+            value={periodLabel(proof.periodFrom, proof.periodTo)}
+            source="supplier"
+            sourceOcr
+          />
+          <ReadonlyField
+            label="단위기간 총 탄소배출량"
+            value={kgFmt(proof.totalEmission)}
+            unit="kg CO₂e"
+            source="supplier"
+            sourceOcr
+          />
+          <ReadonlyField
+            label="단위기간 생두 생산량"
+            value={kgFmt(proof.greenOutput)}
+            unit="kg"
+            source="supplier"
+            sourceOcr
+          />
+        </div>
+
+        {periodMismatch && (
+          <p className="inline-flex items-start gap-1.5 text-xs leading-relaxed text-warning">
+            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            농장 자료 기간이 이 프로젝트의 데이터 수집 기간({periodLabel(collectFrom, collectTo)})과 다릅니다. 기간이 다른 근거를
+            보고서에 기재해야 할 수 있습니다.
+          </p>
+        )}
+
+        {iso &&
+          (dlucProvided ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <ReadonlyField
+                label="단위기간 토지이용변화(dLUC) 배출량"
+                value={kgFmt(dluc)}
+                unit="kg CO₂e"
+                source="supplier"
+                sourceOcr
+                help="농장 자료에 기재된 해당 기간의 토지이용변화 배출량입니다. 농산물은 토지이용변화 배출을 따로 밝히도록 권장되어 별도 항목으로 표시합니다."
+              />
+              <FormField
+                label="dLUC 총계 포함 여부"
+                helpWide
+                help={
+                  <HelpOptions
+                    intro="위 총 탄소배출량 안에 dLUC가 이미 들어 있는지 고릅니다. 대부분의 농장 자료는 총계 안의 한 항목으로 dLUC를 적습니다."
+                    items={[
+                      { term: '총 탄소배출량에 포함됨', desc: '총계를 그대로 사용합니다. dLUC는 내역으로만 표시하고 더하지 않습니다.' },
+                      { term: '총계와 별도로 산정됨', desc: '문서가 dLUC를 총계 밖에 따로 적은 경우입니다. 총계에 dLUC를 더해 산정합니다.' },
+                    ]}
+                    outro="잘못 고르면 이중계산(포함인데 별도로 선택) 또는 누락(별도인데 포함으로 선택)이 발생합니다."
+                  />
+                }
+              >
+                <Select
+                  value={dlucIncluded ? 'in' : 'out'}
+                  onChange={(e) => onDlucIncludedChange(e.target.value === 'in')}
+                  options={[
+                    { value: 'in', label: '총 탄소배출량에 포함됨' },
+                    { value: 'out', label: '총계와 별도로 산정됨' },
+                  ]}
+                />
+              </FormField>
+            </div>
+          ) : (
+            <p className="rounded-md border border-outline-variant bg-surface-container-lowest p-3 text-xs leading-relaxed text-on-surface-variant">
+              <b className="font-medium text-on-surface">토지이용변화(dLUC) 미제공</b> · 원본 데이터에 dLUC 항목이 없어 0으로
+              대체했습니다. 실제 토지전용이 있었다면 과소 산정될 수 있으며, 이 사실은 보고서 한계점에 기재됩니다.
+            </p>
+          ))}
+
+        {dlucOverTotal && (
+          <p className="inline-flex items-start gap-1.5 text-xs leading-relaxed text-error">
+            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            dLUC가 총 탄소배출량보다 큽니다. dLUC는 총계의 하위 항목이므로 값이 잘못 읽혔거나, 해당 연도분이 아니라 전체
+            전용량이 기재됐을 수 있습니다. 원본 문서를 확인해 주세요.
+          </p>
+        )}
+      </div>
+
+      <ReadonlyField
+        label="생두 단위 탄소배출량"
+        value={perKg.toFixed(3)}
+        unit="kg CO₂e/kg"
+        source="calculated"
+        help={`단위기간 총 탄소배출량 ÷ 같은 기간 생두 생산량으로 자동 계산합니다. (${kgFmt(total)} ÷ ${kgFmt(proof.greenOutput)})`}
+      />
+
+      {iso && dlucProvided && (
+        <>
+          <ReadonlyField
+            label="이 중 토지이용변화(dLUC)"
+            value={dlucPerKg.toFixed(3)}
+            unit="kg CO₂e/kg"
+            source="calculated"
+            help="단위기간 dLUC ÷ 같은 기간 생두 생산량입니다."
+          />
+          <p className="rounded-md border border-outline-variant bg-surface-container-low p-3 text-xs leading-relaxed text-on-surface-variant">
+            토지이용변화 배출은 농산물에서 별도로 밝히도록 권장되어 따로 표시합니다. 위 생두 단위 탄소배출량{' '}
+            <b className="font-medium text-on-surface">{perKg.toFixed(3)}</b>에 이미 포함된 값이므로{' '}
+            <b className="font-medium text-on-surface">별도로 더하지 마세요.</b>
+          </p>
+        </>
+      )}
+    </div>
   );
 }
 

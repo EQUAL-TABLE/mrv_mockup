@@ -1,4 +1,4 @@
-import { BookOpen, Building2, Check, FileCheck2, HelpCircle, Info, Loader2, PencilLine, ScanLine, Sigma, Upload } from 'lucide-react';
+import { BookOpen, Building2, Check, FileCheck2, HelpCircle, Info, Loader2, ScanLine, Sigma, Upload } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { ChangeEvent, ComponentType, InputHTMLAttributes, MouseEvent as ReactMouseEvent, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
@@ -88,12 +88,15 @@ export function HelpOptions({
  * 1차/2차 데이터 구분도 항목별로 검증된다. 따라서 등급은 결과 화면이 아니라 값이 실제로
  * 입력·산출되는 지점에 붙이고, 결과 화면의 "데이터 출처 등급 요약"은 이 값을 집계한 것으로 본다.
  *
+ * MRV 트랙 전용이다. 계산기 트랙은 증빙을 받지 않고 참고용 추정 결과만 제공하므로
+ * 등급을 표시하지 않는다.
+ *
  * tier는 요약 집계용 상위 분류다.
  *   - primary   : 1차 데이터 (증빙·공급자 산정값)
  *   - derived   : 파생값 (다른 입력에서 자동 산출 → 등급은 원본을 따름)
- *   - secondary : 2차 데이터 (문헌·통계 표준값, 무증빙 자가입력)
+ *   - secondary : 2차 데이터 (문헌·통계 표준값)
  */
-export type DataSource = 'measured' | 'supplier' | 'calculated' | 'literature' | 'estimated';
+export type DataSource = 'measured' | 'supplier' | 'calculated' | 'literature';
 
 interface SourceMeta {
   label: string;
@@ -138,14 +141,6 @@ export const SOURCE_META: Record<DataSource, SourceMeta> = {
     Icon: BookOpen,
     short: '문헌·통계 표준값',
     desc: '문헌·국가 통계의 표준값(2차 데이터)입니다. 증빙을 올리면 실측으로 대체됩니다.',
-  },
-  estimated: {
-    label: '입력 추정',
-    tier: 'secondary',
-    variant: 'warning',
-    Icon: PencilLine,
-    short: '증빙 없는 직접 입력',
-    desc: '증빙 없이 직접 입력한 값입니다. 참고용 추정치로만 사용하며 인증에는 쓸 수 없습니다.',
   },
 };
 
@@ -292,18 +287,31 @@ export function DocPicker({
   placeholder = '문서 선택',
   uploadLabel = '업로드',
   className,
+  value: controlledValue,
+  onChange,
 }: {
   /** 이미 업로드된 문서 중 선택 목록 */
   options?: Option[];
   placeholder?: string;
   uploadLabel?: string;
   className?: string;
+  /** 선택값을 부모가 제어할 때 사용 (미지정 시 내부 state) */
+  value?: string;
+  /** 선택·업로드로 문서가 바뀔 때. 문서 유무에 따라 화면이 달라지는 곳에서 사용한다. */
+  onChange?: (value: string) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [docs, setDocs] = useState<Option[]>(options);
-  const [value, setValue] = useState(options[0]?.value ?? '');
+  const [innerValue, setInnerValue] = useState(options[0]?.value ?? '');
   const [status, setStatus] = useState<'idle' | 'processing' | 'done'>('idle');
+
+  const isControlled = controlledValue !== undefined;
+  const value = isControlled ? controlledValue : innerValue;
+  const commit = (v: string) => {
+    if (!isControlled) setInnerValue(v);
+    onChange?.(v);
+  };
 
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
 
@@ -313,7 +321,7 @@ export function DocPicker({
     if (!file) return;
     const val = `upload_${docs.length + 1}`;
     setDocs((d) => [...d, { value: val, label: file.name }]);
-    setValue(val);
+    commit(val);
     setStatus('processing');
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => setStatus('done'), 1200);
@@ -325,7 +333,7 @@ export function DocPicker({
         <Select
           className="flex-1"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => commit(e.target.value)}
           options={[{ value: '', label: placeholder }, ...docs]}
         />
         <button

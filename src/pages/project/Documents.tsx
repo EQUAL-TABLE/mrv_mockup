@@ -17,6 +17,8 @@ interface Props {
   methodology?: Methodology;
   boundary?: Boundary;
   status?: ProjectStatus;
+  /** 농장 탄소배출 증빙문서를 등록한 농장 수 (원부자재 단계의 농장 데이터와 맞춘다) */
+  farmProofCount?: number;
 }
 
 export type OcrState = 'done' | 'processing' | 'failed' | 'empty';
@@ -31,7 +33,7 @@ interface DocItem {
   show?: boolean;
 }
 
-export function Documents({ methodology = 'iso', boundary = 'grave', status = 'draft' }: Props = {}) {
+export function Documents({ methodology = 'iso', boundary = 'grave', status = 'draft', farmProofCount = 0 }: Props = {}) {
   const grave = boundary === 'grave';
   const epd = methodology === 'epd';
   const isoGrave = methodology === 'iso' && grave; // 여과지(드립) 노출 조건
@@ -44,7 +46,13 @@ export function Documents({ methodology = 'iso', boundary = 'grave', status = 'd
       step: '원부자재',
       docs: [
         { no: 1, name: '생두 INVOICE', required: true, state: 'done', files: '2개' },
-        { no: 2, name: '농장 탄소배출 증빙문서', required: false, state: 'empty' },
+        {
+          no: 2,
+          name: '농장 탄소배출 증빙문서',
+          required: false,
+          state: farmProofCount > 0 ? 'done' : 'empty',
+          files: farmProofCount > 0 ? `${farmProofCount}개 (농장별)` : undefined,
+        },
         { no: 9, name: '생두 포대 무게 증빙 사진', required: false, state: 'empty' },
       ],
     },

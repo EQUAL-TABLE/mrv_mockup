@@ -88,7 +88,7 @@ function renderStep(stepKey: string, meta: ProjectMeta, data: ProjectData, proje
   const p = { methodology: meta.methodology, boundary: meta.boundary };
   switch (stepKey) {
     case 'documents':
-      return <Documents {...p} status={meta.status} />;
+      return <Documents {...p} status={meta.status} farmProofCount={data.farms.filter((f) => f.proof).length} />;
     case 'materials':
       return <Materials {...p} data={data} />;
     case 'transport':
