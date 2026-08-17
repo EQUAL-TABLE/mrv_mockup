@@ -1,7 +1,8 @@
-import { Check, HelpCircle, Info, Loader2, ScanLine, Upload } from 'lucide-react';
+import { BookOpen, Building2, Check, FileCheck2, HelpCircle, Info, Loader2, PencilLine, ScanLine, Sigma, Upload } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import type { ChangeEvent, InputHTMLAttributes, MouseEvent as ReactMouseEvent, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import type { ChangeEvent, ComponentType, InputHTMLAttributes, MouseEvent as ReactMouseEvent, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';
 
 /** 폼 컨트롤 공통 클래스 (신뢰도 톤: rounded-md, 헤어라인 보더) */
@@ -78,6 +79,108 @@ export function HelpOptions({
   );
 }
 
+/* ── 데이터 출처 등급 (LCA 데이터 품질) ───────────────────── */
+
+/**
+ * 입력값의 데이터 출처 등급.
+ *
+ * ISO 14040/14044의 데이터 품질 요구사항은 단위공정(=개별 입력 항목)마다 기술하도록 되어 있고,
+ * 1차/2차 데이터 구분도 항목별로 검증된다. 따라서 등급은 결과 화면이 아니라 값이 실제로
+ * 입력·산출되는 지점에 붙이고, 결과 화면의 "데이터 출처 등급 요약"은 이 값을 집계한 것으로 본다.
+ *
+ * tier는 요약 집계용 상위 분류다.
+ *   - primary   : 1차 데이터 (증빙·공급자 산정값)
+ *   - derived   : 파생값 (다른 입력에서 자동 산출 → 등급은 원본을 따름)
+ *   - secondary : 2차 데이터 (문헌·통계 표준값, 무증빙 자가입력)
+ */
+export type DataSource = 'measured' | 'supplier' | 'calculated' | 'literature' | 'estimated';
+
+interface SourceMeta {
+  label: string;
+  tier: 'primary' | 'derived' | 'secondary';
+  variant: 'primary' | 'neutral' | 'warning';
+  Icon: ComponentType<{ className?: string }>;
+  /** 범례용 한 줄 설명 */
+  short: string;
+  /** 배지 툴팁용 상세 설명 */
+  desc: string;
+}
+
+export const SOURCE_META: Record<DataSource, SourceMeta> = {
+  measured: {
+    label: '실측',
+    tier: 'primary',
+    variant: 'primary',
+    Icon: FileCheck2,
+    short: '증빙에서 확인',
+    desc: '고지서·거래명세서·INVOICE 등 증빙에서 확인한 1차 데이터입니다.',
+  },
+  supplier: {
+    label: '공급자 제공',
+    tier: 'primary',
+    variant: 'primary',
+    Icon: Building2,
+    short: '공급자 산정값',
+    desc: '공급자가 직접 산정해 제공한 값(CFP 성적서 등)입니다. 1차 데이터로 봅니다.',
+  },
+  calculated: {
+    label: '계산값',
+    tier: 'derived',
+    variant: 'neutral',
+    Icon: Sigma,
+    short: '앞 단계에서 자동 산출',
+    desc: '앞 단계 입력값에서 자동으로 계산·연동된 값입니다. 등급은 계산에 쓰인 원본 값을 따릅니다.',
+  },
+  literature: {
+    label: '문헌값',
+    tier: 'secondary',
+    variant: 'warning',
+    Icon: BookOpen,
+    short: '문헌·통계 표준값',
+    desc: '문헌·국가 통계의 표준값(2차 데이터)입니다. 증빙을 올리면 실측으로 대체됩니다.',
+  },
+  estimated: {
+    label: '입력 추정',
+    tier: 'secondary',
+    variant: 'warning',
+    Icon: PencilLine,
+    short: '증빙 없는 직접 입력',
+    desc: '증빙 없이 직접 입력한 값입니다. 참고용 추정치로만 사용하며 인증에는 쓸 수 없습니다.',
+  },
+};
+
+/** 데이터 출처 등급 배지. ocr=true면 문서에서 자동 추출된 값임을 함께 표시한다. */
+export function SourceBadge({ source, ocr = false, className }: { source: DataSource; ocr?: boolean; className?: string }) {
+  const m = SOURCE_META[source];
+  const Icon = ocr ? ScanLine : m.Icon;
+  return (
+    <Badge
+      variant={m.variant}
+      className={cn('shrink-0', className)}
+      title={ocr ? `${m.label} · 문서 자동 추출 — ${m.desc}` : `${m.label} — ${m.desc}`}
+    >
+      <Icon className="h-3 w-3" />
+      {m.label}
+    </Badge>
+  );
+}
+
+/** 데이터 출처 등급 범례 (작업 화면 상단 1회 노출) */
+export function SourceLegend() {
+  const keys = Object.keys(SOURCE_META) as DataSource[];
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-md border border-outline-variant bg-surface-container-low px-3 py-2 text-xs text-on-surface-variant">
+      <span className="text-xs font-semibold text-on-surface">데이터 출처 등급</span>
+      {keys.map((k) => (
+        <span key={k} className="inline-flex items-center gap-1">
+          <SourceBadge source={k} />
+          {SOURCE_META[k].short}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 interface FormFieldProps {
   label: string;
   required?: boolean;
@@ -85,20 +188,25 @@ interface FormFieldProps {
   /** 도움말 툴팁을 넓게(설명이 긴 경우) */
   helpWide?: boolean;
   hint?: ReactNode;
+  /** 데이터 출처 등급 배지 (라벨 우측) */
+  source?: DataSource;
+  /** 해당 값이 문서에서 자동 추출된 경우 */
+  sourceOcr?: boolean;
   children: ReactNode;
   className?: string;
 }
 
-/** 라벨 + (도움말) + 컨트롤 + 힌트 */
-export function FormField({ label, required, help, helpWide, hint, children, className }: FormFieldProps) {
+/** 라벨 + (도움말) + (출처 등급) + 컨트롤 + 힌트 */
+export function FormField({ label, required, help, helpWide, hint, source, sourceOcr, children, className }: FormFieldProps) {
   return (
     <div className={className}>
       <div className="mb-1.5 flex items-center gap-1">
-        <span className="text-sm font-medium text-on-surface">
+        <span className="min-w-0 text-sm font-medium text-on-surface">
           {label}
           {required && <span className="text-error"> *</span>}
         </span>
         {help && <HelpTip text={help} wide={helpWide} />}
+        {source && <SourceBadge source={source} ocr={sourceOcr} className="ml-auto" />}
       </div>
       {children}
       {hint && <p className="mt-1 text-xs text-on-surface-variant">{hint}</p>}
@@ -149,9 +257,23 @@ interface RadioGroupProps {
 }
 
 /** 자동 계산·고정 값 표시 (읽기전용) */
-export function ReadonlyField({ label, help, value, unit }: { label: string; help?: string; value: ReactNode; unit?: string }) {
+export function ReadonlyField({
+  label,
+  help,
+  value,
+  unit,
+  source,
+  sourceOcr,
+}: {
+  label: string;
+  help?: string;
+  value: ReactNode;
+  unit?: string;
+  source?: DataSource;
+  sourceOcr?: boolean;
+}) {
   return (
-    <FormField label={label} help={help}>
+    <FormField label={label} help={help} source={source} sourceOcr={sourceOcr}>
       <div className="flex items-center justify-between rounded-md border border-outline-variant bg-surface-container-low px-3 py-2 text-sm">
         <span className="font-medium text-on-surface">{value}</span>
         {unit && <span className="text-on-surface-variant">{unit}</span>}

@@ -2,7 +2,7 @@ import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
-import { DocPicker, FormField, InfoBanner, OcrBadge, ReadonlyField, Select, TextInput, UnitInput } from '@/components/ui/form';
+import { DocPicker, FormField, InfoBanner, ReadonlyField, Select, TextInput, UnitInput } from '@/components/ui/form';
 import type { Boundary, Methodology } from '@/types/project';
 import { DEFAULT_PROJECT_DATA } from '@/data/projectData';
 import type { ProjectData } from '@/data/projectData';
@@ -174,15 +174,15 @@ function Leg({
       <div className="grid gap-4 sm:grid-cols-2">
         <EndpointField field={from} />
         <EndpointField field={to} />
-        <FormField label="수송수단" required helpWide help="이 구간에서 실제로 이용한 운송 방법을 고릅니다. 같은 거리라도 방법에 따라 배출량 차이가 큽니다. 특히 해외 구간은 선박이 항공보다 훨씬 적게 배출해요.">
+        <FormField label="수송수단" required helpWide source="measured" help="이 구간에서 실제로 이용한 운송 방법을 고릅니다. 같은 거리라도 방법에 따라 배출량 차이가 큽니다. 특히 해외 구간은 선박이 항공보다 훨씬 적게 배출해요.">
           <Select options={transports} />
         </FormField>
-        <FormField label="수송 거리" required hint="자동 산출되며, 안 되면 직접 입력하세요.">
+        <FormField label="수송 거리" required source="calculated" hint="자동 산출되며, 안 되면 직접 입력하세요.">
           <UnitInput unit="km" type="number" placeholder="자동 계산" />
         </FormField>
       </div>
       <div className="mt-3">
-        <ReadonlyField label="수송량" value="—" unit="ton" help="운반한 생두 무게입니다. 앞에서 입력한 생두 투입량이 자동으로 연결됩니다." />
+        <ReadonlyField label="수송량" value="—" unit="ton" source="calculated" help="운반한 생두 무게입니다. 앞에서 입력한 생두 투입량이 자동으로 연결됩니다." />
       </div>
     </div>
   );
@@ -190,7 +190,12 @@ function Leg({
 
 function EndpointField({ field }: { field: Endpoint }) {
   return (
-    <FormField label={field.label} hint={field.ocr ? <OcrBadge /> : field.auto ? '자동 연결' : undefined}>
+    <FormField
+      label={field.label}
+      source={field.auto ? 'calculated' : 'measured'}
+      sourceOcr={field.ocr}
+      hint={field.auto ? '자동 연결' : undefined}
+    >
       <TextInput defaultValue={field.value} placeholder={field.ocr ? '문서에서 자동 추출' : ''} disabled={field.auto} readOnly={field.auto} />
     </FormField>
   );
@@ -204,14 +209,14 @@ function SubTransport({ title, doc }: { title: string; doc: string }) {
         <DocPicker placeholder={`${doc} 선택`} />
       </FormField>
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="공급처 주소" required>
+        <FormField label="공급처 주소" required source="measured">
           <TextInput placeholder="예: 경기도 파주시 …" />
         </FormField>
-        <ReadonlyField label="수송수단" value="트럭 (고정)" />
-        <FormField label="수송 거리" required hint="공급처·로스터리 주소로 자동 산출됩니다.">
+        <ReadonlyField label="수송수단" value="트럭 (고정)" source="literature" help="부자재 수송수단은 방법론상 트럭으로 고정 가정합니다." />
+        <FormField label="수송 거리" required source="calculated" hint="공급처·로스터리 주소로 자동 산출됩니다.">
           <UnitInput unit="km" type="number" placeholder="자동 계산" />
         </FormField>
-        <ReadonlyField label="수송량" value="—" unit="kg" help="운반한 부자재 무게입니다. 해당 부자재의 총 사용 중량이 자동으로 연결됩니다." />
+        <ReadonlyField label="수송량" value="—" unit="kg" source="calculated" help="운반한 부자재 무게입니다. 해당 부자재의 총 사용 중량이 자동으로 연결됩니다." />
       </div>
     </SectionCard>
   );

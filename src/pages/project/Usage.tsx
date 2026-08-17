@@ -31,12 +31,13 @@ export function Usage({ data = DEFAULT_PROJECT_DATA }: { data?: ProjectData } = 
     <div className="space-y-4">
       <SectionCard title="사용 방식 · 전력 원단위" description="선택한 시나리오에 따라 분쇄·추출 전력이 자동 적용됩니다.">
         <div className="grid gap-4 sm:grid-cols-2">
-          <ReadonlyField label="선택한 사용 방식" value={scenarioLabel(scenario)} />
-          <ReadonlyField label="분쇄 전력 원단위" value="0.019" unit="kWh/kg" help="원두 1kg을 분쇄(그라인딩)할 때 드는 전기량입니다. 커피 분쇄 굵기에 대한 전력 차이는 고려하지 않으며 분쇄 전력 원단위는 관련 논문의 근거하여 0.019 kWh/kg으로 고정값을 적용합니다. " />
+          <ReadonlyField label="선택한 사용 방식" value={scenarioLabel(scenario)} source="calculated" help="기본정보에서 고른 사용 방식 시나리오가 자동으로 연결됩니다." />
+          <ReadonlyField label="분쇄 전력 원단위" value="0.019" unit="kWh/kg" source="literature" help="원두 1kg을 분쇄(그라인딩)할 때 드는 전기량입니다. 커피 분쇄 굵기에 대한 전력 차이는 고려하지 않으며 분쇄 전력 원단위는 관련 논문의 근거하여 0.019 kWh/kg으로 고정값을 적용합니다. " />
           <ReadonlyField
             label="추출 전력 원단위"
             value={EXTRACT_UNIT[scenario]}
             unit="kWh/kg"
+            source="literature"
             help="원두 1kg을 커피로 추출할 때 드는 사용된 전기량입니다. 추출 방식에 따라 전력 사용량은 다음과 같이 상이하며, 이는 문헌에 근거하여 결정되었습니다. (드립 3.771 | 에스프레소 0.435 | 콜드브루 0 kWh/kg)"
           />
         </div>

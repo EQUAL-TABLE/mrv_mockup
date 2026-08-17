@@ -1,5 +1,7 @@
 import { Cpu } from 'lucide-react';
 import { SectionCard } from '@/components/workspace/SectionCard';
+import { SourceBadge } from '@/components/ui/form';
+import type { DataSource } from '@/components/ui/form';
 import type { Boundary, Methodology } from '@/types/project';
 import { DEFAULT_PROJECT_DATA, beanListLabel } from '@/data/projectData';
 import type { ProjectData } from '@/data/projectData';
@@ -24,6 +26,8 @@ interface Row {
   material: string;
   label: string;
   input: number; // kg/kg RC
+  /** 투입량의 데이터 출처 등급 (앞 단계에서 이어받음) */
+  source: DataSource;
 }
 
 interface MassTable {
@@ -38,12 +42,12 @@ export function MassContribution({ methodology = 'iso', boundary = 'grave', data
   const showBox = epd && grave;
   const showFilter = methodology === 'iso' && grave;
 
-  const green: Row = { no: 1, material: '커피 생두', label: beanListLabel(data), input: data.mass.green };
-  const minPack: Row = { no: 1, material: '복합 필름 포장재', label: data.minPackLabel, input: data.mass.minPack };
-  const filter: Row = { no: 2, material: '크라프트지', label: '드립 여과지', input: data.mass.filter };
+  const green: Row = { no: 1, material: '커피 생두', label: beanListLabel(data), input: data.mass.green, source: 'calculated' };
+  const minPack: Row = { no: 1, material: '복합 필름 포장재', label: data.minPackLabel, input: data.mass.minPack, source: 'calculated' };
+  const filter: Row = { no: 2, material: '크라프트지', label: '드립 여과지', input: data.mass.filter, source: 'literature' };
   const box: Row[] = [
-    { no: 1, material: '골판지', label: '출하 박스', input: data.mass.box[0] },
-    { no: 2, material: 'OPP 필름', label: '박스 테이프', input: data.mass.box[1] },
+    { no: 1, material: '골판지', label: '출하 박스', input: data.mass.box[0], source: 'calculated' },
+    { no: 2, material: 'OPP 필름', label: '박스 테이프', input: data.mass.box[1], source: 'literature' },
   ];
 
   // 환경성적표지: 3개 테이블 분리 / ISO: 단일 통합 테이블
@@ -85,12 +89,13 @@ function MassTableView({ table }: { table: MassTable }) {
   let cum = 0;
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[640px] text-sm">
+      <table className="w-full min-w-[760px] text-sm">
         <thead>
           <tr className="border-b border-outline-variant text-left text-xs text-on-surface-variant">
             <th className="py-2 pr-3 font-medium">No.</th>
             <th className="py-2 pr-3 font-medium">물질명</th>
             <th className="py-2 pr-3 font-medium">투입물 레이블</th>
+            <th className="py-2 pr-3 font-medium">출처</th>
             <th className="py-2 pr-3 text-right font-medium">투입량 (kg/kg)</th>
             <th className="py-2 pr-3 text-right font-medium">질량기여도</th>
             <th className="py-2 pr-3 text-right font-medium">누적기여도</th>
@@ -106,6 +111,9 @@ function MassTableView({ table }: { table: MassTable }) {
                 <td className="py-2 pr-3 tabular-nums text-on-surface-variant">{r.no}</td>
                 <td className="py-2 pr-3 font-medium">{r.material}</td>
                 <td className="py-2 pr-3 text-on-surface-variant">{r.label}</td>
+                <td className="py-2 pr-3">
+                  <SourceBadge source={r.source} />
+                </td>
                 <td className="py-2 pr-3 text-right tabular-nums">{r.input.toFixed(4)}</td>
                 <td className="py-2 pr-3 text-right tabular-nums">{share.toFixed(1)}%</td>
                 <td className="py-2 pr-3 text-right tabular-nums">{cum.toFixed(1)}%</td>
@@ -118,7 +126,7 @@ function MassTableView({ table }: { table: MassTable }) {
         </tbody>
         <tfoot>
           <tr className="border-t border-outline-variant font-semibold text-on-surface">
-            <td className="py-2 pr-3" colSpan={3}>
+            <td className="py-2 pr-3" colSpan={4}>
               소계
             </td>
             <td className="py-2 pr-3 text-right tabular-nums">{total.toFixed(4)}</td>

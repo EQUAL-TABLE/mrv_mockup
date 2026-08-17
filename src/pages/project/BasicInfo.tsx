@@ -1,7 +1,7 @@
 import { Plus, X } from 'lucide-react';
 import { useState } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
-import { FormField, HelpOptions, InfoBanner, RadioGroup, Select, TextInput, Textarea, UnitInput } from '@/components/ui/form';
+import { FormField, HelpOptions, InfoBanner, RadioGroup, Select, SourceBadge, TextInput, Textarea, UnitInput } from '@/components/ui/form';
 import { DEFAULT_PROJECT_DATA } from '@/data/projectData';
 import type { ProjectData } from '@/data/projectData';
 
@@ -39,6 +39,8 @@ export function BasicInfo({
   const showLinkedProject = showWriteMode && writeMode === 'B';
   const showAuthor = track === 'mrv';
   const showScenario = methodology === 'iso' && boundary === 'grave';
+  // 계산기 트랙은 증빙을 받지 않으므로 활동데이터가 모두 무증빙 자가입력(입력 추정)이 된다.
+  const activitySource = track === 'calculator' ? 'estimated' : 'measured';
 
   // 방법론 = 환경성적표지 → 경계 폐기까지 고정 / 계산기 → 방법론 없음
   const onMethodology = (v: string) => {
@@ -182,7 +184,7 @@ export function BasicInfo({
                 ]}
               />
             </FormField>
-            <FormField label="출고량" required helpWide help="이 프로젝트에서 출고되는 원두 양을 의미합니다. 이어받은 프로젝트의 생산량과 비교해, 출고량 기반으로 원부자재 투입량이 자동 결정됩니다. (kg RC = 로스팅된 원두 kg)">
+            <FormField label="출고량" required helpWide source={activitySource} help="이 프로젝트에서 출고되는 원두 양을 의미합니다. 이어받은 프로젝트의 생산량과 비교해, 출고량 기반으로 원부자재 투입량이 자동 결정됩니다. (kg RC = 로스팅된 원두 kg)">
               <UnitInput unit="kg RC" type="number" placeholder="0" />
             </FormField>
           </div>
@@ -258,9 +260,10 @@ export function BasicInfo({
       <SectionCard title="4. 생산 정보" 
       description="이 프로젝트에 해당하는 원두 생산량과 로스팅 설비·생두 구성을 입력하세요.">
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label="단위 기간 원두 생산량" 
-          required 
-          helpWide 
+          <FormField label="단위 기간 원두 생산량"
+          required
+          helpWide
+          source={activitySource}
           help="데이터 수집 기간 동안 로스팅한 원두 총량입니다. 이 값으로 원두 1kg당 평균 탄소발자국을 계산하니 정확히 넣어 주세요. (kg RC = 로스팅된 원두 kg)
           생두 사용량은 원두 생산량의 로스팅 수율 76.12%를 일괄 적용하여 자동 계산됩니다.">
             <UnitInput unit="kg RC" type="number" defaultValue={data.production.roastVolume} placeholder="0" />
@@ -311,9 +314,12 @@ export function BasicInfo({
 
         {track === 'mrv' && blending === 'y' && (
           <div className="rounded-md border border-outline-variant bg-surface-container-low p-4">
-            <div className="mb-2 flex items-center justify-between">
+            <div className="mb-2 flex items-center justify-between gap-2">
               <p className="text-sm font-medium text-on-surface">생두별 블렌딩 비율</p>
-              <span className="text-xs text-on-surface-variant">합계 100% (현재 100%)</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-on-surface-variant">합계 100% (현재 100%)</span>
+                <SourceBadge source="measured" />
+              </div>
             </div>
             <div className="space-y-2">
               {data.farms.map((row, idx) => (

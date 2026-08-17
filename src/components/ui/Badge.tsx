@@ -15,12 +15,15 @@ interface BadgeProps {
   children: ReactNode;
   variant?: BadgeVariant;
   className?: string;
+  /** 네이티브 툴팁 (배지 의미 보충 설명) */
+  title?: string;
 }
 
 /** 재사용 태그/배지 (트랙·방법론·경계·문서 표시 공통) */
-export function Badge({ children, variant = 'neutral', className }: BadgeProps) {
+export function Badge({ children, variant = 'neutral', className, title }: BadgeProps) {
   return (
     <span
+      title={title}
       className={cn(
         'inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-medium',
         VARIANT_CLASS[variant],

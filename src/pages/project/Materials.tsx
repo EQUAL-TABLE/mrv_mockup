@@ -9,6 +9,7 @@ import {
   OcrBadge,
   ReadonlyField,
   Select,
+  SourceBadge,
   TextInput,
   UnitInput,
 } from '@/components/ui/form';
@@ -71,14 +72,14 @@ export function Materials({ methodology = 'iso', boundary = 'grave', data = DEFA
           nameField
         />
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label="봉투 1개 무게" required>
+          <FormField label="봉투 1개 무게" required source="measured">
             <UnitInput unit="g" type="number" placeholder="0" />
           </FormField>
-          <FormField label="봉투 1개 포장량" required helpWide help="봉투 하나에 담는 원두 양입니다. 예를 들어 250g 봉투면 250을 넣으세요. 이 값으로 필요한 봉투 개수를 자동 계산합니다.">
+          <FormField label="봉투 1개 포장량" required helpWide source="measured" help="봉투 하나에 담는 원두 양입니다. 예를 들어 250g 봉투면 250을 넣으세요. 이 값으로 필요한 봉투 개수를 자동 계산합니다.">
             <UnitInput unit="g/ea" type="number" placeholder="0" />
           </FormField>
         </div>
-        <ReadonlyField label="단위 기간 사용량" value="—" unit="ea" help="전체 생산량을 봉투 1개 포장량으로 나눠, 기간 동안 쓴 봉투 개수를 자동 계산한 값입니다." />
+        <ReadonlyField label="단위 기간 사용량" value="—" unit="ea" source="calculated" help="전체 생산량을 봉투 1개 포장량으로 나눠, 기간 동안 쓴 봉투 개수를 자동 계산한 값입니다." />
         <button
           type="button"
           onClick={() => alert('최소포장재 추가 (목업)')}
@@ -99,14 +100,14 @@ export function Materials({ methodology = 'iso', boundary = 'grave', data = DEFA
           <p className="mb-3 text-sm font-semibold text-on-surface">박스</p>
           <MaterialMethod aLabel="골판지" aOptions={[{ value: 'corrugated', label: '골판지' }]} />
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <FormField label="박스 단위 무게" required>
+            <FormField label="박스 단위 무게" required source="measured">
               <UnitInput unit="g" type="number" placeholder="0" />
             </FormField>
-            <FormField label="1박스당 출하 제품 개수" required>
+            <FormField label="1박스당 출하 제품 개수" required source="measured">
               <UnitInput unit="ea/box" type="number" placeholder="0" />
             </FormField>
           </div>
-          <ReadonlyField label="단위 기간 박스 사용량" value="—" unit="ea" help="전체 봉투(최소포장재) 개수를 박스 1개에 담는 제품 개수로 나눠, 필요한 박스 수를 자동 계산합니다." />
+          <ReadonlyField label="단위 기간 박스 사용량" value="—" unit="ea" source="calculated" help="전체 봉투(최소포장재) 개수를 박스 1개에 담는 제품 개수로 나눠, 필요한 박스 수를 자동 계산합니다." />
         </div>
 
         {/* E-2 테이프 */}
@@ -128,6 +129,7 @@ export function Materials({ methodology = 'iso', boundary = 'grave', data = DEFA
             label="여과지 총 질량"
             value="—"
             unit="kg"
+            source="literature"
             help="드립 커피는 보통 원두 14g마다 여과지 약 1.6g을 씁니다. 이 비율과 전체 생산량으로 여과지 총 무게를 자동 계산합니다. (직접 수정 불가)"
           />
         </SectionCard>
@@ -187,10 +189,10 @@ function FarmBlock({
               <DocPicker placeholder="문서 선택 (미선택 시 문헌값 적용)" />
             </FormField>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <FormField label="농장명" hint={<OcrBadge />}>
+              <FormField label="농장명" source="measured" sourceOcr>
                 <TextInput defaultValue={farm.name} />
               </FormField>
-              <FormField label="농장 주소" required hint={<OcrBadge />}>
+              <FormField label="농장 주소" required source="measured" sourceOcr>
                 <TextInput defaultValue={`${farm.country} 일대`} />
               </FormField>
             </div>
@@ -199,6 +201,7 @@ function FarmBlock({
                 label="생두 단위 탄소배출량"
                 value={farm.beanEmission.toFixed(3)}
                 unit="kg CO₂e/kg"
+                source="literature"
                 help="증빙 서류를 업로드 하지 않으면, 연구 문헌(Nab & Maslin, 2020)의 표준값 1.165 kg CO₂e/kg(생두)이 자동으로 적용됩니다. "
               />
             </div>
@@ -211,13 +214,13 @@ function FarmBlock({
               <DocPicker placeholder="INVOICE 선택" options={[{ value: 'inv1', label: `INVOICE_${farm.bean}.pdf` }]} />
             </FormField>
             <div className="mt-3 grid gap-4 sm:grid-cols-3">
-              <FormField label="생두명" required hint={<OcrBadge />}>
+              <FormField label="생두명" required source="measured" sourceOcr>
                 <TextInput defaultValue={farm.bean} />
               </FormField>
-              <FormField label="생산국" required hint={<OcrBadge />}>
+              <FormField label="생산국" required source="measured" sourceOcr>
                 <TextInput defaultValue={farm.country} />
               </FormField>
-              <FormField label="거래량 (구매량)" required hint={<OcrBadge />}>
+              <FormField label="거래량 (구매량)" required source="measured" sourceOcr>
                 <UnitInput unit="kg" type="number" placeholder="0" />
               </FormField>
             </div>
@@ -226,6 +229,7 @@ function FarmBlock({
                 label="생두 투입량"
                 value="—"
                 unit="kg"
+                source="calculated"
                 help="로스팅하면 무게가 줄기 때문에, 원두 생산량에서 거꾸로 계산해 필요한 생두 양을 구합니다. (블렌딩 비율 반영, 로스팅 후 무게 76.12% 기준. 직접 수정 불가)"
               />
             </div>
@@ -239,6 +243,7 @@ function FarmBlock({
                 label="포대 재질"
                 required
                 helpWide
+                source="measured"
                 help={
                   <HelpOptions
                     intro="생두가 담겨 온 자루(포대)의 재질을 고릅니다. INVOICE나 자루 표기를 보면 알 수 있어요."
@@ -252,13 +257,18 @@ function FarmBlock({
               >
                 <Select options={[{ value: 'jute', label: '황마' }, { value: 'pp', label: 'PP' }, { value: 'both', label: '황마 + PP' }]} />
               </FormField>
-              <FormField label="단위 포대 중량" required>
+              <FormField label="단위 포대 중량" required source="measured">
                 <UnitInput unit="kg" type="number" defaultValue={farm.sackWeight} />
               </FormField>
-              <FormField label="포대 1개 무게" required hint={<OcrBadge text="증빙 사진 자동 추출 · 미업로드 시 기본값" />}>
+              <FormField
+                label="포대 1개 무게"
+                required
+                source="literature"
+                hint={<OcrBadge text="증빙 사진 자동 추출 · 미업로드 시 기본값" />}
+              >
                 <UnitInput unit="g" type="number" defaultValue={farm.sackUnitWeight} />
               </FormField>
-              <ReadonlyField label="총 투입 질량" value="—" unit="kg" help="포대 개수 × 포대 1개 무게로 계산한 생두 자루 전체 무게입니다. 이 값은 나중에 폐기 단계에서 버려지는 포장재 양으로 이어집니다." />
+              <ReadonlyField label="총 투입 질량" value="—" unit="kg" source="calculated" help="포대 개수 × 포대 1개 무게로 계산한 생두 자루 전체 무게입니다. 이 값은 나중에 폐기 단계에서 버려지는 포장재 양으로 이어집니다." />
             </div>
           </div>
         </div>
@@ -345,16 +355,19 @@ function MaterialMethod({
       </FormField>
 
       {method === 'A' && (
-        <FormField label={aLabel} required helpWide help="목록에서 재질을 고르면, 그 재질을 만들 때 나오는 탄소량(배출계수)이 시스템에 미리 저장된 값으로 자동 적용됩니다. 따로 숫자를 넣지 않아도 돼요.">
+        <FormField label={aLabel} required helpWide source="literature" help="목록에서 재질을 고르면, 그 재질을 만들 때 나오는 탄소량(배출계수)이 시스템에 미리 저장된 값으로 자동 적용됩니다. 따로 숫자를 넣지 않아도 돼요.">
           <Select options={aOptions} />
         </FormField>
       )}
 
       {method === 'B' && (
         <div className="rounded-md border border-outline-variant bg-surface-container-low p-3">
-          <div className="mb-2 flex items-center justify-between">
+          <div className="mb-2 flex items-center justify-between gap-2">
             <p className="text-sm font-medium text-on-surface">포장재 구성 재질, 비율 직접 입력</p>
-            <span className="text-xs text-on-surface-variant">합계 100%</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-on-surface-variant">합계 100%</span>
+              <SourceBadge source="measured" />
+            </div>
           </div>
           <div className="space-y-2">
             {['재질 1', '재질 2'].map((r, i) => (
@@ -391,6 +404,8 @@ function MaterialMethod({
           <FormField
             label="포장재 생산자가 직접 제공한 탄소발자국"
             required
+            source="supplier"
+            sourceOcr
             hint={<OcrBadge text="증명 자료에서 자동 추출 (직접 입력 불가)" />}
           >
             <UnitInput unit="kg CO₂e/kg" type="number" placeholder="0" disabled readOnly />
@@ -593,6 +608,8 @@ function FilterMethod() {
           <FormField
             label="여과지 생산자가 직접 제공한 탄소발자국"
             required
+            source="supplier"
+            sourceOcr
             hint={<OcrBadge text="증명 자료에서 자동 추출 (직접 입력 불가)" />}
           >
             <UnitInput unit="kg CO₂e/kg" type="number" placeholder="0" disabled readOnly />
@@ -612,6 +629,7 @@ function TapeFields() {
         label="테이프 재질"
         required
         helpWide
+        source="measured"
         help={
           <HelpOptions
             intro="박스를 봉하는 테이프의 재질을 고릅니다."
@@ -632,13 +650,13 @@ function TapeFields() {
         />
       </FormField>
       <div className="grid gap-4 sm:grid-cols-3">
-        <FormField label="박스 가로(W)" required>
+        <FormField label="박스 가로(W)" required source="measured">
           <UnitInput unit="mm" type="number" placeholder="0" />
         </FormField>
-        <FormField label="박스 세로(D)" required>
+        <FormField label="박스 세로(D)" required source="measured">
           <UnitInput unit="mm" type="number" placeholder="0" />
         </FormField>
-        <FormField label="박스 높이(H)" required>
+        <FormField label="박스 높이(H)" required source="measured">
           <UnitInput unit="mm" type="number" placeholder="0" />
         </FormField>
       </div>
@@ -646,6 +664,7 @@ function TapeFields() {
         label="단위 기간 테이프 사용량"
         value="—"
         unit="m"
+        source="literature"
         help="박스 하나를 봉하는 데 드는 테이프 길이(가로 4번 + 세로 2번)에 박스 개수를 곱해 자동 계산합니다. 테이프 무게는 표준값(크라프트 6.5g/m · OPP 3.5g/m)을 적용합니다."
       />
     </div>

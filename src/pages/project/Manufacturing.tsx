@@ -1,4 +1,4 @@
-import { AlertTriangle, Plus, ScanLine, X } from 'lucide-react';
+import { AlertTriangle, Plus, X } from 'lucide-react';
 import { useState } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
 import {
@@ -9,6 +9,7 @@ import {
   RadioGroup,
   ReadonlyField,
   Select,
+  SourceBadge,
   TextInput,
 } from '@/components/ui/form';
 import { DEFAULT_PROJECT_DATA } from '@/data/projectData';
@@ -81,6 +82,7 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
           label="단위 기간 전력 사용량 합계"
           value={numberFmt(powerSum)}
           unit="kWh"
+          source="calculated"
           help="올린 전력 고지서의 월별 사용량을 모두 더한 값입니다. 이 전기를 쓰며 나온 배출량은 결과 단계에서 계산돼요."
         />
         <p className="text-xs text-on-surface-variant">
@@ -126,7 +128,7 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
               />
             </div>
 
-            <ReadonlyField label="단위 기간 자가발전량 합계" value={numberFmt(genSum)} unit="kWh" help="태양광 등으로 직접 만들어 쓴 전기를 월별로 더한 값입니다. 이만큼은 배출량이 0으로 처리됩니다." />
+            <ReadonlyField label="단위 기간 자가발전량 합계" value={numberFmt(genSum)} unit="kWh" source="calculated" help="태양광 등으로 직접 만들어 쓴 전기를 월별로 더한 값입니다. 이만큼은 배출량이 0으로 처리됩니다." />
           </>
         )}
       </SectionCard>
@@ -146,6 +148,7 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
             label="가스 종류"
             required
             helpWide
+            source="measured"
             help={
               <HelpOptions
                 intro="로스터기에 쓰는 가스 종류를 고릅니다. 고지서나 가스 계약서를 보면 알 수 있어요."
@@ -190,6 +193,8 @@ export function MrvManufacturing({ data = DEFAULT_PROJECT_DATA }: MrvManufacturi
           label="채프 발생량"
           value="—"
           unit="kg"
+          source="literature"
+          help="생두 1kg당 5.7g(품종별 실측값에 생산·수출 비중을 가중한 문헌값)을 적용해 자동 계산한 값입니다."
         />
       </SectionCard>
     </div>
@@ -266,8 +271,8 @@ function UsageTable({
         <table className="w-full min-w-130 border-collapse text-sm">
           <thead>
             <tr className="border-b border-outline-variant bg-surface-container-low text-left text-xs font-medium text-on-surface-variant">
-              <th scope="col" className="w-9 px-2 py-2 text-center" title="문서 자동 추출 여부">
-                <ScanLine className="mx-auto h-3.5 w-3.5" aria-label="출처" />
+              <th scope="col" className="w-24 px-3 py-2" title="이 행의 데이터 출처 등급">
+                출처
               </th>
               <th scope="col" className="px-3 py-2">{monthLabel}</th>
               <th scope="col" className="px-3 py-2">{amountLabel}</th>
@@ -280,8 +285,10 @@ function UsageTable({
               const noMonth = !row.month;
               return (
                 <tr key={idx} className="border-b border-outline-variant last:border-b-0">
-                  <td className="border-l-2 border-primary/50 px-2 py-2 text-center align-top">
-                    <ScanLine className="mx-auto mt-2.5 h-4 w-4 text-primary" aria-label="문서 자동 추출" />
+                  <td className="border-l-2 border-primary/50 px-3 py-2 align-top">
+                    <div className="mt-2">
+                      <SourceBadge source="measured" ocr />
+                    </div>
                   </td>
                   <td className="px-3 py-2 align-top">
                     <TextInput type="month" defaultValue={row.month} />

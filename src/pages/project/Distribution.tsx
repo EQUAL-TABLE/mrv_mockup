@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
-import { DocPicker, FormField, InfoBanner, OcrBadge, RadioGroup, ReadonlyField, TextInput, UnitInput } from '@/components/ui/form';
+import { DocPicker, FormField, InfoBanner, RadioGroup, ReadonlyField, TextInput, UnitInput } from '@/components/ui/form';
 
 /**
  * ⑦ 제품유통 
@@ -34,23 +34,23 @@ export function Distribution() {
               <DocPicker placeholder="납품 거래명세서 선택" />
             </FormField>
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="납품처명" required hint={<OcrBadge />}>
+              <FormField label="납품처명" required source="measured" sourceOcr>
                 <TextInput placeholder="문서에서 자동 추출" />
               </FormField>
-              <FormField label="납품처 주소" required hint={<OcrBadge />}>
+              <FormField label="납품처 주소" required source="measured" sourceOcr>
                 <TextInput placeholder="문서에서 자동 추출" />
               </FormField>
-              <FormField label="수송 거리" required hint="로스터리·납품처 주소로 자동 산출됩니다. 안 되면 직접 입력하세요.">
+              <FormField label="수송 거리" required source="calculated" hint="로스터리·납품처 주소로 자동 산출됩니다. 안 되면 직접 입력하세요.">
                 <UnitInput unit="km" type="number" placeholder="자동 계산" />
               </FormField>
-              <ReadonlyField label="수송수단" value="트럭 (고정)" />
+              <ReadonlyField label="수송수단" value="트럭 (고정)" source="literature" help="제품유통 수송수단은 방법론상 트럭으로 고정 가정합니다." />
             </div>
           </>
         ) : (
           <InfoBanner>자체 소비로 분류되어 제품유통 수송 거리 = 0km, 배출량 = 0으로 산정됩니다.</InfoBanner>
         )}
 
-        <ReadonlyField label="수송량" value="—" unit="kg RC" help="배송한 원두 무게입니다. 단위 기간 원두 생산량이 자동으로 연결됩니다. (kg RC = 로스팅된 원두 kg)" />
+        <ReadonlyField label="수송량" value="—" unit="kg RC" source="calculated" help="배송한 원두 무게입니다. 단위 기간 원두 생산량이 자동으로 연결됩니다. (kg RC = 로스팅된 원두 kg)" />
         <p className="text-xs text-on-surface-variant">
           유통 배출량은 마지막 <b className="font-medium text-on-surface">결과</b> 단계에서 계산되어 표시됩니다.
         </p>

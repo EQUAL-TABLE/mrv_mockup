@@ -1,6 +1,7 @@
 import { Download, FileCheck2, FileText, History } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { SectionCard } from '@/components/workspace/SectionCard';
+import { StageBars } from '@/components/workspace/StageBars';
 import { ReadonlyField } from '@/components/ui/form';
 import { DEFAULT_PROJECT_DATA } from '@/data/projectData';
 import type { ProjectData } from '@/data/projectData';
@@ -27,36 +28,25 @@ export function Result({ methodology = 'iso', boundary = 'grave', data = DEFAULT
   const iso = methodology === 'iso';
 
   const st = data.result.stages;
-  const raw = [
-    { name: '제조 전 (원료·수송)', value: st.pre, show: true },
-    { name: '제조 (로스팅)', value: st.manuf, show: true },
+  const stages = [
+    { name: '제조전 - 원부자재', value: st.preMaterial, show: true },
+    { name: '제조전 - 원료 수송', value: st.preTransport, show: true },
+    { name: '제조 - 로스팅', value: st.manuf, show: true },
     { name: '제품 유통', value: st.distribution, show: grave },
     { name: '사용', value: st.usage, show: iso && grave },
-    { name: '폐기 수송', value: st.wasteTransport, show: iso },
-    { name: '폐기 처리', value: st.waste, show: true },
+    { name: '폐기 - 수송', value: st.wasteTransport, show: iso },
+    { name: '폐기 - 처리', value: st.waste, show: true },
   ].filter((s) => s.show);
-  const total = raw.reduce((s, r) => s + r.value, 0);
-  const stages = raw.map((s) => ({ ...s, pct: Math.round((s.value / total) * 100) }));
+  const total = stages.reduce((s, r) => s + r.value, 0);
 
   return (
     <div className="space-y-4">
       {/* Section 1 — 단계별 배출량 */}
-      <SectionCard title="단계별 탄소배출량" description="단위: kg CO₂e / 원두 1kg">
-        <div className="space-y-3">
-          {stages.map((s) => (
-            <div key={s.name}>
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="text-on-surface">{s.name}</span>
-                <span className="tabular-nums font-medium text-on-surface">
-                  {s.value.toFixed(2)} <span className="text-xs text-on-surface-variant">({s.pct}%)</span>
-                </span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-surface-container-high">
-                <div className="h-full rounded-full bg-primary" style={{ width: `${s.pct}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
+      <SectionCard
+        title="단계별 탄소배출량"
+        description="단위: kg CO₂e / 원두 1kg"
+      >
+        <StageBars items={stages} />
       </SectionCard>
 
       {/* Section 2 — 최종 탄소발자국 */}
@@ -76,11 +66,14 @@ export function Result({ methodology = 'iso', boundary = 'grave', data = DEFAULT
       </SectionCard>
 
       {/* Section 3 — 데이터 출처 등급 요약 */}
-      <SectionCard title="데이터 출처 등급 요약" description="어떤 값이 실측·계산·추정으로 산정됐는지 보여줍니다.">
+      <SectionCard
+        title="데이터 출처 등급 요약"
+        description="각 입력 화면의 항목마다 붙은 출처 등급을 모은 것입니다. 어떤 값이 실측·계산·문헌값으로 산정됐는지 보여줍니다."
+      >
         <div className="grid gap-3 sm:grid-cols-3">
-          <ReadonlyField label="측정치 기반" value="전력·가스·거래량 등" />
-          <ReadonlyField label="계산치 기반" value="수송량·포장재 사용량 등" />
-          <ReadonlyField label="추정치(문헌값) 적용" value="생두 배출량(1.165) 등" />
+          <ReadonlyField label="1차 데이터" value="전력·가스·거래량 등" source="measured" help="고지서·거래명세서·INVOICE 등 증빙에서 확인했거나 공급자가 제공한 값입니다." />
+          <ReadonlyField label="파생값" value="수송량·포장재 사용량 등" source="calculated" help="다른 입력값에서 자동 계산된 값입니다. 등급은 계산에 쓰인 원본 값을 따릅니다." />
+          <ReadonlyField label="2차 데이터" value="생두 배출량(1.165)·폐기 처리 비율 등" source="literature" help="문헌·국가 통계의 표준값입니다." />
         </div>
         <div className="rounded-md border border-outline-variant bg-surface-container-low p-3 text-xs leading-relaxed text-on-surface-variant">
           문헌값 적용 구간과 OCR 수동 입력 대체 항목은 보고서 본문에 자동으로 기재됩니다.

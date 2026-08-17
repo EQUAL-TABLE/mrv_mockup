@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { AppShell } from '@/components/AppShell';
 import { Badge, StatusChip } from '@/components/ui/Badge';
+import { SourceLegend } from '@/components/ui/form';
 import { Stepper } from '@/components/workspace/Stepper';
 import { StepActions } from '@/components/workspace/StepActions';
 import { StepIntro } from '@/components/workspace/StepIntro';
@@ -54,9 +55,10 @@ export function ProjectWorkspace({ projectId, stepKey, children }: ProjectWorksp
         {/* 상단 스텝 네비 */}
         <Stepper projectId={projectId} currentKey={stepKey} steps={steps} />
 
-        {/* 단계 설명 (비전문가 눈높이) + 내용 */}
+        {/* 단계 설명 (비전문가 눈높이) + 출처 등급 범례 + 내용 */}
         <div className="space-y-4">
           <StepIntro stepKey={stepKey} steps={steps} />
+          <SourceLegend />
           {children}
         </div>
 

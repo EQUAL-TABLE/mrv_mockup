@@ -37,7 +37,8 @@ export interface GenRow {
 
 /** 단계별 배출량 (kg CO₂e / 원두 1kg). 화면은 방법론·경계에 따라 표시할 항목만 고른다. */
 export interface ResultStages {
-  pre: number; // 제조 전 (원료·수송)
+  preMaterial: number; // 제조 전 · 원부자재 (생두·포장재)
+  preTransport: number; // 제조 전 · 원료 수송 (해상·내륙)
   manuf: number; // 제조 (로스팅)
   distribution: number; // 제품 유통 (폐기까지)
   usage: number; // 사용 (ISO·폐기까지)
@@ -123,7 +124,7 @@ export const DEFAULT_PROJECT_DATA: ProjectData = {
   ],
   mass: { green: 1.3138, minPack: 0.012, filter: 0.0021, box: [0.0345, 0.0009] },
   result: {
-    stages: { pre: 2.51, manuf: 1.3, distribution: 0.18, usage: 0.72, wasteTransport: 0.05, waste: 0.34 },
+    stages: { preMaterial: 2.18, preTransport: 0.33, manuf: 1.3, distribution: 0.18, usage: 0.72, wasteTransport: 0.05, waste: 0.34 },
     scope: { s1: 0.42, s2: 0.88, s3: 3.03 },
   },
 };
@@ -156,7 +157,7 @@ export const PROJECT_DATA: Record<string, ProjectData> = {
     genRows: [],
     mass: { green: 1.3138, minPack: 0.012, filter: 0.0021, box: [0.0345, 0.0009] },
     result: {
-      stages: { pre: 2.36, manuf: 1.28, distribution: 0.18, usage: 0.72, wasteTransport: 0.05, waste: 0.31 },
+      stages: { preMaterial: 2.05, preTransport: 0.31, manuf: 1.28, distribution: 0.18, usage: 0.72, wasteTransport: 0.05, waste: 0.31 },
       scope: { s1: 0.44, s2: 0.9, s3: 3.56 },
     },
   },
@@ -186,7 +187,8 @@ export const PROJECT_DATA: Record<string, ProjectData> = {
     mass: { green: 1.3092, minPack: 0.018, filter: 0.0021, box: [0.0345, 0.0009] },
     result: {
       // 콜드브루는 추출 전력 원단위 0 → 사용 단계 배출이 매우 작다
-      stages: { pre: 2.74, manuf: 1.4, distribution: 0.24, usage: 0.02, wasteTransport: 0.06, waste: 0.38 },
+      // 블렌드(콜롬비아·브라질 2개 원산지) → 원료 수송 비중이 싱글오리진보다 크다
+      stages: { preMaterial: 2.36, preTransport: 0.38, manuf: 1.4, distribution: 0.24, usage: 0.02, wasteTransport: 0.06, waste: 0.38 },
       scope: { s1: 0, s2: 1.02, s3: 3.82 },
     },
   },
@@ -218,8 +220,8 @@ export const PROJECT_DATA: Record<string, ProjectData> = {
     genRows: [],
     mass: { green: 1.3138, minPack: 0.0102, filter: 0.0021, box: [0.0345, 0.0009] },
     result: {
-      // 제품 생산까지: pre + manuf + wasteTransport + waste = 4.21
-      stages: { pre: 2.52, manuf: 1.3, distribution: 0.18, usage: 0.72, wasteTransport: 0.05, waste: 0.34 },
+      // 제품 생산까지: 제조전(원부자재+원료수송) + manuf + wasteTransport + waste = 4.21
+      stages: { preMaterial: 2.19, preTransport: 0.33, manuf: 1.3, distribution: 0.18, usage: 0.72, wasteTransport: 0.05, waste: 0.34 },
       scope: { s1: 0.4, s2: 0.85, s3: 2.96 },
     },
   },
@@ -256,7 +258,7 @@ export const PROJECT_DATA: Record<string, ProjectData> = {
     mass: { green: 1.3138, minPack: 0.015, filter: 0.0021, box: [0.0412, 0.0011] },
     result: {
       // 환경성적표지·폐기까지: pre + manuf + distribution + waste (사용·폐기수송 없음)
-      stages: { pre: 2.6, manuf: 1.35, distribution: 0.2, usage: 0, wasteTransport: 0, waste: 0.38 },
+      stages: { preMaterial: 2.24, preTransport: 0.36, manuf: 1.35, distribution: 0.2, usage: 0, wasteTransport: 0, waste: 0.38 },
       scope: { s1: 0.35, s2: 0.62, s3: 3.56 },
     },
   },
@@ -281,8 +283,8 @@ export const PROJECT_DATA: Record<string, ProjectData> = {
     genRows: [],
     mass: { green: 1.3138, minPack: 0.012, filter: 0.0021, box: [0.0345, 0.0009] },
     result: {
-      // 계산기·제품 생산까지: pre + manuf + waste = 5.02
-      stages: { pre: 3.1, manuf: 1.58, distribution: 0, usage: 0, wasteTransport: 0, waste: 0.34 },
+      // 계산기·제품 생산까지: 제조전(원부자재+원료수송) + manuf + waste = 5.02
+      stages: { preMaterial: 2.71, preTransport: 0.39, manuf: 1.58, distribution: 0, usage: 0, wasteTransport: 0, waste: 0.34 },
       scope: { s1: 0, s2: 0, s3: 0 },
     },
   },
@@ -307,8 +309,8 @@ export const PROJECT_DATA: Record<string, ProjectData> = {
     genRows: [],
     mass: { green: 1.3138, minPack: 0.014, filter: 0.0021, box: [0.0345, 0.0009] },
     result: {
-      // 계산기·폐기까지: pre + manuf + usage + waste
-      stages: { pre: 2.34, manuf: 1.62, distribution: 0, usage: 0.72, wasteTransport: 0, waste: 0.34 },
+      // 계산기·폐기까지: 제조전(원부자재+원료수송) + manuf + usage + waste
+      stages: { preMaterial: 2.05, preTransport: 0.29, manuf: 1.62, distribution: 0, usage: 0.72, wasteTransport: 0, waste: 0.34 },
       scope: { s1: 0, s2: 0, s3: 0 },
     },
   },
