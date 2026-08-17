@@ -192,7 +192,14 @@ export function BasicInfo({
       </SectionCard>
 
       {/* Section 2 — 프로젝트 정보 */}
-      <SectionCard title="2. 프로젝트 정보" description="프로젝트 명과 산정 대상 기간, 결과 표시 기준을 입력합니다.">
+      <SectionCard
+        title="2. 프로젝트 정보"
+        description={
+          isMrv
+            ? '프로젝트 명과 산정 대상 기간, 결과 표시 기준을 입력합니다.'
+            : '프로젝트 명과 기준연도를 입력합니다. 계산기 방식은 원두 1kg 기준으로 추정 결과를 제공합니다.'
+        }
+      >
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField label="프로젝트명" required >
             <TextInput defaultValue={name} placeholder="예: 에티오피아 예가체프 싱글오리진 2026" />
@@ -200,27 +207,33 @@ export function BasicInfo({
           <FormField label="기준연도" required>
             <UnitInput unit="년" type="number" defaultValue={data.baseYear} />
           </FormField>
-          <FormField label="데이터 수집 시작" required>
-            <TextInput type="month" defaultValue={data.collectFrom} />
-          </FormField>
-          <FormField label="데이터 수집 종료" required hint="데이터 수집기간은 연단위를 권장합니다. 따라서 수집 기간이 12개월 미만이면 경고가 표시될 수 있습니다.">
-            <TextInput type="month" defaultValue={data.collectTo} />
-          </FormField>
-          <FormField
-            label="기준 수량(기능단위)"
-            required
-            helpWide
-            help="결과를 ‘얼마당’ 보여줄지 정하는 값입니다. 계산은 항상 원두 1kg 기준으로 하되, 화면·보고서에는 기준 수량을 기반으로 제공합니다."
-          >
-            <UnitInput unit="kg" type="number" defaultValue={data.functionalUnit} />
-          </FormField>
-          <FormField label="기능단위 표시" hint="자동으로 조합됩니다.">
-            <TextInput value={`로스팅된 커피 ${data.functionalUnit} kg`} disabled readOnly />
-          </FormField>
+          {isMrv && (
+            <>
+              <FormField label="데이터 수집 시작" required>
+                <TextInput type="month" defaultValue={data.collectFrom} />
+              </FormField>
+              <FormField label="데이터 수집 종료" required hint="데이터 수집기간은 연단위를 권장합니다. 따라서 수집 기간이 12개월 미만이면 경고가 표시될 수 있습니다.">
+                <TextInput type="month" defaultValue={data.collectTo} />
+              </FormField>
+              <FormField
+                label="기준 수량(기능단위)"
+                required
+                helpWide
+                help="결과를 ‘얼마당’ 보여줄지 정하는 값입니다. 계산은 항상 원두 1kg 기준으로 하되, 화면·보고서에는 기준 수량을 기반으로 제공합니다."
+              >
+                <UnitInput unit="kg" type="number" defaultValue={data.functionalUnit} />
+              </FormField>
+              <FormField label="기능단위 표시" hint="자동으로 조합됩니다.">
+                <TextInput value={`로스팅된 커피 ${data.functionalUnit} kg`} disabled readOnly />
+              </FormField>
+            </>
+          )}
         </div>
-        <FormField label="산정 범위 설명 (선택)" helpWide help="표준 계산 방식·공정과 다른, 이 프로젝트 만의 특이한 공정을 작성할 수 있습니다. 작성 내용은 결과 보고서에 반영됩니다.">
-          <Textarea rows={2} placeholder="예: 자사는 재생에너지 자가발전 설비를 운영합니다." />
-        </FormField>
+        {isMrv && (
+          <FormField label="산정 범위 설명 (선택)" helpWide help="표준 계산 방식·공정과 다른, 이 프로젝트 만의 특이한 공정을 작성할 수 있습니다. 작성 내용은 결과 보고서에 반영됩니다.">
+            <Textarea rows={2} placeholder="예: 자사는 재생에너지 자가발전 설비를 운영합니다." />
+          </FormField>
+        )}
       </SectionCard>
 
       {/* Section 3 — 작성자 정보 (계산기 트랙은 입력받지 않음: 번호 유지 + 안내) */}

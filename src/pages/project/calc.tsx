@@ -177,8 +177,8 @@ export function CalcManufacturing({ fuel = 'elec_gas' }: { fuel?: 'elec' | 'elec
         )}
       </SectionCard>
 
-      <SectionCard title="커피 껍질(채프) 발생량" description="로스팅 중 떨어져 나오는 껍질입니다. 자동으로 계산됩니다.">
-        <ReadonlyField label="채프 발생량" value="—" unit="kg" help="로스팅할 때 생두에서 떨어져 나오는 얇은 껍질입니다. 생두 1kg당 약 5.7g이 나온다는 기준으로 자동 계산됩니다." />
+      <SectionCard title="커피 껍질(채프) 발생량" description="로스팅 중 떨어져 나오는 껍질입니다. 생두 1kg당 약 5.7g이 나온다는 기준으로 자동 계산되며 이후 폐기물로 자동 반영됩니다.">
+        <ReadonlyField label="채프 발생량" value="—" unit="kg" />
       </SectionCard>
     </div>
   );
