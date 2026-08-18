@@ -56,11 +56,11 @@ export const MRV_DOCUMENTS: DocItem[] = [
   { name: '수입국 내륙수송 거래명세서', note: '국내 항구에서 로스터리까지 운송 내역', required: false },
   { name: '최소포장재 구매 거래명세서', note: '봉투·밸브 등 포장재 구매 내역', required: false },
   { name: '출하포장재 구매 거래명세서', note: '박스·테이프 등 출하용 포장재', required: false, methodology: 'epd' },
-  { name: '부자재(여과지) 구매 거래명세서', note: '드립백 여과지 (드립 시나리오일 때)', required: false, boundary: 'grave' },
+  { name: '부자재(여과지) 구매 거래명세서', note: '드립백 여과지 (드립 시나리오일 때)', required: false, methodology: 'iso', boundary: 'grave' },
   { name: '생두 포대 무게 증빙 사진', note: '포대 1개 무게 (저울/표기 사진)', required: false },
   { name: '재생에너지 설치 확인서', note: '자가 태양광 등 설치 서류', required: false },
   { name: '재생에너지 발전량 모니터링 기록', note: '자가발전 실제 사용량 기록', required: false },
-  { name: '재활용폐기물처리 증빙서류', note: '재활용 처리 실적', required: false, boundary: 'grave' },
+  { name: '재활용폐기물처리 증빙서류', note: '황마 포대·포장재 등 제조단계 폐기물 재활용 처리 실적', required: false },
 ];
 
 /** 선택한 방법론·산정 범위에 해당하는 준비 문서만 추린다. */
@@ -79,9 +79,9 @@ export const TRACK_GUIDES: Record<Track, TrackGuideContent> = {
     tagline: '증빙 문서 기반 · 탄소 회계 기반 산정',
     canCertify: true,
     summary:
-      '전기 고지서·거래명세서 등 실제 증빙 문서를 올리면 시스템이 자동으로 읽어 계산합니다. 검토·확정을 거쳐 인증용 결과확인서와 보고서를 발급받을 수 있는 정확한 방식입니다.',
+      '전기 고지서·거래명세서 등 실제 증빙 문서를 올리면 시스템이 자동으로 읽어 계산합니다. 검토·확정을 거쳐 탄소 회계 산정 결과를 담은 결과확인서와 보고서를 받아볼 수 있는 정확한 방식이며, 이 문서는 제3자 검증을 거쳐 인증에 활용할 수 있습니다.',
     whenToUse: [
-      '거래처·인증기관에 제출할 공식 결과가 필요할 때',
+      '거래처·인증기관 제출에 활용할 수 있는 탄소 회계 산정 결과가 필요할 때',
       '전기 고지서·생두 인보이스 등 실제 증빙을 보유하고 있을 때',
       'ISO 14067 또는 환경성적표지 인증을 목표로 할 때',
     ],
@@ -175,7 +175,7 @@ export const TRACK_GUIDES: Record<Track, TrackGuideContent> = {
           },
           {
             title: '결과',
-            desc: '단계별 탄소배출량과 최종 탄소발자국을 확인하고, 인증용 결과확인서·보고서를 발급받습니다.',
+            desc: '단계별 탄소배출량과 최종 탄소발자국을 확인하고, 탄소 회계 산정 결과를 담은 결과확인서·보고서를 받아봅니다.',
             inputs: ['결과 확인 · 보고서 발급'],
           },
         ],

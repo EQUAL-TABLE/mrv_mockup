@@ -72,8 +72,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <ShieldCheck className="h-4.5 w-4.5 text-white" />
           </div>
           <div className="leading-tight">
-            <p className="font-headline text-lg tracking-wide text-white">EQUALTABLE</p>
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-primary-fixed">Admin Console</p>
+            <p className="font-headline text-lg tracking-wide text-white">COFFEE MRV</p>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-primary-fixed">Admin Console · EQUAL TABLE</p>
           </div>
         </div>
 
@@ -133,7 +133,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <footer className="border-t border-outline-variant px-8 py-4">
           <p className="text-xs text-on-surface-variant">
             <b className="font-semibold text-on-surface">관리자 콘솔</b> · 전 기능 Super Admin 권한 · 일반 사용자 접근 불가 · 모든
-            조작은 감사 로그에 영구 기록됩니다 · © EQUALTABLE
+            조작은 감사 로그에 영구 기록됩니다 · © EQUAL TABLE
           </p>
         </footer>
       </div>

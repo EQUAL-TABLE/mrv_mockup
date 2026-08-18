@@ -22,10 +22,13 @@ export function Sidebar() {
     <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r border-outline-variant bg-surface-container-lowest px-4">
       {/* 1) 로고 + 사이트명 (살짝 아래로) */}
       <div className="flex items-center gap-2 px-1 pt-8">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary">
           <Leaf className="h-4 w-4 text-white" />
         </div>
-        <span className="font-headline text-xl tracking-wide text-primary">EQUALTABLE</span>
+        <div className="leading-tight">
+          <p className="font-headline text-lg tracking-wide text-primary">COFFEE MRV</p>
+          <p className="text-[11px] font-medium tracking-wide text-on-surface-variant">by EQUAL TABLE</p>
+        </div>
       </div>
 
       {/* 2) 로그인 사용자 정보 + 알림 */}

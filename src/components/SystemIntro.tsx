@@ -16,8 +16,7 @@ export function SystemIntro({ onStart }: SystemIntroProps) {
         <div className="max-w-3xl">
           <h2 className="text-lg font-bold text-on-surface">커피 전과정 탄소발자국 산정 시스템</h2>
           <p className="mt-1.5 text-sm leading-relaxed text-on-surface-variant">
-            생두 재배부터 로스팅·유통·폐기까지 전 과정에서 발생하는 온실가스를 표준(ISO 14067·환경성적표지)에 맞춰
-            산정하고, 검토·확정 절차를 거쳐 인증용 결과확인서를 발급합니다. 시작 전 아래 두 가지 방식을 확인하세요.
+            생두 재배부터 로스팅·유통·폐기까지 전 과정에서 발생하는 온실가스를 표준(ISO 14067·환경성적표지)에 맞춰 산정하고, 검토·확정 절차를 거쳐 탄소 회계 산정 결과를 담은 결과확인서를 제공합니다.시작 전 아래 두 가지 방식을 확인하세요.
           </p>
         </div>
         <Button className="shrink-0" onClick={onStart}>
@@ -31,7 +30,7 @@ export function SystemIntro({ onStart }: SystemIntroProps) {
           title="MRV 기반 탄소배출량 산정"
           tag="탄소 회계 기반 산정"
           tagVariant="primary"
-          description="전기 고지서·거래명세서 등 실제 증빙 문서를 올리면 자동으로 읽어 계산합니다. 결과확인서·보고서 발급이 가능한 정확한 방식입니다."
+          description="전기 고지서·거래명세서 등 실제 증빙 문서를 올리면 자동으로 읽어 계산합니다. 탄소 회계 산정 결과를 담은 결과확인서·보고서를 제공합니다."
           learnMoreHref="/guide?track=mrv"
         />
         <TrackInfoCard

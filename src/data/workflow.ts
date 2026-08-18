@@ -64,7 +64,7 @@ export const WORKFLOW_META: Record<WorkflowId, { title: string; summary: string;
   'mrv-iso-grave': {
     title: 'MRV · ISO 14067 · 폐기까지',
     summary:
-      '증빙을 기반으로 커피의 전 생애(재배~폐기)를 국제표준으로 산정하고, 검토·확정을 거쳐 인증용 문서를 발급합니다. 모든 단계를 포함하는 가장 완전한 흐름입니다.',
+      '증빙을 기반으로 커피의 전 생애(재배~폐기)를 국제표준으로 산정하고, 검토·확정을 거쳐 산정 결과 문서를 제공합니다. 모든 단계를 포함하는 가장 완전한 흐름입니다.',
     certify: true,
   },
   'mrv-iso-gate': {

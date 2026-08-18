@@ -265,7 +265,7 @@ export function CalcResult({ boundary, data = DEFAULT_PROJECT_DATA }: { boundary
     <div className="space-y-4">
       <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-3 text-sm leading-relaxed text-warning">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-        <span>본 결과는 <b className="font-semibold">참고용</b>이며 인증에 사용할 수 없습니다. 인증용 결과가 필요하면 MRV 방식으로 다시 산정하세요.</span>
+        <span>본 결과는 <b className="font-semibold">참고용</b>이며 인증에 활용할 수 없습니다. 정확한 탄소 회계 산정 결과가 필요하면 MRV 방식으로 다시 산정하세요.</span>
       </div>
 
       <SectionCard title="단계별 탄소배출량" description="단위: kg CO₂e / 1kg 원두">

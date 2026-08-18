@@ -27,8 +27,8 @@ export function AdminLogin() {
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary">
             <ShieldCheck className="h-6 w-6 text-white" />
           </div>
-          <p className="mt-4 font-headline text-2xl tracking-wide text-white">EQUALTABLE</p>
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary-fixed">Admin Console</p>
+          <p className="mt-4 font-headline text-2xl tracking-wide text-white">COFFEE MRV</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary-fixed">Admin Console · EQUAL TABLE</p>
           <p className="mt-2 text-sm text-slate-400">관리자 전용 인증 경로입니다.</p>
         </div>
 

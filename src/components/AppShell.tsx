@@ -16,7 +16,7 @@ export function AppShell({ children }: AppShellProps) {
 
         <footer className="border-t border-outline-variant px-6 py-4">
           <p className="text-xs text-on-surface-variant">
-            <b className="font-semibold text-on-surface">© EQUALTABLE</b>
+            <b className="font-semibold text-on-surface">COFFEE MRV</b> · © EQUAL TABLE
           </p>
         </footer>
       </div>
