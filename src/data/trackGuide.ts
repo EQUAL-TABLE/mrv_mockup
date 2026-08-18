@@ -1,4 +1,4 @@
-import type { Track } from '@/types/project';
+import type { Boundary, Methodology, Track } from '@/types/project';
 
 /** 트랙 안내 페이지 콘텐츠 (설계 문서 기준, 쉬운 말로 요약) */
 
@@ -25,6 +25,10 @@ export interface DocItem {
   name: string;
   note: string;
   required: boolean;
+  /** 이 방법론에서만 필요 (없으면 모든 방법론에 해당) */
+  methodology?: Methodology;
+  /** 이 산정 범위에서만 필요 (없으면 모든 범위에 해당). 'grave' = 폐기까지일 때만 */
+  boundary?: Boundary;
 }
 
 export interface TrackGuideContent {
@@ -37,30 +41,42 @@ export interface TrackGuideContent {
   phases: GuidePhase[];
 }
 
-/** MRV 트랙에서 준비하면 좋은 증빙 문서 (설계 문서 §2.1 기준) */
+/**
+ * MRV 트랙에서 준비하면 좋은 증빙 문서 (설계 문서 §2.1 기준).
+ * methodology·boundary 조건이 붙은 문서는 해당 선택일 때만 노출된다. (getDocuments 참고)
+ */
 export const MRV_DOCUMENTS: DocItem[] = [
   { name: '생두 INVOICE', note: '생두 구매 내역서 (수량·원산지)', required: true },
   { name: '전력 고지서', note: '로스팅에 사용한 전기 사용량', required: true },
+  { name: 'B/L 또는 항공화물운송장', note: '생두 국제 운송 서류', required: true },
+  { name: '가스 고지서', note: '가스 로스터기를 쓰는 경우', required: true },
+  { name: '납품 거래명세서·운송장', note: '납품처 주소·배송 내역이 증빙 가능한 자료', required: true, boundary: 'grave' },
   { name: '농장 탄소배출 증빙문서', note: '농장이 제공한 탄소배출 자료 (있는 경우)', required: false },
-  { name: 'B/L 또는 항공화물운송장', note: '생두 국제 운송 서류', required: false },
   { name: '수출국 내륙수송 거래명세서', note: '산지에서 항구까지 운송 내역', required: false },
   { name: '수입국 내륙수송 거래명세서', note: '국내 항구에서 로스터리까지 운송 내역', required: false },
   { name: '최소포장재 구매 거래명세서', note: '봉투·밸브 등 포장재 구매 내역', required: false },
-  { name: '출하포장재 구매 거래명세서', note: '박스·테이프 등 (환경성적표지 방식일 때)', required: false },
-  { name: '부자재(여과지) 구매 거래명세서', note: '드립백 여과지 (드립 시나리오일 때)', required: false },
+  { name: '출하포장재 구매 거래명세서', note: '박스·테이프 등 출하용 포장재', required: false, methodology: 'epd' },
+  { name: '부자재(여과지) 구매 거래명세서', note: '드립백 여과지 (드립 시나리오일 때)', required: false, boundary: 'grave' },
   { name: '생두 포대 무게 증빙 사진', note: '포대 1개 무게 (저울/표기 사진)', required: false },
-  { name: '가스 고지서', note: '가스 로스터기를 쓰는 경우', required: false },
   { name: '재생에너지 설치 확인서', note: '자가 태양광 등 설치 서류', required: false },
   { name: '재생에너지 발전량 모니터링 기록', note: '자가발전 실제 사용량 기록', required: false },
-  { name: '납품 거래명세서', note: '납품처·배송 내역 (폐기까지 산정 시)', required: false },
-  { name: '재활용폐기물처리 증빙서류', note: '재활용 처리 실적 (폐기까지 산정 시)', required: false },
+  { name: '재활용폐기물처리 증빙서류', note: '재활용 처리 실적', required: false, boundary: 'grave' },
 ];
+
+/** 선택한 방법론·산정 범위에 해당하는 준비 문서만 추린다. */
+export function getDocuments(methodology: Methodology, boundary: Boundary): DocItem[] {
+  return MRV_DOCUMENTS.filter((d) => {
+    if (d.methodology && d.methodology !== methodology) return false;
+    if (d.boundary === 'grave' && boundary !== 'grave') return false;
+    return true;
+  });
+}
 
 export const TRACK_GUIDES: Record<Track, TrackGuideContent> = {
   mrv: {
     key: 'mrv',
     name: 'MRV 기반 탄소배출량 산정',
-    tagline: '증빙 문서 기반 · 인증 가능',
+    tagline: '증빙 문서 기반 · 탄소 회계 기반 산정',
     canCertify: true,
     summary:
       '전기 고지서·거래명세서 등 실제 증빙 문서를 올리면 시스템이 자동으로 읽어 계산합니다. 검토·확정을 거쳐 인증용 결과확인서와 보고서를 발급받을 수 있는 정확한 방식입니다.',

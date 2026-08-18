@@ -29,7 +29,7 @@ export function SystemIntro({ onStart }: SystemIntroProps) {
         <TrackInfoCard
           Icon={FileCheck2}
           title="MRV 기반 탄소배출량 산정"
-          tag="인증 가능"
+          tag="탄소 회계 기반 산정"
           tagVariant="primary"
           description="전기 고지서·거래명세서 등 실제 증빙 문서를 올리면 자동으로 읽어 계산합니다. 결과확인서·보고서 발급이 가능한 정확한 방식입니다."
           learnMoreHref="/guide?track=mrv"

@@ -1,11 +1,11 @@
 import { Check, ChevronRight, Coffee, Cpu, FileText, Flame, Package, Plus, ScanLine, Ship, Sprout, Trash2, Truck } from 'lucide-react';
-import { useState, type ReactNode } from 'react';
+import { Fragment, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { AppShell } from '@/components/AppShell';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { MRV_DOCUMENTS } from '@/data/trackGuide';
+import { getDocuments } from '@/data/trackGuide';
 import { AXES, LCA_INTRO, LIFECYCLE, type LifecyclePhase } from '@/data/lcaConcept';
 import { STEP_INTRO } from '@/data/stepIntro';
 import { WORKFLOW_META, getSteps, resolveWorkflowId, type WorkflowStep } from '@/data/workflow';
@@ -98,6 +98,8 @@ export function TrackGuide() {
           summary={meta.summary}
           certify={meta.certify}
           isMrv={track === 'mrv'}
+          methodology={methodology}
+          boundary={boundary}
           steps={steps}
           onStart={() =>
             navigate(`/projects/new/basic?track=${track}&methodology=${methodology}&boundary=${boundary}`)
@@ -124,8 +126,8 @@ function ConceptSection() {
         <p className="mb-2.5 text-sm font-semibold text-primary">커피의 전과정</p>
         <div className="flex items-stretch gap-2">
           {LIFECYCLE.map((p, i) => (
-            <div key={p.name} className="flex flex-1 items-stretch gap-2">
-              <div className="flex w-full flex-col items-center rounded-md border border-outline-variant bg-surface-container-low px-2 py-4 text-center">
+            <Fragment key={p.name}>
+              <div className="flex flex-1 basis-0 flex-col items-center rounded-md border border-outline-variant bg-surface-container-low px-2 py-4 text-center">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
                   {lifecycleIcon(p.icon)}
                 </span>
@@ -137,7 +139,7 @@ function ConceptSection() {
                   <ChevronRight className="h-4 w-4 text-outline-variant" />
                 </div>
               )}
-            </div>
+            </Fragment>
           ))}
         </div>
       </div>
@@ -278,11 +280,13 @@ interface WorkflowDetailProps {
   summary: string;
   certify: boolean;
   isMrv: boolean;
+  methodology: Methodology;
+  boundary: Boundary;
   steps: WorkflowStep[];
   onStart: () => void;
 }
 
-function WorkflowDetail({ title, summary, certify, isMrv, steps, onStart }: WorkflowDetailProps) {
+function WorkflowDetail({ title, summary, certify, isMrv, methodology, boundary, steps, onStart }: WorkflowDetailProps) {
   const groups = groupByPhase(steps);
   let no = 0;
 
@@ -290,14 +294,14 @@ function WorkflowDetail({ title, summary, certify, isMrv, steps, onStart }: Work
     <div className="mt-4 rounded-lg border border-outline-variant bg-surface-container-lowest p-6">
       <div className="flex flex-wrap items-center gap-2">
         <h3 className="text-base font-bold text-on-surface">{title}</h3>
-        <Badge variant={certify ? 'primary' : 'warning'}>{certify ? '인증 가능' : '참고용'}</Badge>
+        <Badge variant={certify ? 'primary' : 'warning'}>{certify ? '탄소 회계 기반 산정' : '참고용'}</Badge>
         <Badge variant="neutral">전체 {steps.length}단계</Badge>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">{summary}</p>
 
       {isMrv && (
         <div className="mt-5">
-          <DocumentChecklist />
+          <DocumentChecklist methodology={methodology} boundary={boundary} />
         </div>
       )}
 
@@ -352,10 +356,11 @@ function StepDetailCard({ no, step }: { no: number; step: WorkflowStep }) {
   );
 }
 
-/** MRV 필요 문서 체크리스트 (필수 강조) */
-function DocumentChecklist() {
-  const required = MRV_DOCUMENTS.filter((d) => d.required);
-  const optional = MRV_DOCUMENTS.filter((d) => !d.required);
+/** MRV 필요 문서 체크리스트 (선택한 방법론·산정 범위에 맞춰 노출) */
+function DocumentChecklist({ methodology, boundary }: { methodology: Methodology; boundary: Boundary }) {
+  const docs = getDocuments(methodology, boundary);
+  const required = docs.filter((d) => d.required);
+  const optional = docs.filter((d) => !d.required);
 
   return (
     <section className="rounded-lg border border-primary/30 bg-primary/5 p-6">
@@ -364,7 +369,7 @@ function DocumentChecklist() {
         <h3 className="text-base font-bold text-on-surface">먼저 준비하면 좋은 문서</h3>
       </div>
       <p className="mt-1 text-sm text-on-surface-variant">
-        MRV 방식은 아래 문서를 올리면 자동으로 값이 채워집니다. <b className="font-semibold text-primary">필수 2종</b>만 있으면 시작할 수 있어요.
+        선택한 산정 방식·방법론·범위에 맞춰 아래 문서를 올리면 자동으로 값이 채워집니다. <b className="font-semibold text-primary">필수 {required.length}종</b>부터 준비해 보세요.
       </p>
 
       <p className="mb-2 mt-4 text-xs font-semibold text-primary">필수</p>

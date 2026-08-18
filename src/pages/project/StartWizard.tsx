@@ -43,7 +43,7 @@ const STEP_META: Record<StepKey, { nav: string; title: string; intro: string }> 
     nav: '산정 방식',
     title: '산정 방식 선택',
     intro:
-      '산정 방식(트랙)은 탄소배출량을 ‘어떻게’ 계산할지 정하는 첫 선택입니다. 실제 증빙 문서를 근거로 정확하게 산정할지, 값을 직접 입력해 간편하게 추정할지를 고릅니다. 이 선택에 따라 이후 입력 방식과 인증 가능 여부가 달라집니다.',
+      '산정 방식(트랙)은 탄소배출량을 ‘어떻게’ 계산할지 정하는 첫 선택입니다. 실제 증빙 문서를 근거로 정확하게 산정할지, 값을 직접 입력해 간편하게 추정할지를 고릅니다. 이 선택에 따라 이후 입력 방식과 활용 가능 여부가 달라집니다.',
   },
   methodology: {
     nav: '방법론',
@@ -367,7 +367,7 @@ function ChoiceSummary({ track, methodology, boundary }: { track: Track; methodo
     <div className="mt-6 rounded-lg border border-primary/30 bg-primary/5 p-5">
       <div className="flex flex-wrap items-center gap-2">
         <h3 className="text-sm font-bold text-on-surface">선택한 산정 방식</h3>
-        <Badge variant={meta.certify ? 'primary' : 'warning'}>{meta.certify ? '인증 가능' : '참고용'}</Badge>
+        <Badge variant={meta.certify ? 'primary' : 'warning'}>{meta.certify ? '탄소 회계 기반 산정' : '참고용'}</Badge>
         <Badge variant="neutral">전체 {steps.length}단계</Badge>
       </div>
       <div className="mt-3 flex flex-wrap gap-2">

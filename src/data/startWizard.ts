@@ -29,8 +29,8 @@ export const TRACK_OPTIONS: WizardOption<Track>[] = [
     value: 'mrv',
     icon: 'mrv',
     title: 'MRV 트랙',
-    subtitle: '증빙 문서 기반 · 인증 가능',
-    tag: '인증 가능',
+    subtitle: '증빙 문서 기반 · 탄소 회계 기반 산정',
+    tag: '탄소 회계 기반 산정',
     tagTone: 'primary',
     desc: '전기 고지서·거래명세서·인보이스 같은 실제 증빙을 올리면 시스템이 OCR로 값을 자동으로 읽어 계산합니다. 입력값이 증빙에 근거해 신뢰도가 높고, 검토·확정 절차를 거쳐 인증에 쓸 수 있는 결과확인서·보고서를 발급할 수 있습니다.',
     bullets: [

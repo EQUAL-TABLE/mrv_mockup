@@ -71,7 +71,7 @@ export function BasicInfo({
                 intro="탄소발자국을 어떻게 계산할지 정합니다. 생성 후 수정이 불가합니다."
                 items={[
                   {
-                    term: 'MRV 기반 탄소배출량 산정 (증빙·인증 가능)',
+                    term: 'MRV 기반 탄소배출량 산정 (증빙·탄소 회계 기반 산정)',
                     desc: '전기 고지서·거래명세서와 같은 실제 증빙을 올려 데이터를 추출하고 탄소발자국을 계산합니다. 값이 정확해 인증이나 납품처 제출용으로 활용 가능합니다. 대신 준비할 서류가 조금 더 많습니다. (MRV = 측정·보고·검증. 단, 제출 등을 위한 외부 검증은 별도 절차 필요)',
                   },
                   {
@@ -86,7 +86,7 @@ export function BasicInfo({
               value={track}
               onChange={(e) => onTrack(e.target.value)}
               options={[
-                { value: 'mrv', label: 'MRV 기반 탄소배출량 산정 (증빙·인증 가능)' },
+                { value: 'mrv', label: 'MRV 기반 탄소배출량 산정 (증빙·탄소 회계 기반 산정)' },
                 { value: 'calculator', label: '탄소배출량 추정치 계산기 (추정·참고용)' },
               ]}
             />
